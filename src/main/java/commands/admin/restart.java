@@ -1,0 +1,43 @@
+package commands.admin;
+
+import datawrapper.User;
+import lostmanager.Bot;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import util.MessageUtil;
+
+public class restart extends ListenerAdapter {
+
+	@Override
+	public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
+		if (!event.getName().equals("restart"))
+			return;
+		event.deferReply().queue();
+		String title = "Restart";
+
+		User userexecuted = new User(event.getUser().getId());
+		if (!userexecuted.isAdmin()) {
+			event.getHook()
+					.editOriginalEmbeds(MessageUtil.buildEmbed(title,
+							"Du musst Admin sein, um diesen Befehl ausführen zu können.", MessageUtil.EmbedType.ERROR))
+					.queue();
+			return;
+		}
+
+		event.getHook()
+				.editOriginalEmbeds(
+						MessageUtil.buildEmbed(title, "Der Bot wird neugestartet.", MessageUtil.EmbedType.SUCCESS))
+				.queue();
+
+		Bot.registerCommands(Bot.getJda(), Bot.guild_id);
+		
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		 System.exit(0);
+
+	}
+}
