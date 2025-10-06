@@ -53,7 +53,7 @@ public class unlink extends ListenerAdapter {
 		Player p = new Player(tag);
 
 		if (p.IsLinked()) {
-			DBUtil.executeUpdate("DELETE FROM players WHERE cr_tag = ?", tag);
+			DBUtil.executeUpdate("DELETE FROM players WHERE coc_tag = ?", tag);
 			String desc = "Die Verknüpfung des Spielers mit dem Tag " + tag + " wurde erfolgreich gelöscht.";
 			event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.SUCCESS))
 					.queue();

@@ -30,24 +30,35 @@ public class link extends ListenerAdapter {
 		}
 		if (b == false) {
 			event.getHook()
-			.editOriginalEmbeds(MessageUtil.buildEmbed(title,
-					"Du musst mindestens Vize-Anführer eines Clans sein, um diesen Befehl ausführen zu können.",
-					MessageUtil.EmbedType.ERROR)).queue();
+					.editOriginalEmbeds(MessageUtil.buildEmbed(title,
+							"Du musst mindestens Vize-Anführer eines Clans sein, um diesen Befehl ausführen zu können.",
+							MessageUtil.EmbedType.ERROR))
+					.queue();
 			return;
 		}
 
 		OptionMapping tagOption = event.getOption("tag");
 		OptionMapping useroption = event.getOption("user");
+		OptionMapping useridoption = event.getOption("userid");
 
-		if (tagOption == null || useroption == null) {
-			event.getHook().editOriginalEmbeds(
-					MessageUtil.buildEmbed(title, "Beide Parameter sind erforderlich!", MessageUtil.EmbedType.ERROR))
+		if (tagOption == null || (useroption == null && useridoption == null)) {
+			event.getHook()
+					.editOriginalEmbeds(MessageUtil.buildEmbed(title,
+							"Der Tag und einer der anderen Parameter ist erforderlich!", MessageUtil.EmbedType.ERROR))
 					.queue();
 			return;
 		}
 
 		String tag = tagOption.getAsString();
-		String userid = useroption.getAsMentionable().getId();
+		if (!tag.startsWith("#")) {
+			tag = "#" + tag;
+		}
+		String userid;
+		if (useroption != null) {
+			userid = useroption.getAsMentionable().getId();
+		} else {
+			userid = useridoption.getAsString();
+		}
 
 		Player p = new Player(tag);
 
@@ -60,20 +71,22 @@ public class link extends ListenerAdapter {
 				e.printStackTrace();
 			}
 			if (!p.IsLinked()) {
-				DBUtil.executeUpdate("INSERT INTO players (cr_tag, discord_id, name) VALUES (?, ?, ?)", tag, userid,
+				DBUtil.executeUpdate("INSERT INTO players (coc_tag, discord_id, name) VALUES (?, ?, ?)", tag, userid,
 						playername);
 				Player player = new Player(tag);
-				String desc = "Der Spieler " + MessageUtil.unformat(player.getInfoStringDB())
+				String desc = "Der Spieler " + MessageUtil.unformat(player.getInfoStringAPI())
 						+ " wurde erfolgreich mit dem User <@" + userid + "> verknüpft.";
 				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.SUCCESS))
 						.queue();
+				MessageUtil.sendUserPingHidden(event.getChannel(), userid);
 			} else {
 				Player player = new Player(tag);
 				String linkeduserid = player.getUser().getUserID();
-				String desc = "Der Spieler " + MessageUtil.unformat(player.getInfoStringDB()) + " ist bereits mit <@"
+				String desc = "Der Spieler " + MessageUtil.unformat(player.getInfoStringAPI()) + " ist bereits mit <@"
 						+ linkeduserid + "> verknüpft. Bitte verwende zuerst ``/unlink``.";
 				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.ERROR))
 						.queue();
+				MessageUtil.sendUserPingHidden(event.getChannel(), linkeduserid);
 			}
 		} else {
 			String desc = "Der Spieler mit dem Tag " + tag + " existiert nicht oder es ist ein API-Fehler aufgetreten.";
