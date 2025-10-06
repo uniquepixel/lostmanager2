@@ -81,15 +81,25 @@ public class cwdonator extends ListenerAdapter {
 			}
 			warMemberList.remove(chosen);
 			if (ping) {
-				desc += map.getFirst() + "-" + map.getSecond() + ": " + chosen.getNameDB() + "(<@"
-						+ chosen.getUser().getUserID() + ">) (Nr. " + mapposition + ")\n";
+				if (chosen.getUser() != null) {
+					desc += map.getFirst() + "-" + map.getSecond() + ": " + chosen.getNameDB() + "(<@"
+							+ chosen.getUser().getUserID() + ">) (Nr. " + mapposition + ")\n";
+				} else {
+					desc += map.getFirst() + "-" + map.getSecond() + ": " + chosen.getNameDB()
+							+ "(nicht verlinkt) (Nr. " + mapposition + ")\n";
+				}
 			} else {
-				desc += map.getFirst() + "-" + map.getSecond() + ": " + chosen.getNameDB() + "(UserID: "
-						+ chosen.getUser().getUserID() + ") (Nr. " + mapposition + ")\n";
+				if (chosen.getUser() != null) {
+					desc += map.getFirst() + "-" + map.getSecond() + ": " + chosen.getNameDB() + "(UserID: "
+							+ chosen.getUser().getUserID() + ") (Nr. " + mapposition + ")\n";
+				} else {
+					desc += map.getFirst() + "-" + map.getSecond() + ": " + chosen.getNameDB()
+							+ "(nicht verlinkt) (Nr. " + mapposition + ")\n";
+				}
 			}
 		}
 
-		event.reply(desc);
+		event.getHook().editOriginal(desc);
 
 	}
 
@@ -104,7 +114,9 @@ public class cwdonator extends ListenerAdapter {
 		if (focused.equals("clan")) {
 			List<Command.Choice> choices = DBManager.getClansAutocomplete(input);
 
-			event.replyChoices(choices).queue();
+			event.replyChoices(choices).queue(success -> {
+			}, failure -> {
+			});
 		}
 	}
 

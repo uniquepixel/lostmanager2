@@ -170,7 +170,7 @@ public class kpadd extends ListenerAdapter {
 					id, playertag, timestampcreated, amount, reason, userid, timestampnow, timestampexpires);
 
 			String desc = "### Der Kickpunkt wurde hinzugefügt.\n";
-			desc += "Spieler: " + MessageUtil.unformat(p.getInfoString()) + "\n";
+			desc += "Spieler: " + MessageUtil.unformat(p.getInfoStringDB()) + "\n";
 			desc += "Clan: " + c.getInfoString() + "\n";
 			desc += "Anzahl: " + amount + "\n";
 			desc += "Grund: " + reason + "\n";
@@ -203,7 +203,7 @@ public class kpadd extends ListenerAdapter {
 		if (focused.equals("player")) {
 			List<Command.Choice> choices = DBManager.getPlayerlistAutocomplete(input, DBManager.InClanType.INCLAN);
 
-			event.replyChoices(choices).queue();
+			event.replyChoices(choices).queue(success ->{}, failure -> {});
 		}
 		if (focused.equals("reason")) {
 			String playertag = event.getOption("player").getAsString();
@@ -215,7 +215,7 @@ public class kpadd extends ListenerAdapter {
 			String clantag = c.getTag();
 			List<Command.Choice> choices = DBManager.getKPReasonsAutocomplete(input, clantag);
 
-			event.replyChoices(choices).queue();
+			event.replyChoices(choices).queue(success ->{}, failure -> {});
 		}
 	}
 

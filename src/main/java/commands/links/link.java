@@ -63,14 +63,14 @@ public class link extends ListenerAdapter {
 				DBUtil.executeUpdate("INSERT INTO players (cr_tag, discord_id, name) VALUES (?, ?, ?)", tag, userid,
 						playername);
 				Player player = new Player(tag);
-				String desc = "Der Spieler " + MessageUtil.unformat(player.getInfoString())
+				String desc = "Der Spieler " + MessageUtil.unformat(player.getInfoStringDB())
 						+ " wurde erfolgreich mit dem User <@" + userid + "> verknüpft.";
 				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.SUCCESS))
 						.queue();
 			} else {
 				Player player = new Player(tag);
 				String linkeduserid = player.getUser().getUserID();
-				String desc = "Der Spieler " + MessageUtil.unformat(player.getInfoString()) + " ist bereits mit <@"
+				String desc = "Der Spieler " + MessageUtil.unformat(player.getInfoStringDB()) + " ist bereits mit <@"
 						+ linkeduserid + "> verknüpft. Bitte verwende zuerst ``/unlink``.";
 				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.ERROR))
 						.queue();

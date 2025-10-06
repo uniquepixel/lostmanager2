@@ -58,7 +58,7 @@ public class kpmember extends ListenerAdapter {
 
 		ArrayList<Kickpoint> activekps = p.getActiveKickpoints();
 
-		String desc = "Aktive Kickpunkte von " + MessageUtil.unformat(p.getInfoString()) + " in " + c.getInfoString()
+		String desc = "Aktive Kickpunkte von " + MessageUtil.unformat(p.getInfoStringDB()) + " in " + c.getInfoString()
 				+ ":\n";
 		if (activekps.size() > 0) {
 			int totalkps = 0;
@@ -130,7 +130,7 @@ public class kpmember extends ListenerAdapter {
 		if (focused.equals("player")) {
 			List<Command.Choice> choices = DBManager.getPlayerlistAutocomplete(input, DBManager.InClanType.INCLAN);
 
-			event.replyChoices(choices).queue();
+			event.replyChoices(choices).queue(success ->{}, failure -> {});
 		}
 	}
 

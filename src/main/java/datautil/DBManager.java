@@ -105,7 +105,7 @@ public class DBManager {
 					String tag = rs.getString("tag");
 					String clanName = rs.getString("clan_name");
 
-					String display = new Player(tag).getInfoString();
+					String display = new Player(tag).getInfoStringDB();
 					if (inclantype == InClanType.NOTINCLAN) {
 						if (clanName == null || clanName.isEmpty()) {
 							if (display.toLowerCase().contains(input.toLowerCase())

@@ -11,7 +11,7 @@ public class KickpointReason {
 
 	private String kpreason;
 	private String clan_tag;
-	private Integer amount;
+	private Long amount;
 
 	public KickpointReason(String reason, String clan_tag) {
 		kpreason = reason;
@@ -45,10 +45,10 @@ public class KickpointReason {
 		return clan_tag;
 	}
 
-	public int getAmount() {
+	public long getAmount() {
 		if(amount == null) {
 			String sql = "SELECT amount FROM kickpoint_reasons WHERE clan_tag = ? AND name = ?";
-			amount = DBUtil.getValueFromSQL(sql, Integer.class, clan_tag, kpreason);
+			amount = DBUtil.getValueFromSQL(sql, Long.class, clan_tag, kpreason);
 		}
 		return amount;
 	}

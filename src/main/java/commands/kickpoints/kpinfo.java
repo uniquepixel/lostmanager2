@@ -77,8 +77,10 @@ public class kpinfo extends ListenerAdapter {
 
 		Integer daysexpire = c.getDaysKickpointsExpireAfter();
 		Long maxpoints = c.getMaxKickpoints();
+		Long minwins = c.getMinSeasonWins();
 		Field days;
 		Field max;
+		Field wins;
 		if (daysexpire != null) {
 			days = new Field("**Gültigkeitsdauer von Kickpunkten:**", daysexpire + " Tage", true);
 		} else {
@@ -91,7 +93,14 @@ public class kpinfo extends ListenerAdapter {
 			max = new Field("**Maximale Anzahl an Kickpunkten:**", "/", true);
 		}
 
-		event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.INFO, days, max))
+		if (minwins != null) {
+			wins = new Field("**Minimale Anzahl an Season Wins:**", minwins + " Wins", true);
+		} else {
+			wins = new Field("**Minimale Anzahl an Season Wins:**", "/", true);
+		}
+
+		event.getHook()
+				.editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.INFO, days, max, wins))
 				.queue();
 
 	}
@@ -107,7 +116,7 @@ public class kpinfo extends ListenerAdapter {
 		if (focused.equals("clan")) {
 			List<Command.Choice> choices = DBManager.getClansAutocomplete(input);
 
-			event.replyChoices(choices).queue();
+			event.replyChoices(choices).queue(success ->{}, failure -> {});
 		}
 	}
 

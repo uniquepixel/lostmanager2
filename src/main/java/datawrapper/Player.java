@@ -1,23 +1,17 @@
 package datawrapper;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import datautil.APIUtil;
@@ -32,6 +26,10 @@ public class Player {
 	};
 
 	private String tag;
+	private Integer currentRaidAttacks;
+	private Integer currentRaidGoldLooted;
+	private Integer currentRaidAttackLimit;
+	private Integer currentRaidbonusAttackLimit;
 	private Boolean warpreference;
 	private Integer warmapposition;
 	private String namedb;
@@ -40,7 +38,7 @@ public class Player {
 	private Clan clandb;
 	private Clan clanapi;
 	private ArrayList<Kickpoint> kickpoints;
-	private Integer kickpointstotal = -1;
+	private Integer kickpointstotal;
 	private RoleType role;
 
 	public Player(String tag) {
@@ -65,6 +63,26 @@ public class Player {
 	// setter; only use if already known -> better performance if not needed to be
 	// requested
 	// returns self, allows chaining
+
+	public Player setCurrentRaidAttackLimit(Integer i) {
+		this.currentRaidAttackLimit = i;
+		return this;
+	}
+
+	public Player setCurrentRaidBonusAttackLimit(Integer i) {
+		this.currentRaidbonusAttackLimit = i;
+		return this;
+	}
+
+	public Player setCurrentRaidAttacks(Integer i) {
+		this.currentRaidAttacks = i;
+		return this;
+	}
+
+	public Player setCurrentGoldLooted(Integer i) {
+		this.currentRaidGoldLooted = i;
+		return this;
+	}
 
 	public Player setWarPreference(Boolean b) {
 		this.warpreference = b;
@@ -117,6 +135,70 @@ public class Player {
 	}
 
 	// getter; creates Data from API/DB if needed -> Null if not existant
+
+	public Integer getCurrentRaidAttackLimit() {
+		if (currentRaidAttackLimit == null) {
+			Clan c = getClanAPI();
+			if (c != null) {
+				ArrayList<Player> raidmembers = c.getRaidMemberList();
+				for (Player p : raidmembers) {
+					if (p.getTag().equals(tag)) {
+						currentRaidAttackLimit = p.getCurrentRaidAttackLimit();
+						break;
+					}
+				}
+			}
+		}
+		return currentRaidAttackLimit;
+	}
+
+	public Integer getCurrentRaidbonusAttackLimit() {
+		if (currentRaidbonusAttackLimit == null) {
+			Clan c = getClanAPI();
+			if (c != null) {
+				ArrayList<Player> raidmembers = c.getRaidMemberList();
+				for (Player p : raidmembers) {
+					if (p.getTag().equals(tag)) {
+						currentRaidbonusAttackLimit = p.getCurrentRaidbonusAttackLimit();
+						break;
+					}
+				}
+			}
+		}
+		return currentRaidbonusAttackLimit;
+	}
+
+	public Integer getCurrentRaidAttacks() {
+		if (currentRaidAttacks == null) {
+			Clan c = getClanAPI();
+			if (c != null) {
+				ArrayList<Player> raidmembers = c.getRaidMemberList();
+				for (Player p : raidmembers) {
+					if (p.getTag().equals(tag)) {
+						currentRaidAttacks = p.getCurrentRaidAttacks();
+						break;
+					}
+				}
+			}
+		}
+		return currentRaidAttacks;
+	}
+
+	public Integer getCurrentRaidGoldLooted() {
+		if (currentRaidGoldLooted == null) {
+			Clan c = getClanAPI();
+			if (c != null) {
+				ArrayList<Player> raidmembers = c.getRaidMemberList();
+				for (Player p : raidmembers) {
+					if (p.getTag().equals(tag)) {
+						currentRaidGoldLooted = p.getCurrentRaidGoldLooted();
+						break;
+					}
+				}
+			}
+		}
+		return currentRaidGoldLooted;
+	}
 
 	public boolean IsLinked() {
 		String sql = "SELECT 1 FROM players WHERE coc_tag = ?";
@@ -216,50 +298,11 @@ public class Player {
 		if (warmapposition == null) {
 			Clan c = getClanAPI();
 			if (c != null) {
-				String clantag = c.getTag();
-
-				String json;
-
-				String encodedTag = java.net.URLEncoder.encode(clantag, java.nio.charset.StandardCharsets.UTF_8);
-
-				String url = "https://api.clashofclans.com/v1/clans/" + encodedTag + "/currentwar";
-
-				HttpClient client = HttpClient.newHttpClient();
-
-				HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url))
-						.header("Authorization", "Bearer " + Bot.api_key).header("Accept", "application/json").GET()
-						.build();
-
-				HttpResponse<String> response = null;
-				try {
-					response = client.send(request, HttpResponse.BodyHandlers.ofString());
-				} catch (IOException | InterruptedException e) {
-					e.printStackTrace();
-					json = null;
-				}
-
-				if (response.statusCode() == 200) {
-					String responseBody = response.body();
-					// Einfacher JSON-Name-Parser ohne Bibliotheken:
-					json = responseBody;
-				} else {
-					System.err.println("Fehler beim Abrufen: HTTP " + response.statusCode());
-					System.err.println("Antwort: " + response.body());
-					json = null;
-				}
-
-				JSONObject jsonObject = new JSONObject(json);
-				String state = jsonObject.getString("state");
-				if (!state.equals("NOT_IN_WAR")) {
-					JSONObject WarClan = jsonObject.getJSONObject("clan");
-					JSONArray ClanWarMemberList = WarClan.getJSONArray("members");
-
-					for (int i = 0; i < ClanWarMemberList.length(); i++) {
-						JSONObject member = ClanWarMemberList.getJSONObject(i);
-						String tag = member.getString("tag");
-						if (tag.equals(this.tag)) {
-							warmapposition = member.getInt("mapPosition");
-						}
+				ArrayList<Player> warmemberlist = c.getWarMemberList();
+				for (Player p : warmemberlist) {
+					if (p.getTag().equals(tag)) {
+						warmapposition = p.getWarMapPosition();
+						break;
 					}
 				}
 			}
@@ -267,9 +310,18 @@ public class Player {
 		return warmapposition;
 	}
 
-	public String getInfoString() {
+	public String getInfoStringDB() {
 		try {
 			return getNameDB() + " (" + tag + ")";
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public String getInfoStringAPI() {
+		try {
+			return getNameAPI() + " (" + tag + ")";
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

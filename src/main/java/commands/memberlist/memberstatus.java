@@ -62,13 +62,13 @@ public class memberstatus extends ListenerAdapter {
 		String membernotinclanstr = "";
 
 		for (Player p : membernotinclan) {
-			membernotinclanstr += p.getInfoString() + "\n";
+			membernotinclanstr += p.getInfoStringDB() + "\n";
 		}
 
 		String inclannotmemberstr = "";
 
 		for (Player p : inclannotmember) {
-			inclannotmemberstr += p.getInfoString() + "\n";
+			inclannotmemberstr += p.getInfoStringDB() + "\n";
 		}
 
 		String desc = "## " + c.getInfoString() + "\n";
@@ -93,7 +93,7 @@ public class memberstatus extends ListenerAdapter {
 		if (focused.equals("clan")) {
 			List<Command.Choice> choices = DBManager.getClansAutocomplete(input);
 
-			event.replyChoices(choices).queue();
+			event.replyChoices(choices).queue(success ->{}, failure -> {});
 		}
 	}
 

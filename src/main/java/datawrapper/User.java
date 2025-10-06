@@ -45,7 +45,7 @@ public class User {
 	public ArrayList<Player> getAllLinkedAccounts() {
 		if (linkedaccounts == null) {
 			linkedaccounts = new ArrayList<>();
-			String sql = "SELECT cr_tag FROM players WHERE discord_id = ?";
+			String sql = "SELECT coc_tag FROM players WHERE discord_id = ?";
 			for (String tag : DBUtil.getArrayListFromSQL(sql, String.class, userid)) {
 				linkedaccounts.add(new Player(tag));
 			}

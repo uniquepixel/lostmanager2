@@ -37,7 +37,7 @@ public class clanconfig extends ListenerAdapter {
 		}
 
 		String clantag = clanOption.getAsString();
-		
+
 		User userexecuted = new User(event.getUser().getId());
 		if (!(userexecuted.getClanRoles().get(clantag) == Player.RoleType.ADMIN
 				|| userexecuted.getClanRoles().get(clantag) == Player.RoleType.LEADER
@@ -76,6 +76,14 @@ public class clanconfig extends ListenerAdapter {
 					.setPlaceholder("z.B. 9").setMinLength(1).build();
 		}
 
+		if (c.getMinSeasonWins() != null) {
+			kpmax = TextInput.create("wins", "Minimum Season Wins", TextInputStyle.SHORT).setPlaceholder("z.B. 70")
+					.setMinLength(1).setValue(c.getMinSeasonWins() + "").build();
+		} else {
+			kpmax = TextInput.create("wins", "Minimum Season Wins", TextInputStyle.SHORT).setPlaceholder("z.B. 70")
+					.setMinLength(1).build();
+		}
+
 		Modal modal = Modal.create("clanconfig_" + c.getTag(), "Clanconfig bearbeiten")
 				.addActionRows(ActionRow.of(kpdays), ActionRow.of(kpmax)).build();
 
@@ -88,11 +96,14 @@ public class clanconfig extends ListenerAdapter {
 		if (event.getModalId().startsWith("clanconfig")) {
 			event.deferReply().queue();
 			String title = "Clanconfig";
+			String winsstr = event.getValue("wins").getAsString();
 			String daysstr = event.getValue("days").getAsString();
 			String maxstr = event.getValue("max").getAsString();
+			int wins = -1;
 			int days = -1;
 			int max = -1;
 			try {
+				wins = Integer.valueOf(winsstr);
 				days = Integer.valueOf(daysstr);
 				max = Integer.valueOf(maxstr);
 			} catch (Exception ex) {
@@ -109,12 +120,12 @@ public class clanconfig extends ListenerAdapter {
 
 			if (c.getDaysKickpointsExpireAfter() == null) {
 				DBUtil.executeUpdate(
-						"INSERT INTO clan_settings (clan_tag, max_kickpoints, kickpoints_expire_after_days) VALUES (?, ?, ?)",
-						clantag, max, days);
+						"INSERT INTO clan_settings (clan_tag, max_kickpoints, kickpoints_expire_after_days, min_season_wins) VALUES (?, ?, ?, ?)",
+						clantag, max, days, wins);
 			} else {
 				DBUtil.executeUpdate(
-						"UPDATE clan_settings SET max_kickpoints = ?, kickpoints_expire_after_days = ? WHERE clan_tag = ?",
-						max, days, clantag);
+						"UPDATE clan_settings SET max_kickpoints = ?, kickpoints_expire_after_days = ?, min_season_wins = ? WHERE clan_tag = ?",
+						max, days, wins, clantag);
 			}
 
 			String desc = "### Die Clan-Settings wurden bearbeitet.\n";
@@ -138,7 +149,7 @@ public class clanconfig extends ListenerAdapter {
 		if (focused.equals("clan")) {
 			List<Command.Choice> choices = DBManager.getClansAutocomplete(input);
 
-			event.replyChoices(choices).queue();
+			event.replyChoices(choices).queue(success ->{}, failure -> {});
 		}
 	}
 

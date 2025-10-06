@@ -44,16 +44,16 @@ public class listmembers extends ListenerAdapter {
 
 		for (Player p : playerlist) {
 			if (p.getRole() == Player.RoleType.LEADER) {
-				leaderlist += p.getInfoString() + "\n";
+				leaderlist += p.getInfoStringDB() + "\n";
 			}
 			if (p.getRole() == Player.RoleType.COLEADER) {
-				coleaderlist += p.getInfoString() + "\n";
+				coleaderlist += p.getInfoStringDB() + "\n";
 			}
 			if (p.getRole() == Player.RoleType.ELDER) {
-				elderlist += p.getInfoString() + "\n";
+				elderlist += p.getInfoStringDB() + "\n";
 			}
 			if (p.getRole() == Player.RoleType.MEMBER) {
-				memberlist += p.getInfoString() + "\n";
+				memberlist += p.getInfoStringDB() + "\n";
 			}
 		}
 		String desc = "## " + c.getInfoString() + "\n";
@@ -82,7 +82,7 @@ public class listmembers extends ListenerAdapter {
 		if (focused.equals("clan")) {
 			List<Command.Choice> choices = DBManager.getClansAutocomplete(input);
 
-			event.replyChoices(choices).queue();
+			event.replyChoices(choices).queue(success ->{}, failure -> {});
 		}
 	}
 

@@ -96,7 +96,7 @@ public class editmember extends ListenerAdapter {
 						: role.equals("elder") ? "Ältester" : role.equals("member") ? "Mitglied" : null;
 		String desc = null;
 		try {
-			desc = "Der Spieler " + MessageUtil.unformat(p.getInfoString()) + " im Clan " + c.getInfoString()
+			desc = "Der Spieler " + MessageUtil.unformat(p.getInfoStringDB()) + " im Clan " + c.getInfoString()
 					+ " ist nun " + rolestring + ".";
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -116,7 +116,7 @@ public class editmember extends ListenerAdapter {
 		if (focused.equals("player")) {
 			List<Command.Choice> choices = DBManager.getPlayerlistAutocomplete(input, DBManager.InClanType.INCLAN);
 
-			event.replyChoices(choices).queue();
+			event.replyChoices(choices).queue(success ->{}, failure -> {});
 		}
 		if (focused.equals("role")) {
 			List<Command.Choice> choices = new ArrayList<>();
@@ -124,7 +124,7 @@ public class editmember extends ListenerAdapter {
 			choices.add(new Command.Choice("Vize-Anführer", "coleader"));
 			choices.add(new Command.Choice("Ältester", "elder"));
 			choices.add(new Command.Choice("Mitglied", "member"));
-			event.replyChoices(choices).queue();
+			event.replyChoices(choices).queue(success ->{}, failure -> {});
 		}
 	}
 

@@ -111,7 +111,7 @@ public class addmember extends ListenerAdapter {
 
 		String desc = "";
 		try {
-			desc += "Der Spieler " + MessageUtil.unformat(p.getInfoString()) + " wurde erfolgreich dem Clan "
+			desc += "Der Spieler " + MessageUtil.unformat(p.getInfoStringDB()) + " wurde erfolgreich dem Clan "
 					+ new Clan(clantag).getInfoString() + " als " + rolestring + " hinzugefügt.";
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -122,11 +122,15 @@ public class addmember extends ListenerAdapter {
 		Member member = guild.getMemberById(userid);
 		String memberroleid = c.getRoleID(Clan.Role.MEMBER);
 		Role memberrole = guild.getRoleById(memberroleid);
-		if (member.getRoles().contains(memberrole)) {
-			desc += "\n\n**Der User <@" + userid + "> hat bereits die Rolle <@&" + memberroleid + ">.**";
+		if (member != null) {
+			if (member.getRoles().contains(memberrole)) {
+				desc += "\n\n**Der User <@" + userid + "> hat bereits die Rolle <@&" + memberroleid + ">.**";
+			} else {
+				guild.addRoleToMember(member, memberrole).queue();
+				desc += "\n\n**Dem User <@" + userid + "> wurde die Rolle <@&" + memberroleid + "> hinzugefügt.**";
+			}
 		} else {
-			guild.addRoleToMember(member, memberrole).queue();
-			desc += "\n\n**Dem User <@" + userid + "> wurde die Rolle <@&" + memberroleid + "> hinzugefügt.**";
+			desc += "\n\n**Der User <@" + userid + "> existiert nicht auf dem Server. Ihm wurde somit keine Rolle hinzugefügt.**";
 		}
 
 		MessageChannelUnion channel = event.getChannel();
@@ -147,12 +151,12 @@ public class addmember extends ListenerAdapter {
 		if (focused.equals("clan")) {
 			List<Command.Choice> choices = DBManager.getClansAutocomplete(input);
 
-			event.replyChoices(choices).queue();
+			event.replyChoices(choices).queue(success ->{}, failure -> {});
 		}
 		if (focused.equals("player")) {
 			List<Command.Choice> choices = DBManager.getPlayerlistAutocomplete(input, DBManager.InClanType.NOTINCLAN);
 
-			event.replyChoices(choices).queue();
+			event.replyChoices(choices).queue(success ->{}, failure -> {});
 		}
 		if (focused.equals("role")) {
 			List<Command.Choice> choices = new ArrayList<>();
@@ -160,7 +164,7 @@ public class addmember extends ListenerAdapter {
 			choices.add(new Command.Choice("Vize-Anführer", "coleader"));
 			choices.add(new Command.Choice("Ältester", "elder"));
 			choices.add(new Command.Choice("Mitglied", "member"));
-			event.replyChoices(choices).queue();
+			event.replyChoices(choices).queue(success ->{}, failure -> {});
 		}
 	}
 }

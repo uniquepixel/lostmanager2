@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import datautil.DBUtil;
 import datawrapper.Player;
 import datawrapper.User;
+import lostmanager.Bot;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -46,24 +47,20 @@ public class verify extends ListenerAdapter {
 		Player p = new Player(tag);
 
 		if (p.AccExists()) {
-			String playername = null;
-			try {
-				playername = p.getNameAPI();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			String playername = p.getNameAPI();
 			if (!p.IsLinked()) {
 				if (p.verifyCocTokenAPI(apitoken)) {
 					DBUtil.executeUpdate("INSERT INTO players (coc_tag, discord_id, name) VALUES (?, ?, ?)", tag,
 							userid, playername);
 					Player player = new Player(tag);
-					String desc = "Der Spieler " + MessageUtil.unformat(player.getInfoString())
+					String desc = "Der Spieler " + MessageUtil.unformat(player.getInfoStringDB())
 							+ " wurde erfolgreich mit dem User <@" + userid + "> verknüpft.";
 					ArrayList<Player> linkedaccs = userexecuted.refreshData().getAllLinkedAccounts();
 					if (linkedaccs.size() == 1) {
 						Member member = event.getGuild().getMemberById(userid);
 						member.modifyNickname(playername).queue();
+						if (!member.getRoles().contains(event.getGuild().getRoleById(Bot.verified_roleid)))
+							event.getGuild().addRoleToMember(member, event.getGuild().getRoleById(Bot.verified_roleid));
 					}
 					event.getHook()
 							.editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.SUCCESS))
@@ -74,8 +71,7 @@ public class verify extends ListenerAdapter {
 							});
 				} else {
 					String desc = "Der API-Token passt nicht zu dem Account.";
-					event.getHook()
-							.editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.SUCCESS))
+					event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.ERROR))
 							.queue(sentMessage -> {
 								scheduler.schedule(() -> {
 									sentMessage.delete().queue();
@@ -85,7 +81,7 @@ public class verify extends ListenerAdapter {
 			} else {
 				Player player = new Player(tag);
 				String linkeduserid = player.getUser().getUserID();
-				String desc = "Der Spieler " + MessageUtil.unformat(player.getInfoString()) + " ist bereits mit <@"
+				String desc = "Der Spieler " + MessageUtil.unformat(player.getInfoStringDB()) + " ist bereits mit <@"
 						+ linkeduserid + "> verknüpft. Bitte einen Vize-Anführer, den Account zu entlinken.";
 				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.ERROR))
 						.queue(sentMessage -> {

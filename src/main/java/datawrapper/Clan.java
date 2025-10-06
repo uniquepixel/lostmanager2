@@ -27,6 +27,7 @@ public class Clan {
 	private ArrayList<Player> playerlistdb;
 	private ArrayList<Player> playerlistapi;
 	private ArrayList<Player> clanwarmembers;
+	private ArrayList<Player> raidmembers;
 	private Long max_kickpoints;
 	private Long min_season_wins;
 	private Integer kickpoints_expire_after_days;
@@ -64,6 +65,66 @@ public class Clan {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	public ArrayList<Player> getRaidMemberList() {
+		if (raidmembers == null) {
+			raidmembers = new ArrayList<>();
+
+			String json;
+
+			String encodedTag = java.net.URLEncoder.encode(clan_tag, java.nio.charset.StandardCharsets.UTF_8);
+
+			String url = "https://api.clashofclans.com/v1/clans/" + encodedTag + "/capitalraidseasons?limit=1";
+
+			HttpClient client = HttpClient.newHttpClient();
+
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url))
+					.header("Authorization", "Bearer " + Bot.api_key).header("Accept", "application/json").GET()
+					.build();
+
+			HttpResponse<String> response = null;
+			try {
+				response = client.send(request, HttpResponse.BodyHandlers.ofString());
+			} catch (IOException | InterruptedException e) {
+				e.printStackTrace();
+				json = null;
+			}
+
+			if (response.statusCode() == 200) {
+				String responseBody = response.body();
+				// Einfacher JSON-Name-Parser ohne Bibliotheken:
+				json = responseBody;
+			} else {
+				System.err.println("Fehler beim Abrufen: HTTP " + response.statusCode());
+				System.err.println("Antwort: " + response.body());
+				json = null;
+			}
+
+			JSONObject jsonObject = new JSONObject(json);
+			JSONArray items = jsonObject.getJSONArray("items");
+			JSONObject currentitem = items.getJSONObject(0);
+			String state = currentitem.getString("state");
+			if (!state.equals("ongoing")) {
+				return null;
+			}
+			JSONArray members = currentitem.getJSONArray("members");
+
+			for (int i = 0; i < members.length(); i++) {
+				JSONObject member = members.getJSONObject(i);
+				String tag = member.getString("tag");
+				String name = member.getString("name");
+				int attacks = member.getInt("attacks");
+				int attackLimit = member.getInt("attackLimit");
+				int bonusAttackLimit = member.getInt("bonusAttackLimit");
+				int capitalResourcesLooted = member.getInt("capitalResourcesLooted");
+				Player p = new Player(tag).setNameAPI(name).setCurrentRaidAttacks(attacks)
+						.setCurrentRaidAttackLimit(attackLimit).setCurrentRaidBonusAttackLimit(bonusAttackLimit)
+						.setCurrentGoldLooted(capitalResourcesLooted);
+				raidmembers.add(p);
+			}
+		}
+		return raidmembers;
 	}
 
 	public ArrayList<Player> getWarMemberList() {
