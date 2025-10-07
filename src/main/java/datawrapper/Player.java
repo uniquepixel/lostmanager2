@@ -38,7 +38,7 @@ public class Player {
 	private Clan clandb;
 	private Clan clanapi;
 	private ArrayList<Kickpoint> kickpoints;
-	private Integer kickpointstotal;
+	private Long kickpointstotal;
 	private RoleType role;
 
 	public Player(String tag) {
@@ -119,12 +119,12 @@ public class Player {
 		return this;
 	}
 
-	public Player setClanDB(ArrayList<Kickpoint> kickpoints) {
+	public Player setKickpoints(ArrayList<Kickpoint> kickpoints) {
 		this.kickpoints = kickpoints;
 		return this;
 	}
 
-	public Player setKickpointsTotal(Integer i) {
+	public Player setKickpointsTotal(Long i) {
 		this.kickpointstotal = i;
 		return this;
 	}
@@ -392,14 +392,17 @@ public class Player {
 		return kickpoints;
 	}
 
-	public int getTotalKickpoints() {
+	public long getTotalKickpoints() {
 		if (kickpointstotal == null) {
 			ArrayList<Kickpoint> a = new ArrayList<>();
 			String sql = "SELECT id FROM kickpoints WHERE player_tag = ?";
 			for (Long id : DBUtil.getArrayListFromSQL(sql, Long.class, tag)) {
 				a.add(new Kickpoint(id));
 			}
-			kickpointstotal = a.size();
+			kickpointstotal = 0L;
+			for(Kickpoint kp : a) {
+				kickpointstotal = kickpointstotal + kp.getAmount();
+			}
 		}
 		return kickpointstotal;
 	}

@@ -90,7 +90,7 @@ public class kpadd extends ListenerAdapter {
 						.setPlaceholder("z.B. 1").setValue(kpreason.getAmount() + "").setMinLength(1).build();
 			} else {
 				kpamountti = TextInput.create("amount", "Anzahl Kickpunkte", TextInputStyle.SHORT)
-						.setPlaceholder("z.B. 1").setValue("z.B. 1").setMinLength(1).build();
+						.setPlaceholder("z.B. 1").setMinLength(1).build();
 			}
 		} else {
 			reasonti = TextInput.create("reason", "Grund", TextInputStyle.SHORT).setPlaceholder("z.B. CW vergessen")

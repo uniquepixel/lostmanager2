@@ -111,14 +111,16 @@ public class removemember extends ListenerAdapter {
 			ArrayList<Player> allaccs = player.getUser().getAllLinkedAccounts();
 			boolean b = false;
 			for (Player acc : allaccs) {
-				if (acc.getClanDB().getTag().equals(clantag)) {
-					b = true;
-					break;
+				if (acc.getClanDB() != null) {
+					if (acc.getClanDB().getTag().equals(clantag)) {
+						b = true;
+						break;
+					}
 				}
 			}
 			if (member.getRoles().contains(memberrole)) {
 				if (!b) {
-					guild.removeRoleFromMember(member, memberrole);
+					guild.removeRoleFromMember(member, memberrole).queue();
 					desc += "\n\n";
 					desc += "**Dem User <@" + userid + "> wurde die Rolle <@&" + memberroleid + "> genommen.**\n";
 				} else {
@@ -172,7 +174,9 @@ public class removemember extends ListenerAdapter {
 		if (focused.equals("player")) {
 			List<Command.Choice> choices = DBManager.getPlayerlistAutocomplete(input, DBManager.InClanType.INCLAN);
 
-			event.replyChoices(choices).queue(success ->{}, failure -> {});
+			event.replyChoices(choices).queue(success -> {
+			}, failure -> {
+			});
 		}
 	}
 

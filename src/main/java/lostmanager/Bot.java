@@ -68,8 +68,8 @@ public class Bot extends ListenerAdapter {
 		url = System.getenv("LOST_MANAGER_DB_URL");
 		user = System.getenv("LOST_MANAGER_DB_USER");
 		password = System.getenv("LOST_MANAGER_DB_PASSWORD");
-		verified_roleid = System.getenv("DISCORD_VERIFIED_ROLEID");
-		exmember_roleid = System.getenv("DISCORD_EXMEMBER_ROLEID");
+		verified_roleid = System.getenv("DISCORD_VERIFIED_ROLE_ID");
+		exmember_roleid = System.getenv("DISCORD_EX_MEMBER_ROLE_ID");
 
 		String token = System.getenv("LOST_MANAGER_TOKEN");
 

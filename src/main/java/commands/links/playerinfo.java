@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import datautil.DBManager;
+import datawrapper.Kickpoint;
 import datawrapper.Player;
 import datawrapper.User;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
@@ -87,23 +88,15 @@ public class playerinfo extends ListenerAdapter {
 			} else {
 				desc += "Ingame in Clan: ---\n";
 			}
-			desc += "Aktuelle Anzahl Kickpunkte: " + player.getActiveKickpoints().size() + "\n";
+			long kpatm = 0;
+			for (Kickpoint kp : player.getActiveKickpoints()) {
+				kpatm += kp.getAmount();
+			}
+			desc += "Aktuelle Anzahl Kickpunkte: " + kpatm + "\n";
 			desc += "Ingesamte Anzahl Kickpunkte: " + player.getTotalKickpoints();
 
-			final String uuid = userid;
 			MessageChannelUnion channel = event.getChannel();
-			channel.sendMessage(".").queue(sentMessage -> {
-				new Thread(() -> {
-					try {
-						Thread.sleep(100);
-						sentMessage.editMessage("<@" + uuid + ">").queue();
-						Thread.sleep(100);
-						sentMessage.delete().queue();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}).start();
-			});
+			MessageUtil.sendUserPingHidden(channel, userid);
 		}
 		if (conv == ConvertionType.USERTOACCS) {
 			try {
@@ -120,16 +113,7 @@ public class playerinfo extends ListenerAdapter {
 				}
 			}
 		}
-		final String descr = desc;
-		new Thread(() -> {
-			try {
-				Thread.sleep(500);
-				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, descr, MessageUtil.EmbedType.INFO))
-						.queue();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}).start();
+		event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.INFO)).queue();
 
 	}
 
@@ -144,7 +128,9 @@ public class playerinfo extends ListenerAdapter {
 		if (focused.equals("player")) {
 			List<Command.Choice> choices = DBManager.getPlayerlistAutocomplete(input, DBManager.InClanType.ALL);
 
-			event.replyChoices(choices).queue(success ->{}, failure -> {});
+			event.replyChoices(choices).queue(success -> {
+			}, failure -> {
+			});
 		}
 	}
 

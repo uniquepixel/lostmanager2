@@ -103,9 +103,10 @@ public class DBManager {
 			try (ResultSet rs = pstmt.executeQuery()) {
 				while (rs.next()) {
 					String tag = rs.getString("tag");
+					String name = rs.getString("player_name");
 					String clanName = rs.getString("clan_name");
 
-					String display = new Player(tag).getInfoStringDB();
+					String display = new Player(tag).setNameDB(name).getInfoStringDB();
 					if (inclantype == InClanType.NOTINCLAN) {
 						if (clanName == null || clanName.isEmpty()) {
 							if (display.toLowerCase().contains(input.toLowerCase())

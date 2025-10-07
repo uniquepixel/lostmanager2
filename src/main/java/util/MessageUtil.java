@@ -1,6 +1,7 @@
 package util;
 
 import java.awt.Color;
+import java.util.regex.Matcher;
 
 import lostmanager.Bot;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -39,10 +40,14 @@ public class MessageUtil {
 	}
 
 	public static String unformat(String s) {
-		return s.replaceAll("_", "\\_").replaceAll("\\*", "\\\\*").replaceAll("~", "\\~").replaceAll("`", "\\`")
-				.replaceAll("\\|", "\\\\|").replaceAll(">", "\\>").replaceAll("-", "\\-").replaceAll("#", "\\#");
+		String a = s.replaceAll("_", Matcher.quoteReplacement("\\_"))
+				.replaceAll("\\*", Matcher.quoteReplacement("\\\\*")).replaceAll("~", Matcher.quoteReplacement("\\~"))
+				.replaceAll("`", Matcher.quoteReplacement("\\`")).replaceAll("\\|", Matcher.quoteReplacement("\\\\|"))
+				.replaceAll(">", Matcher.quoteReplacement("\\>")).replaceAll("-", Matcher.quoteReplacement("\\-"))
+				.replaceAll("#", Matcher.quoteReplacement("\\#"));
+		return a;
 	}
-	
+
 	public static void sendUserPingHidden(MessageChannelUnion channel, String uuid) {
 		channel.sendMessage(".").queue(sentMessage -> {
 			new Thread(() -> {

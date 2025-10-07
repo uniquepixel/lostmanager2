@@ -113,7 +113,7 @@ public class kpmember extends ListenerAdapter {
 		}
 		desc += "\n";
 		desc += "**Gesamtanzahl (Vergangene und aktuelle Kickpunkte):**" + "\n";
-		int kptotal = p.getTotalKickpoints();
+		long kptotal = p.getTotalKickpoints();
 		desc += "" + kptotal;
 		event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.INFO)).queue();
 

@@ -34,9 +34,10 @@ public class unlink extends ListenerAdapter {
 		}
 		if (b == false) {
 			event.getHook()
-			.editOriginalEmbeds(MessageUtil.buildEmbed(title,
-					"Du musst mindestens Vize-Anführer eines Clans sein, um diesen Befehl ausführen zu können.",
-					MessageUtil.EmbedType.ERROR)).queue();
+					.editOriginalEmbeds(MessageUtil.buildEmbed(title,
+							"Du musst mindestens Vize-Anführer eines Clans sein, um diesen Befehl ausführen zu können.",
+							MessageUtil.EmbedType.ERROR))
+					.queue();
 			return;
 		}
 
@@ -53,10 +54,16 @@ public class unlink extends ListenerAdapter {
 		Player p = new Player(tag);
 
 		if (p.IsLinked()) {
-			DBUtil.executeUpdate("DELETE FROM players WHERE coc_tag = ?", tag);
-			String desc = "Die Verknüpfung des Spielers mit dem Tag " + tag + " wurde erfolgreich gelöscht.";
-			event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.SUCCESS))
-					.queue();
+			if (p.getClanDB() == null) {
+				DBUtil.executeUpdate("DELETE FROM players WHERE coc_tag = ?", tag);
+				String desc = "Die Verknüpfung des Spielers mit dem Tag " + tag + " wurde erfolgreich gelöscht.";
+				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.SUCCESS))
+						.queue();
+			} else {
+				String desc = "Der Spieler ist noch in einen Clan eingetragen. Entferne ihn dort erst.";
+				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.ERROR))
+						.queue();
+			}
 		} else {
 			String desc = "Der Spieler mit dem Tag " + tag + " ist bereits nicht mehr verknüpft.";
 			event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.ERROR))
@@ -76,7 +83,9 @@ public class unlink extends ListenerAdapter {
 		if (focused.equals("tag")) {
 			List<Command.Choice> choices = DBManager.getPlayerlistAutocomplete(input, DBManager.InClanType.ALL);
 
-			event.replyChoices(choices).queue(success ->{}, failure -> {});
+			event.replyChoices(choices).queue(success -> {
+			}, failure -> {
+			});
 		}
 	}
 
