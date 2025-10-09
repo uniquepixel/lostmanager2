@@ -97,11 +97,14 @@ public class Bot extends ListenerAdapter {
 							.addOption(OptionType.STRING, "apitoken",
 									"Der API-Token. Auffindbar in den Einstellungen im Spiel.", true),
 
-							Commands.slash("link", "Verlinke einen Clash of Clans Account mit einem Discord User.")
-									.addOption(OptionType.STRING, "tag", "Der Tag des Clash of Clans Accounts", true)
+							Commands.slash("link",
+									"Verlinke einen Clash of Clans Account mit einem Discord User oder einer UserID.")
+									.addOption(OptionType.STRING, "tag", "Der Tag des Clash Royale Accounts", true)
+									.addOption(OptionType.MENTIONABLE, "user",
+											"Der User, mit dem der Account verlinkt werden soll.")
 									.addOption(
-											OptionType.MENTIONABLE, "user",
-											"Der User, mit dem der Account verlinkt werden soll.", true),
+											OptionType.STRING, "userid",
+											"Die ID des Users, mit dem der Account verlinkt werden soll."),
 
 							Commands.slash("unlink", "Lösche eine Verlinkung eines Clash of Clans Accounts.")
 									.addOptions(new OptionData(

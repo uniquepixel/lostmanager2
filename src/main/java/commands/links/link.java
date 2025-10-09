@@ -49,7 +49,7 @@ public class link extends ListenerAdapter {
 			return;
 		}
 
-		String tag = tagOption.getAsString();
+		String tag = tagOption.getAsString().toUpperCase();
 		if (!tag.startsWith("#")) {
 			tag = "#" + tag;
 		}

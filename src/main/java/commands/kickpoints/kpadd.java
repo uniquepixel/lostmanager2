@@ -163,11 +163,10 @@ public class kpadd extends ListenerAdapter {
 			Timestamp timestampexpires = Timestamp.valueOf(dateTime.plusDays(c.getDaysKickpointsExpireAfter()));
 			Timestamp timestampnow = Timestamp.from(Instant.now());
 			String userid = event.getUser().getId();
-			int id = DBManager.getAvailableKPID();
 
 			DBUtil.executeUpdate(
-					"INSERT INTO kickpoints (id, player_tag, date, amount, description, created_by_discord_id, created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-					id, playertag, timestampcreated, amount, reason, userid, timestampnow, timestampexpires);
+					"INSERT INTO kickpoints (player_tag, date, amount, description, created_by_discord_id, created_at, expires_at, clan_tag, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					playertag, timestampcreated, amount, reason, userid, timestampnow, timestampexpires, c.getTag(), timestampnow);
 
 			String desc = "### Der Kickpunkt wurde hinzugefügt.\n";
 			desc += "Spieler: " + MessageUtil.unformat(p.getInfoStringDB()) + "\n";

@@ -40,7 +40,7 @@ public class verify extends ListenerAdapter {
 			return;
 		}
 
-		String tag = tagOption.getAsString();
+		String tag = tagOption.getAsString().toUpperCase();
 		String apitoken = apitokenoption.getAsString();
 		User userexecuted = new User(event.getUser().getId());
 		String userid = userexecuted.getUserID();
