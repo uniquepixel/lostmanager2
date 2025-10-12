@@ -7,19 +7,41 @@ import java.sql.Statement;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 
+import util.Tuple;
+
 public class DBUtil {
-	
-	public static void executeUpdate(String sql, Object... params) {
-		try (PreparedStatement pstmt = Connection.getConnection().prepareStatement(sql)) {
-			// Parameter setzen
+
+	public static Tuple<PreparedStatement, Integer> executeUpdate(String sql, Object... params) {
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = Connection.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			for (int i = 0; i < params.length; i++) {
 				pstmt.setObject(i + 1, params[i]);
 			}
+			int rA = pstmt.executeUpdate();
 
-			pstmt.executeUpdate();
+			PreparedStatement finalPstmt = pstmt;
+			new Thread(() -> {
+				try {
+					Thread.sleep(10000);
+					finalPstmt.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}).start();
+
+			return new Tuple<>(pstmt, rA);
 		} catch (SQLException e) {
 			e.printStackTrace();
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
 		}
+		return null;
 	}
 
 	public static <T> T getValueFromSQL(String sql, Class<T> clazz, Object... params) {

@@ -1,19 +1,23 @@
 package commands.links;
 
+import java.util.List;
+
 import datautil.DBManager;
 import datautil.DBUtil;
 import datawrapper.Player;
 import datawrapper.User;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import util.MessageUtil;
 
-public class link extends ListenerAdapter {
+public class relink extends ListenerAdapter {
 
 	@Override
 	public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
-		if (!event.getName().equals("link"))
+		if (!event.getName().equals("relink"))
 			return;
 		event.deferReply().queue();
 		String title = "User-Link";
@@ -49,7 +53,7 @@ public class link extends ListenerAdapter {
 			return;
 		}
 
-		String tag = tagOption.getAsString().toUpperCase().replaceAll("O", "0");
+		String tag = tagOption.getAsString().toUpperCase();
 		if (!tag.startsWith("#")) {
 			tag = "#" + tag;
 		}
@@ -63,16 +67,8 @@ public class link extends ListenerAdapter {
 		Player p = new Player(tag);
 
 		if (p.AccExists()) {
-			String playername = null;
-			try {
-				playername = p.getNameAPI();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			if (!p.IsLinked()) {
-				DBUtil.executeUpdate("INSERT INTO players (coc_tag, discord_id, name) VALUES (?, ?, ?)", tag, userid,
-						playername);
+			if (p.IsLinked()) {
+				DBUtil.executeUpdate("UPDATE players SET discord_id = ? WHERE coc_tag = ?", userid, tag);
 				Player player = new Player(tag);
 				String desc = "Der Spieler " + MessageUtil.unformat(player.getInfoStringAPI())
 						+ " wurde erfolgreich mit dem User <@" + userid + "> verknüpft.";
@@ -80,13 +76,9 @@ public class link extends ListenerAdapter {
 						.queue();
 				MessageUtil.sendUserPingHidden(event.getChannel(), userid);
 			} else {
-				Player player = new Player(tag);
-				String linkeduserid = player.getUser().getUserID();
-				String desc = "Der Spieler " + MessageUtil.unformat(player.getInfoStringAPI()) + " ist bereits mit <@"
-						+ linkeduserid + "> verknüpft. Bitte verwende ``/unlink`` oder ``/relink``.";
+				String desc = "Der Spieler ist nicht verknüpft. Bitte verwende normal ``/link``.";
 				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.ERROR))
 						.queue();
-				MessageUtil.sendUserPingHidden(event.getChannel(), linkeduserid);
 			}
 		} else {
 			String desc = "Der Spieler mit dem Tag " + tag + " existiert nicht oder es ist ein API-Fehler aufgetreten.";
@@ -94,6 +86,23 @@ public class link extends ListenerAdapter {
 					.queue();
 		}
 
+	}
+	
+	@Override
+	public void onCommandAutoCompleteInteraction(CommandAutoCompleteInteractionEvent event) {
+		if (!event.getName().equals("relink"))
+			return;
+
+		String focused = event.getFocusedOption().getName();
+		String input = event.getFocusedOption().getValue();
+
+		if (focused.equals("tag")) {
+			List<Command.Choice> choices = DBManager.getPlayerlistAutocomplete(input, DBManager.InClanType.ALL);
+
+			event.replyChoices(choices).queue(success -> {
+			}, failure -> {
+			});
+		}
 	}
 
 }

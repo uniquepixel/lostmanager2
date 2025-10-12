@@ -5,6 +5,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import commands.admin.deletemessages;
 import commands.admin.restart;
 import commands.kickpoints.clanconfig;
@@ -19,6 +21,7 @@ import commands.kickpoints.kpremove;
 import commands.kickpoints.kpremovereason;
 import commands.links.link;
 import commands.links.playerinfo;
+import commands.links.relink;
 import commands.links.unlink;
 import commands.links.verify;
 import commands.memberlist.addmember;
@@ -32,6 +35,7 @@ import commands.util.cwdonator;
 import commands.util.raidping;
 import commands.util.setnick;
 import datautil.DBUtil;
+import datawrapper.ActionValue;
 import datawrapper.Player;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -62,7 +66,7 @@ public class Bot extends ListenerAdapter {
 	public static String exmember_roleid;
 
 	public static void main(String[] args) throws Exception {
-		VERSION = "2.0";
+		VERSION = "2.0.1";
 		guild_id = System.getenv("DISCORD_GUILD_ID");
 		api_key = System.getenv("LOST_MANAGER_API_KEY");
 		url = System.getenv("LOST_MANAGER_DB_URL");
@@ -86,6 +90,18 @@ public class Bot extends ListenerAdapter {
 				.setMemberCachePolicy(MemberCachePolicy.ALL).setChunkingFilter(ChunkingFilter.ALL)
 				.setActivity(Activity.playing("mit deinen Kickpunkten")).addEventListeners(getListenerClassObjects())
 				.build();
+
+		ObjectMapper mapper = new ObjectMapper();
+
+		ActionValue actionValue = new ActionValue(ActionValue.ACTIONVALUETYPE.FILLER);
+
+		// Serialisieren: Objekt -> JSON-String
+		String json = mapper.writeValueAsString(actionValue);
+		System.out.println("JSON: " + json);
+
+		// Deserialisieren: JSON-String -> Objekt
+		ActionValue obj = mapper.readValue(json, ActionValue.class);
+		System.out.println("Objekt: " + obj);
 	}
 
 	public static void registerCommands(JDA jda, String guildId) {
@@ -99,7 +115,16 @@ public class Bot extends ListenerAdapter {
 
 							Commands.slash("link",
 									"Verlinke einen Clash of Clans Account mit einem Discord User oder einer UserID.")
-									.addOption(OptionType.STRING, "tag", "Der Tag des Clash Royale Accounts", true)
+									.addOption(OptionType.STRING, "tag", "Der Tag des Clash of Clans Accounts", true)
+									.addOption(OptionType.MENTIONABLE, "user",
+											"Der User, mit dem der Account verlinkt werden soll.")
+									.addOption(
+											OptionType.STRING, "userid",
+											"Die ID des Users, mit dem der Account verlinkt werden soll."),
+
+							Commands.slash("relink", "Verlinke einen bereits verlinkten Clash of Clans Account neu.")
+									.addOptions(new OptionData(OptionType.STRING, "tag",
+											"Der Tag des Clash of Clans Accounts", true).setAutoComplete(true))
 									.addOption(OptionType.MENTIONABLE, "user",
 											"Der User, mit dem der Account verlinkt werden soll.")
 									.addOption(
@@ -265,6 +290,7 @@ public class Bot extends ListenerAdapter {
 		classes.add(new verify());
 		classes.add(new link());
 		classes.add(new unlink());
+		classes.add(new relink());
 		classes.add(new restart());
 		classes.add(new addmember());
 		classes.add(new removemember());

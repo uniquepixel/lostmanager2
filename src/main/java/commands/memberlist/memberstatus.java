@@ -68,7 +68,7 @@ public class memberstatus extends ListenerAdapter {
 		String inclannotmemberstr = "";
 
 		for (Player p : inclannotmember) {
-			inclannotmemberstr += p.getInfoStringDB() + "\n";
+			inclannotmemberstr += p.getInfoStringAPI() + "\n";
 		}
 
 		String desc = "## " + c.getInfoString() + "\n";

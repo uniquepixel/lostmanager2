@@ -1,5 +1,8 @@
 package commands.kickpoints;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -28,6 +31,7 @@ import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import util.MessageUtil;
+import util.Tuple;
 
 public class kpadd extends ListenerAdapter {
 
@@ -55,7 +59,6 @@ public class kpadd extends ListenerAdapter {
 
 		String clantag = p.getClanDB().getTag();
 
-		
 		User userexecuted = new User(event.getUser().getId());
 		if (!(userexecuted.getClanRoles().get(clantag) == Player.RoleType.ADMIN
 				|| userexecuted.getClanRoles().get(clantag) == Player.RoleType.LEADER
@@ -65,7 +68,7 @@ public class kpadd extends ListenerAdapter {
 					MessageUtil.EmbedType.ERROR)).queue();
 			return;
 		}
-		
+
 		if (p.getClanDB() == null) {
 			event.replyEmbeds(MessageUtil.buildEmbed(title, "Dieser Spieler existiert nicht oder ist in keinem Clan.",
 					MessageUtil.EmbedType.ERROR)).queue();
@@ -164,15 +167,32 @@ public class kpadd extends ListenerAdapter {
 			Timestamp timestampnow = Timestamp.from(Instant.now());
 			String userid = event.getUser().getId();
 
-			DBUtil.executeUpdate(
+			Tuple<PreparedStatement, Integer> result = DBUtil.executeUpdate(
 					"INSERT INTO kickpoints (player_tag, date, amount, description, created_by_discord_id, created_at, expires_at, clan_tag, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-					playertag, timestampcreated, amount, reason, userid, timestampnow, timestampexpires, c.getTag(), timestampnow);
+					playertag, timestampcreated, amount, reason, userid, timestampnow, timestampexpires, c.getTag(),
+					timestampnow);
+
+			PreparedStatement stmt = result.getFirst();
+			int rowsAffected = result.getSecond();
+
+			Long id = null;
+
+			if (rowsAffected > 0) {
+				try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+					if (generatedKeys.next()) {
+						id = generatedKeys.getLong(1);
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 
 			String desc = "### Der Kickpunkt wurde hinzugefügt.\n";
 			desc += "Spieler: " + MessageUtil.unformat(p.getInfoStringDB()) + "\n";
 			desc += "Clan: " + c.getInfoString() + "\n";
 			desc += "Anzahl: " + amount + "\n";
 			desc += "Grund: " + reason + "\n";
+			desc += "ID: " + id + "\n";
 
 			if (timestampexpires.before(Timestamp.from(Instant.now()))) {
 				desc += "### Achtung: Der Kickpunkt ist bereits abgelaufen.\n";
@@ -202,7 +222,9 @@ public class kpadd extends ListenerAdapter {
 		if (focused.equals("player")) {
 			List<Command.Choice> choices = DBManager.getPlayerlistAutocomplete(input, DBManager.InClanType.INCLAN);
 
-			event.replyChoices(choices).queue(success ->{}, failure -> {});
+			event.replyChoices(choices).queue(success -> {
+			}, failure -> {
+			});
 		}
 		if (focused.equals("reason")) {
 			String playertag = event.getOption("player").getAsString();
@@ -214,7 +236,9 @@ public class kpadd extends ListenerAdapter {
 			String clantag = c.getTag();
 			List<Command.Choice> choices = DBManager.getKPReasonsAutocomplete(input, clantag);
 
-			event.replyChoices(choices).queue(success ->{}, failure -> {});
+			event.replyChoices(choices).queue(success -> {
+			}, failure -> {
+			});
 		}
 	}
 
