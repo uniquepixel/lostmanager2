@@ -107,13 +107,19 @@ public class removemember extends ListenerAdapter {
 		Member member = guild.getMemberById(userid);
 		String memberroleid = playerclan.getRoleID(Clan.Role.MEMBER);
 		Role memberrole = guild.getRoleById(memberroleid);
+		String elderroleid = playerclan.getRoleID(Clan.Role.ELDER);
+		Role elderrole = guild.getRoleById(elderroleid);
 		if (member != null) {
 			ArrayList<Player> allaccs = player.getUser().getAllLinkedAccounts();
 			boolean b = false;
+			boolean othereldersameclan = false;
 			for (Player acc : allaccs) {
 				if (acc.getClanDB() != null) {
 					if (acc.getClanDB().getTag().equals(clantag)) {
 						b = true;
+						if (acc.getRole() == Player.RoleType.ELDER) {
+							othereldersameclan = true;
+						}
 						break;
 					}
 				}
@@ -141,15 +147,34 @@ public class removemember extends ListenerAdapter {
 							+ memberroleid + "> nicht. Gebe sie ihm manuell, falls erwünscht.**\n";
 				}
 			}
+			if (member.getRoles().contains(elderrole)) {
+				if (!othereldersameclan) {
+					guild.removeRoleFromMember(member, elderrole).queue();
+					desc += "\n\n";
+					desc += "**Dem User <@" + userid + "> wurde die Rolle <@&" + elderroleid + "> genommen.**\n";
+				} else {
+					desc += "\n\n";
+					desc += "**Der User <@" + userid
+							+ "> hat noch mindestens einen anderen Account als Ältester in dem Clan, daher behält er die Rolle <@&"
+							+ elderroleid + ">.**\n";
+				}
+			} else {
+				if (othereldersameclan) {
+					desc += "\n\n";
+					desc += "**Der User <@" + userid
+							+ "> hat noch mindestens einen anderen Account als Ältester in dem Clan, hat aber die Rolle <@&"
+							+ elderroleid + "> nicht. Gebe sie ihm manuell, falls erwünscht.**\n";
+				}
+			}
 
-			Role exmemberrole = guild.getRoleById(Bot.exmember_roleid);
+			String exmemberroleid = Bot.exmember_roleid;
+			Role exmemberrole = guild.getRoleById(exmemberroleid);
 			if (member.getRoles().contains(exmemberrole)) {
 				desc += "\n\n";
-				desc += "**Der User <@" + userid + "> hat die Rolle <@&" + memberroleid + "> bereits.**\n";
+				desc += "**Der User <@" + userid + "> hat die Rolle <@&" + exmemberroleid + "> bereits.**\n";
 			} else {
 				guild.addRoleToMember(member, exmemberrole).queue();
-				desc += "\n\n**Dem User <@" + userid + "> wurde die Rolle <@&" + Bot.exmember_roleid
-						+ "> hinzugefügt.**";
+				desc += "\n\n**Dem User <@" + userid + "> wurde die Rolle <@&" + exmemberroleid + "> hinzugefügt.**";
 			}
 		} else {
 			desc += "\n\n**Der User <@" + userid

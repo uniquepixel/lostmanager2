@@ -5,7 +5,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import commands.admin.deletemessages;
 import commands.admin.restart;
@@ -35,7 +34,6 @@ import commands.util.cwdonator;
 import commands.util.raidping;
 import commands.util.setnick;
 import datautil.DBUtil;
-import datawrapper.ActionValue;
 import datawrapper.Player;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -66,7 +64,7 @@ public class Bot extends ListenerAdapter {
 	public static String exmember_roleid;
 
 	public static void main(String[] args) throws Exception {
-		VERSION = "2.0.1";
+		VERSION = "2.1.0";
 		guild_id = System.getenv("DISCORD_GUILD_ID");
 		api_key = System.getenv("LOST_MANAGER_API_KEY");
 		url = System.getenv("LOST_MANAGER_DB_URL");
@@ -90,18 +88,6 @@ public class Bot extends ListenerAdapter {
 				.setMemberCachePolicy(MemberCachePolicy.ALL).setChunkingFilter(ChunkingFilter.ALL)
 				.setActivity(Activity.playing("mit deinen Kickpunkten")).addEventListeners(getListenerClassObjects())
 				.build();
-
-		ObjectMapper mapper = new ObjectMapper();
-
-		ActionValue actionValue = new ActionValue(ActionValue.ACTIONVALUETYPE.FILLER);
-
-		// Serialisieren: Objekt -> JSON-String
-		String json = mapper.writeValueAsString(actionValue);
-		System.out.println("JSON: " + json);
-
-		// Deserialisieren: JSON-String -> Objekt
-		ActionValue obj = mapper.readValue(json, ActionValue.class);
-		System.out.println("Objekt: " + obj);
 	}
 
 	public static void registerCommands(JDA jda, String guildId) {

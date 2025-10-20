@@ -42,7 +42,6 @@ public class playerinfo extends ListenerAdapter {
 		String userid = null;
 		String playertag = null;
 		ArrayList<Player> linkedaccs = new ArrayList<>();
-
 		Player player = null;
 
 		enum ConvertionType {

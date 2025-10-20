@@ -12,19 +12,24 @@ import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 public class MessageUtil {
 
 	public enum EmbedType {
-		INFO, SUCCESS, ERROR
+		INFO, SUCCESS, ERROR, LOADING
 	}
 
 	public static String footer = "Lost Manager | Made by Pixel | v" + Bot.VERSION;
 
-	public static MessageEmbed buildEmbed(String title, String description, EmbedType type, Field... fields) {
+	public static MessageEmbed buildEmbed(String title, String description, EmbedType type, String additionalfooter,
+			Field... fields) {
 		EmbedBuilder embedreply = new EmbedBuilder();
 		embedreply.setTitle(title);
 		embedreply.setDescription(description);
 		for (int i = 0; i < fields.length; i++) {
 			embedreply.addField(fields[i]);
 		}
-		embedreply.setFooter(footer);
+		if (footer.equals("")) {
+			embedreply.setFooter(footer);
+		} else {
+			embedreply.setFooter(additionalfooter + "\n\r" + footer);
+		}
 		switch (type) {
 		case INFO:
 			embedreply.setColor(Color.CYAN);
@@ -35,16 +40,22 @@ public class MessageUtil {
 		case ERROR:
 			embedreply.setColor(Color.RED);
 			break;
+		case LOADING:
+			embedreply.setColor(Color.MAGENTA);
+			break;
 		}
 		return embedreply.build();
 	}
 
+	public static MessageEmbed buildEmbed(String title, String description, EmbedType type, Field... fields) {
+		return buildEmbed(title, description, type, "", fields);
+	}
+
 	public static String unformat(String s) {
-		String a = s.replaceAll("_", Matcher.quoteReplacement("\\_"))
-				.replaceAll("\\*", Matcher.quoteReplacement("\\\\*")).replaceAll("~", Matcher.quoteReplacement("\\~"))
-				.replaceAll("`", Matcher.quoteReplacement("\\`")).replaceAll("\\|", Matcher.quoteReplacement("\\\\|"))
-				.replaceAll(">", Matcher.quoteReplacement("\\>")).replaceAll("-", Matcher.quoteReplacement("\\-"))
-				.replaceAll("#", Matcher.quoteReplacement("\\#"));
+		String a = s.replaceAll("_", Matcher.quoteReplacement("\\_")).replaceAll("\\*", Matcher.quoteReplacement("\\*"))
+				.replaceAll("~", Matcher.quoteReplacement("\\~")).replaceAll("`", Matcher.quoteReplacement("\\`"))
+				.replaceAll("\\|", Matcher.quoteReplacement("\\|")).replaceAll(">", Matcher.quoteReplacement("\\>"))
+				.replaceAll("-", Matcher.quoteReplacement("\\-")).replaceAll("#", Matcher.quoteReplacement("\\#"));
 		return a;
 	}
 
