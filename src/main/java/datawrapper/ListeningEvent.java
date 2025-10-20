@@ -11,7 +11,7 @@ import datautil.DBUtil;
 public class ListeningEvent {
 
 	public enum LISTENINGTYPE {
-		CW, RAID, CWL, CS
+		CW, RAID, CWLDAY, CS
 	}
 
 	public enum ACTIONTYPE {
@@ -21,11 +21,27 @@ public class ListeningEvent {
 	private Long id;
 	private String clan_tag;
 	private LISTENINGTYPE listeningtype;
-	private Long durationuntilend;
+	private Long durationuntilend; //in ms
 	private ACTIONTYPE actiontype;
 	private String channelid;
 	private ArrayList<ActionValue> actionvalues;
-
+	
+	private Long timestamptofire;
+	
+	private Boolean fireStatus = false;
+	
+	public ListeningEvent refreshData() {
+		clan_tag = null;
+		listeningtype = null;
+		durationuntilend = null;
+		actiontype = null;
+		channelid = null;
+		actionvalues = null;
+		timestamptofire = null;
+		fireStatus = null;
+		return this;
+	}
+	
 	public ListeningEvent(long id) {
 		this.id = id;
 	}
@@ -57,6 +73,11 @@ public class ListeningEvent {
 
 	public ListeningEvent setActionValues(ArrayList<ActionValue> list) {
 		this.actionvalues = list;
+		return this;
+	}
+	
+	public ListeningEvent setFireStatus(boolean b) {
+		fireStatus = b;
 		return this;
 	}
 
@@ -124,5 +145,28 @@ public class ListeningEvent {
 		}
 		return actionvalues;
 	}
+	
+	public Boolean hasFired() {
+		return hasFired();
+	}
 
+	public Long getTimestamp() {
+		Long timestamp = null;
+		switch (getListeningType()) {
+		case CS:
+			
+			break;
+		case CW:
+			
+			break;
+		case CWLDAY:
+			
+			break;
+		case RAID:
+			
+			break;
+		}
+		return timestamp;
+	}
+	
 }

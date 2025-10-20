@@ -21,18 +21,41 @@ import lostmanager.Bot;
 
 public class Clan {
 
+	//Identifier
 	private String clan_tag;
+	
+	//Names
 	private String namedb;
 	private String nameapi;
+	
+	//Playerlists
 	private ArrayList<Player> playerlistdb;
 	private ArrayList<Player> playerlistapi;
+	
+	//CW
+	private Boolean cwactive;
 	private ArrayList<Player> clanwarmembers;
-	private ArrayList<Player> raidmembers;
+	private Long CWEndTimeMillis;
+	
+	//Raid
 	private Boolean raidactive;
+	private ArrayList<Player> raidmembers;
+	private Long RaidEndTimeMillis;
+	
+	//CWL
+	private Boolean cwlactive;
+	private Long CWLDayEndTimeMillis;
+	
+	//CS
+	private Boolean csactive;
+	private Long CSEndTimeMillis;
+	
+	//Settings
 	private Long max_kickpoints;
 	private Long min_season_wins;
 	private Integer kickpoints_expire_after_days;
 	private ArrayList<KickpointReason> kickpoint_reasons;
+	
 
 	public enum Role {
 		LEADER, COLEADER, ELDER, MEMBER
@@ -43,18 +66,38 @@ public class Clan {
 	}
 
 	public Clan refreshData() {
-		namedb = null;
-		nameapi = null;
-		playerlistdb = null;
-		playerlistapi = null;
-		clanwarmembers = null;
-		raidmembers = null;
-		raidactive = null;
-		max_kickpoints = null;
-		min_season_wins = null;
-		kickpoints_expire_after_days = null;
-		kickpoint_reasons = null;
-		return this;
+	//Names
+	namedb = null;
+	nameapi = null;
+	
+	//Playerlists
+	playerlistdb = null;
+	playerlistapi = null;
+	
+	//CW
+	cwactive = null;
+	clanwarmembers = null;
+	CWEndTimeMillis = null;
+	
+	//Raid
+	raidactive = null;
+	raidmembers = null;
+	RaidEndTimeMillis = null;
+	
+	//CWL
+	cwlactive = null;
+	CWLDayEndTimeMillis = null;
+	
+	//CS
+	csactive = null;
+	CSEndTimeMillis = null;
+	
+	//Settings
+	max_kickpoints = null;
+	min_season_wins = null;
+	kickpoints_expire_after_days = null;
+	kickpoint_reasons = null;
+	return this;
 	}
 
 	public boolean ExistsDB() {
@@ -314,6 +357,13 @@ public class Clan {
 			nameapi = jsonobject.getString("name");
 		}
 		return nameapi;
+	}
+	
+	public Long getCWLDayEndTimeMillis() {
+		if(CWLDayEndTimeMillis == null) {
+			
+		}
+		return CWLDayEndTimeMillis;
 	}
 
 }
