@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -42,9 +43,9 @@ public class checkreacts extends ListenerAdapter {
 		String emoji = emojiOption.getAsString();
 		String channelId = messagelink.split("/")[messagelink.split("/").length - 2];
 
-		TextChannel channel = null;
+		MessageChannelUnion channel = null;
 		if (channelId != null) {
-			channel = event.getJDA().getTextChannelById(channelId);
+			channel = event.getJDA().getChannelById(MessageChannelUnion.class ,channelId);
 			if (channel == null) {
 				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title,
 						"Channel mit dieser ID nicht gefunden.", MessageUtil.EmbedType.ERROR)).queue();
