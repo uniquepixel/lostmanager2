@@ -1,6 +1,7 @@
 package commands.kickpoints;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -83,8 +84,14 @@ public class kpclan extends ListenerAdapter {
 					desc += key + ": " + sorted.get(key) + " " + kp + "\n\n";
 				}
 
-				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.INFO))
-						.setActionRow(Button.secondary("kpclan_" + clantag, "\u200B").withEmoji(Emoji.fromUnicode("🔁"))).queue();
+				LocalDateTime jetzt = LocalDateTime.now();
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy 'um' HH:mm 'Uhr'");
+				String formatiert = jetzt.atZone(ZoneId.of("Europe/Berlin")).format(formatter);
+
+				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.INFO, "Zuletzt aktualisiert am " + formatiert))
+						.setActionRow(
+								Button.secondary("kpclan_" + clantag, "\u200B").withEmoji(Emoji.fromUnicode("🔁")))
+						.queue();
 
 			}
 		}).start();
@@ -165,7 +172,7 @@ public class kpclan extends ListenerAdapter {
 
 				LocalDateTime jetzt = LocalDateTime.now();
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy 'um' HH:mm 'Uhr'");
-				String formatiert = jetzt.format(formatter);
+				String formatiert = jetzt.atZone(ZoneId.of("Europe/Berlin")).format(formatter);
 
 				event.getInteraction().getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc,
 						MessageUtil.EmbedType.INFO, "Zuletzt aktualisiert am " + formatiert)).queue();

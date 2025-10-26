@@ -9,6 +9,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -47,7 +53,6 @@ public class Clan {
 	private Long CWLDayEndTimeMillis;
 
 	// CS
-	private Boolean cgactive;
 	private Long CGEndTimeMillis;
 
 	// Settings
@@ -56,7 +61,7 @@ public class Clan {
 	private Integer kickpoints_expire_after_days;
 	private ArrayList<KickpointReason> kickpoint_reasons;
 
-	//Roles	
+	// Roles
 	public enum Role {
 		LEADER, COLEADER, ELDER, MEMBER
 	}
@@ -89,7 +94,6 @@ public class Clan {
 		CWLDayEndTimeMillis = null;
 
 		// CG
-		cgactive = null;
 		CGEndTimeMillis = null;
 
 		// Settings
@@ -100,8 +104,8 @@ public class Clan {
 		return this;
 	}
 
-	//Identifier
-	
+	// Identifier
+
 	public boolean ExistsDB() {
 		String sql = "SELECT 1 FROM clans WHERE tag = ?";
 		try (PreparedStatement pstmt = Connection.getConnection().prepareStatement(sql)) {
@@ -118,9 +122,9 @@ public class Clan {
 	public String getTag() {
 		return clan_tag;
 	}
-	
-	//Roles
-	
+
+	// Roles
+
 	public String getRoleID(Role role) {
 		switch (role) {
 		case LEADER:
@@ -138,13 +142,13 @@ public class Clan {
 		}
 		return null;
 	}
-	
-	//Names
+
+	// Names
 
 	public String getInfoString() {
 		return getNameAPI() + " (" + clan_tag + ")";
 	}
-	
+
 	public String getNameDB() {
 		if (namedb == null) {
 			String sql = "SELECT name FROM clans WHERE tag = ?";
@@ -169,8 +173,8 @@ public class Clan {
 		}
 		return nameapi;
 	}
-	
-	//Playerlists
+
+	// Playerlists
 
 	public ArrayList<Player> getPlayersAPI() {
 		if (playerlistapi == null) {
@@ -197,8 +201,8 @@ public class Clan {
 		}
 		return playerlistdb;
 	}
-	
-	//Settings
+
+	// Settings
 
 	public Long getMaxKickpoints() {
 		if (max_kickpoints == null) {
@@ -252,16 +256,28 @@ public class Clan {
 
 	// CG
 
-	public Boolean isCGActive() {
-		if (cgactive == null) {
-
-		}
-		return cwlactive;
-	}
-
+	// hardcoded since no api data
 	public Long getCGEndTimeMillis() {
 		if (CGEndTimeMillis == null) {
+			LocalDateTime now = LocalDateTime.now();
+			int year = now.getYear();
+			int month = now.getMonthValue();
+			int day = now.getDayOfMonth();
+			int hour = now.getHour();
 
+			// Wenn heute nach dem 28. ist oder genau am 28. nach 12 Uhr
+			if (day > 28 || (day == 28 && hour >= 12)) {
+				month++;
+				if (month > 12) {
+					month = 1;
+					year++;
+				}
+			}
+
+			LocalDateTime next28thAtNoon = LocalDateTime.of(year, month, 28, 12, 0);
+
+			ZonedDateTime zdt = next28thAtNoon.atZone(ZoneId.systemDefault());
+			return zdt.toInstant().toEpochMilli();
 		}
 		return CGEndTimeMillis;
 	}
@@ -277,7 +293,7 @@ public class Clan {
 
 	public Long getCWLDayEndTimeMillis() {
 		if (CWLDayEndTimeMillis == null) {
-
+			
 		}
 		return CWLDayEndTimeMillis;
 	}
@@ -286,7 +302,18 @@ public class Clan {
 
 	public boolean RaidActive() {
 		if (raidactive == null) {
-			getRaidMemberList();
+			JSONObject jsonObject = getRaidJson();
+			JSONArray items = jsonObject.getJSONArray("items");
+			JSONObject currentitem = items.getJSONObject(0);
+			String state = currentitem.getString("state");
+			raidactive = state.equals("ongoing") ? true : false;
+
+			// endtimelogic here to prevent double api requests if in same result
+			String endTime = currentitem.getString("endTime");
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss.SSS'Z'")
+					.withZone(ZoneOffset.UTC);
+			Instant instant = Instant.from(formatter.parse(endTime));
+			RaidEndTimeMillis = instant.toEpochMilli();
 		}
 		return raidactive;
 	}
@@ -294,38 +321,7 @@ public class Clan {
 	public ArrayList<Player> getRaidMemberList() {
 		if (raidmembers == null) {
 			raidmembers = new ArrayList<>();
-
-			String json;
-
-			String encodedTag = java.net.URLEncoder.encode(clan_tag, java.nio.charset.StandardCharsets.UTF_8);
-
-			String url = "https://api.clashofclans.com/v1/clans/" + encodedTag + "/capitalraidseasons?limit=1";
-
-			HttpClient client = HttpClient.newHttpClient();
-
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url))
-					.header("Authorization", "Bearer " + Bot.api_key).header("Accept", "application/json").GET()
-					.build();
-
-			HttpResponse<String> response = null;
-			try {
-				response = client.send(request, HttpResponse.BodyHandlers.ofString());
-			} catch (IOException | InterruptedException e) {
-				e.printStackTrace();
-				json = null;
-			}
-
-			if (response.statusCode() == 200) {
-				String responseBody = response.body();
-				// Einfacher JSON-Name-Parser ohne Bibliotheken:
-				json = responseBody;
-			} else {
-				System.err.println("Fehler beim Abrufen: HTTP " + response.statusCode());
-				System.err.println("Antwort: " + response.body());
-				json = null;
-			}
-
-			JSONObject jsonObject = new JSONObject(json);
+			JSONObject jsonObject = getRaidJson();
 			JSONArray items = jsonObject.getJSONArray("items");
 			JSONObject currentitem = items.getJSONObject(0);
 			String state = currentitem.getString("state");
@@ -351,7 +347,7 @@ public class Clan {
 
 	public Long getRaidEndTimeMillis() {
 		if (RaidEndTimeMillis == null) {
-
+			RaidActive();
 		}
 		return RaidEndTimeMillis;
 	}
@@ -359,16 +355,7 @@ public class Clan {
 	// CW
 
 	public Boolean isCWActive() {
-		if(cwactive == null) {
-			
-		}
-		return cwactive;
-	}
-	
-	public ArrayList<Player> getWarMemberList() {
-		if (clanwarmembers == null) {
-			clanwarmembers = new ArrayList<>();
-
+		if (cwactive == null) {
 			String json;
 
 			String encodedTag = java.net.URLEncoder.encode(clan_tag, java.nio.charset.StandardCharsets.UTF_8);
@@ -401,6 +388,29 @@ public class Clan {
 
 			JSONObject jsonObject = new JSONObject(json);
 			String state = jsonObject.getString("state");
+			if (state.equalsIgnoreCase("notInWar")) {
+				cwactive = false;
+			} else {
+				cwactive = true;
+			}
+
+			if (cwactive) {
+				// CW Endtime logic here to prevent double api request if in same result
+				String endTime = jsonObject.getString("endTime");
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss.SSS'Z'")
+						.withZone(ZoneOffset.UTC);
+				Instant instant = Instant.from(formatter.parse(endTime));
+				CWEndTimeMillis = instant.toEpochMilli();
+			}
+		}
+		return cwactive;
+	}
+
+	public ArrayList<Player> getWarMemberList() {
+		if (clanwarmembers == null) {
+			clanwarmembers = new ArrayList<>();
+			JSONObject jsonObject = getCWJson();
+			String state = jsonObject.getString("state");
 			if (state.equals("notInWar")) {
 				return null;
 			}
@@ -418,12 +428,81 @@ public class Clan {
 		}
 		return clanwarmembers;
 	}
-	
+
 	public Long getCWEndTimeMillis() {
-		if(CWEndTimeMillis == null) {
-			
+		if (CWEndTimeMillis == null) {
+			isCWActive();
+
 		}
 		return CWEndTimeMillis;
+	}
+
+	private JSONObject getCWJson() {
+		String json;
+
+		String encodedTag = java.net.URLEncoder.encode(clan_tag, java.nio.charset.StandardCharsets.UTF_8);
+
+		String url = "https://api.clashofclans.com/v1/clans/" + encodedTag + "/currentwar";
+
+		HttpClient client = HttpClient.newHttpClient();
+
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url))
+				.header("Authorization", "Bearer " + Bot.api_key).header("Accept", "application/json").GET().build();
+
+		HttpResponse<String> response = null;
+		try {
+			response = client.send(request, HttpResponse.BodyHandlers.ofString());
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+			json = null;
+		}
+
+		if (response.statusCode() == 200) {
+			String responseBody = response.body();
+			// Einfacher JSON-Name-Parser ohne Bibliotheken:
+			json = responseBody;
+		} else {
+			System.err.println("Fehler beim Abrufen: HTTP " + response.statusCode());
+			System.err.println("Antwort: " + response.body());
+			json = null;
+		}
+
+		JSONObject jsonObject = new JSONObject(json);
+		return jsonObject;
+	}
+
+	private JSONObject getRaidJson() {
+		String json;
+
+		String encodedTag = java.net.URLEncoder.encode(clan_tag, java.nio.charset.StandardCharsets.UTF_8);
+
+		String url = "https://api.clashofclans.com/v1/clans/" + encodedTag + "/capitalraidseasons?limit=1";
+
+		HttpClient client = HttpClient.newHttpClient();
+
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url))
+				.header("Authorization", "Bearer " + Bot.api_key).header("Accept", "application/json").GET().build();
+
+		HttpResponse<String> response = null;
+		try {
+			response = client.send(request, HttpResponse.BodyHandlers.ofString());
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+			json = null;
+		}
+
+		if (response.statusCode() == 200) {
+			String responseBody = response.body();
+			// Einfacher JSON-Name-Parser ohne Bibliotheken:
+			json = responseBody;
+		} else {
+			System.err.println("Fehler beim Abrufen: HTTP " + response.statusCode());
+			System.err.println("Antwort: " + response.body());
+			json = null;
+		}
+
+		JSONObject jsonObject = new JSONObject(json);
+		return jsonObject;
 	}
 
 }

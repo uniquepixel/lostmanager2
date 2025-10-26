@@ -21,15 +21,15 @@ public class ListeningEvent {
 	private Long id;
 	private String clan_tag;
 	private LISTENINGTYPE listeningtype;
-	private Long durationuntilend; //in ms
+	private Long durationuntilend; // in ms
 	private ACTIONTYPE actiontype;
 	private String channelid;
 	private ArrayList<ActionValue> actionvalues;
-	
+
 	private Long timestamptofire;
-	
-	private Boolean fireStatus = false;
-	
+
+	private boolean fireStatus = false;
+
 	public ListeningEvent refreshData() {
 		clan_tag = null;
 		listeningtype = null;
@@ -38,10 +38,9 @@ public class ListeningEvent {
 		channelid = null;
 		actionvalues = null;
 		timestamptofire = null;
-		fireStatus = null;
 		return this;
 	}
-	
+
 	public ListeningEvent(long id) {
 		this.id = id;
 	}
@@ -75,7 +74,7 @@ public class ListeningEvent {
 		this.actionvalues = list;
 		return this;
 	}
-	
+
 	public ListeningEvent setFireStatus(boolean b) {
 		fireStatus = b;
 		return this;
@@ -87,8 +86,7 @@ public class ListeningEvent {
 
 	public String getClanTag() {
 		if (clan_tag == null) {
-			clan_tag = DBUtil.getValueFromSQL("SELECT clan_tag FROM listening_events WHERE id = ?", String.class,
-					id);
+			clan_tag = DBUtil.getValueFromSQL("SELECT clan_tag FROM listening_events WHERE id = ?", String.class, id);
 		}
 		return clan_tag;
 	}
@@ -145,28 +143,30 @@ public class ListeningEvent {
 		}
 		return actionvalues;
 	}
-	
+
 	public Boolean hasFired() {
-		return hasFired();
+		return fireStatus;
 	}
 
 	public Long getTimestamp() {
-		Long timestamp = null;
-		switch (getListeningType()) {
-		case CS:
-			
-			break;
-		case CW:
-			
-			break;
-		case CWLDAY:
-			
-			break;
-		case RAID:
-			
-			break;
+		if (timestamptofire == null) {
+			Clan c = new Clan(clan_tag);
+			switch (getListeningType()) {
+			case CS:
+				timestamptofire = c.getCGEndTimeMillis();
+				break;
+			case CW:
+				timestamptofire = c.getCWEndTimeMillis();
+				break;
+			case CWLDAY:
+				timestamptofire = c.getCWLDayEndTimeMillis();
+				break;
+			case RAID:
+				timestamptofire = c.getRaidEndTimeMillis();
+				break;
+			}
 		}
-		return timestamp;
+		return timestamptofire;
 	}
-	
+
 }

@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import datautil.APIUtil;
@@ -39,6 +40,8 @@ public class Player {
 	private Clan clanapi;
 	private ArrayList<Kickpoint> kickpoints;
 	private Long kickpointstotal;
+	private Integer currentClanGamesPointsEarnedDB;
+	private Integer currentClanGamesPointsEarnedAPI;
 	private RoleType roledb;
 	private RoleType roleapi;
 
@@ -62,6 +65,8 @@ public class Player {
 		clanapi = null;
 		kickpoints = null;
 		kickpointstotal = null;
+		currentClanGamesPointsEarnedDB = null;
+		currentClanGamesPointsEarnedAPI = null;
 		roledb = null;
 		roleapi = null;
 		return this;
@@ -412,6 +417,29 @@ public class Player {
 			}
 		}
 		return kickpointstotal;
+	}
+
+	public Integer getCGPointsDB() {
+		if (currentClanGamesPointsEarnedDB == null) {
+
+		}
+		return currentClanGamesPointsEarnedDB;
+	}
+
+	public Integer getCGPointsAPI() {
+		if (currentClanGamesPointsEarnedAPI == null) {
+			JSONObject jsonObject = new JSONObject(APIUtil.getPlayerJson(tag));
+			JSONArray achievementarray = jsonObject.getJSONArray("achievements");
+			for(int i = 0; i < achievementarray.length(); i++) {
+				JSONObject achievement = achievementarray.getJSONObject(i);
+				String achievementname = achievement.getString("name");
+				if(achievementname.equals("Games Champion")) {
+					currentClanGamesPointsEarnedAPI = achievement.getInt("value");
+					break;
+				}
+			}
+		}
+		return currentClanGamesPointsEarnedAPI;
 	}
 
 	public RoleType getRoleDB() {

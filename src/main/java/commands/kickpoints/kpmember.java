@@ -129,7 +129,13 @@ public class kpmember extends ListenerAdapter {
 				desc += "" + kptotal;
 				Button refreshButton = Button.secondary("kpmember_" + playertag, "\u200B")
 						.withEmoji(Emoji.fromUnicode("🔁"));
-				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.INFO))
+
+
+				LocalDateTime jetzt = LocalDateTime.now();
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy 'um' HH:mm 'Uhr'");
+				String formatiert = jetzt.atZone(ZoneId.of("Europe/Berlin")).format(formatter);
+				
+				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.INFO, "Zuletzt aktualisiert am " + formatiert))
 						.setActionRow(refreshButton).queue();
 
 			}
@@ -256,7 +262,7 @@ public class kpmember extends ListenerAdapter {
 
 				LocalDateTime jetzt = LocalDateTime.now();
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy 'um' HH:mm 'Uhr'");
-				String formatiert = jetzt.format(formatter);
+				String formatiert = jetzt.atZone(ZoneId.of("Europe/Berlin")).format(formatter);
 
 				event.getInteraction().getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc.toString(),
 						MessageUtil.EmbedType.INFO, "Zuletzt aktualisiert am " + formatiert)).queue();
