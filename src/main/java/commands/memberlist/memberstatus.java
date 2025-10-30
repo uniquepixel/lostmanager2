@@ -71,7 +71,7 @@ public class memberstatus extends ListenerAdapter {
 				if (roledb == RoleType.LEADER) {
 					roledb = RoleType.COLEADER;
 				}
-				if(roleapi == RoleType.LEADER) {
+				if (roleapi == RoleType.LEADER) {
 					continue;
 				}
 				if (roledb != roleapi) {
@@ -96,12 +96,12 @@ public class memberstatus extends ListenerAdapter {
 
 		String desc = "## " + c.getInfoString() + "\n";
 
-		desc += "**Im Clan, falsche Rolle:**\n";
-		desc += wrongrolestr == "" ? "---\n\n" : MessageUtil.unformat(wrongrolestr) + "\n";
 		desc += "**Mitglied, ingame nicht im Clan:**\n";
 		desc += membernotinclanstr == "" ? "---\n\n" : MessageUtil.unformat(membernotinclanstr) + "\n";
 		desc += "**Kein Mitglied, ingame im Clan:**\n";
 		desc += inclannotmemberstr == "" ? "---\n\n" : MessageUtil.unformat(inclannotmemberstr) + "\n";
+		desc += "**Im Clan, falsche Rolle:**\n";
+		desc += wrongrolestr == "" ? "---\n\n" : MessageUtil.unformat(wrongrolestr) + "\n";
 
 		event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.INFO)).queue();
 
@@ -130,7 +130,7 @@ public class memberstatus extends ListenerAdapter {
 			return "Leader";
 		case COLEADER:
 			return "CoLeader";
-		case ADMIN:
+		case ELDER:
 			return "Elder";
 		case MEMBER:
 			return "Member";

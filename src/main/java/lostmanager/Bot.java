@@ -1,10 +1,13 @@
 package lostmanager;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
 
 import commands.admin.deletemessages;
 import commands.admin.restart;
@@ -34,6 +37,7 @@ import commands.util.cwdonator;
 import commands.util.raidping;
 import commands.util.setnick;
 import datautil.DBUtil;
+import datawrapper.AchievementData.Type;
 import datawrapper.Player;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -51,7 +55,8 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 public class Bot extends ListenerAdapter {
 
-	private final static ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+	private static ScheduledExecutorService schedulernames = Executors.newSingleThreadScheduledExecutor();
+	private static ScheduledExecutorService schedulertasks = Executors.newSingleThreadScheduledExecutor();
 
 	private static JDA jda;
 	public static String VERSION;
@@ -83,6 +88,8 @@ public class Bot extends ListenerAdapter {
 
 		// sql.Connection.tablesExists();
 		startNameUpdates();
+		startClanGamesSavings();
+		endClanGamesSavings();
 
 		JDABuilder.createDefault(token).enableIntents(GatewayIntent.GUILD_MEMBERS)
 				.setMemberCachePolicy(MemberCachePolicy.ALL).setChunkingFilter(ChunkingFilter.ALL)
@@ -323,30 +330,151 @@ public class Bot extends ListenerAdapter {
 		return jda;
 	}
 
+	public static void endClanGamesSavings() {
+		long nowMillis = System.currentTimeMillis();
+		ZonedDateTime zdt = getNext28thAt12pm();
+		long endMillis = zdt.toInstant().toEpochMilli();
+		long enddelay = Math.max(endMillis - nowMillis, 0);
+
+		String sql = "SELECT coc_tag FROM players";
+
+		Timestamp timestampend = Timestamp.from(zdt.toInstant());
+
+		schedulertasks.schedule(() -> {
+			System.out.println("Es werden alle Clanspieldaten übertragen...");
+			for (String tag : DBUtil.getArrayListFromSQL(sql, String.class)) {
+				Player p = new Player(tag);
+				p.addAchievementDataToDB(Type.CLANGAMES_POINTS, timestampend);
+			}
+			endClanGamesSavings();
+		}, enddelay, TimeUnit.MILLISECONDS);
+	}
+
+	public static void startClanGamesSavings() {
+		long nowMillis = System.currentTimeMillis();
+		ZonedDateTime zdt = getNext22thAt7am();
+		long startMillis = zdt.toInstant().toEpochMilli();
+		long startdelay = Math.max(startMillis - nowMillis, 0);
+
+		String sql = "SELECT coc_tag FROM players";
+
+		Timestamp timestampstart = Timestamp.from(zdt.toInstant());
+
+		schedulertasks.schedule(() -> {
+			System.out.println("Es werden alle Clanspieldaten übertragen...");
+			for (String tag : DBUtil.getArrayListFromSQL(sql, String.class)) {
+				Player p = new Player(tag);
+				p.addAchievementDataToDB(Type.CLANGAMES_POINTS, timestampstart);
+			}
+			startClanGamesSavings();
+		}, startdelay, TimeUnit.MILLISECONDS);
+	}
+
 	public static void startNameUpdates() {
-		Thread thread = new Thread(() -> {
-			Runnable task = () -> {
-				System.out.println("Alle 2h werden nun die Namen aktualisiert. " + System.currentTimeMillis());
-
-				String sql = "SELECT coc_tag FROM players";
-				for (String tag : DBUtil.getArrayListFromSQL(sql, String.class)) {
-					try {
-						DBUtil.executeUpdate("UPDATE players SET name = ? WHERE coc_tag = ?",
-								new Player(tag).getNameAPI(), tag);
-					} catch (Exception e) {
-						System.out.println(
-								"Beim Updaten des Namens von Spieler mit Tag " + tag + " ist ein Fehler aufgetreten.");
-					}
+		Runnable task = () -> {
+			System.out.println("Alle 2h werden nun die Namen aktualisiert. " + System.currentTimeMillis());
+			String sql = "SELECT coc_tag FROM players";
+			for (String tag : DBUtil.getArrayListFromSQL(sql, String.class)) {
+				try {
+					DBUtil.executeUpdate("UPDATE players SET name = ? WHERE coc_tag = ?", new Player(tag).getNameAPI(),
+							tag);
+				} catch (Exception e) {
+					System.out.println("Fehler beim Namenupdate von Tag " + tag);
 				}
-
-			};
-			scheduler.scheduleAtFixedRate(task, 0, 2, TimeUnit.HOURS);
-		});
-		thread.start();
+			}
+		};
+		schedulernames.scheduleAtFixedRate(task, 0, 2, TimeUnit.HOURS);
 	}
 
 	public void stopScheduler() {
-		scheduler.shutdown();
+		schedulernames.shutdown();
+		schedulertasks.shutdown();
+	}
+
+	// Helpers
+
+	public static ZonedDateTime getNext22thAt7am() {
+		LocalDateTime now = LocalDateTime.now();
+		int year = now.getYear();
+		int month = now.getMonthValue();
+
+		LocalDateTime target = LocalDateTime.of(year, month, 22, 7, 0, 0, 0);
+
+		// Wenn jetzt >= 22. um 07:00 Uhr dann nächsten Monat nehmen
+		if (!now.isBefore(target)) {
+			month++;
+			if (month > 12) {
+				month = 1;
+				year++;
+			}
+			target = LocalDateTime.of(year, month, 22, 7, 0, 0, 0);
+		}
+
+		ZonedDateTime zdt = target.atZone(ZoneId.systemDefault());
+		return zdt;
+	}
+
+	public static ZonedDateTime getNext28thAt12pm() {
+		LocalDateTime now = LocalDateTime.now();
+		int year = now.getYear();
+		int month = now.getMonthValue();
+
+		LocalDateTime target = LocalDateTime.of(year, month, 28, 12, 0, 0, 0);
+
+		// Wenn jetzt >= 28. um 12:00 Uhr dann nächsten Monat nehmen
+		if (!now.isBefore(target)) {
+			month++;
+			if (month > 12) {
+				month = 1;
+				year++;
+			}
+			target = LocalDateTime.of(year, month, 28, 12, 0, 0, 0);
+		}
+
+		ZonedDateTime zdt = target.atZone(ZoneId.systemDefault());
+		return zdt;
+	}
+
+	public static ZonedDateTime getPrevious22thAt7am() {
+		LocalDateTime now = LocalDateTime.now();
+		int year = now.getYear();
+		int month = now.getMonthValue();
+
+		LocalDateTime target = LocalDateTime.of(year, month, 22, 7, 0, 0, 0);
+
+		// Wenn jetzt < 22. um 07:00 Uhr, dann vorherigen Monat nehmen
+		if (now.isBefore(target)) {
+			month--;
+			if (month < 1) {
+				month = 12;
+				year--;
+			}
+			target = LocalDateTime.of(year, month, 22, 7, 0, 0, 0);
+		}
+
+		ZonedDateTime zdt = target.atZone(ZoneId.systemDefault());
+		return zdt;
+	}
+
+	public static ZonedDateTime getPrevious28thAt12pm() {
+		LocalDateTime now = LocalDateTime.now();
+		int year = now.getYear();
+		int month = now.getMonthValue();
+
+		LocalDateTime target = LocalDateTime.of(year, month, 28, 12, 0, 0, 0);
+
+		// Wenn jetzt < 28. um 12:00 Uhr, dann vorherigen Monat nehmen
+		if (now.isBefore(target)) {
+			month--;
+			if (month < 1) {
+				month = 12;
+				year--;
+			}
+			target = LocalDateTime.of(year, month, 28, 12, 0, 0, 0);
+		}
+
+		ZonedDateTime zdt = target.atZone(ZoneId.systemDefault());
+		return zdt;
 	}
 
 }

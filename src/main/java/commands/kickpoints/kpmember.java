@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -131,9 +132,9 @@ public class kpmember extends ListenerAdapter {
 						.withEmoji(Emoji.fromUnicode("🔁"));
 
 
-				LocalDateTime jetzt = LocalDateTime.now();
+				ZonedDateTime jetzt = ZonedDateTime.now(ZoneId.of("Europe/Berlin"));
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy 'um' HH:mm 'Uhr'");
-				String formatiert = jetzt.atZone(ZoneId.of("Europe/Berlin")).format(formatter);
+				String formatiert = jetzt.format(formatter);
 				
 				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.INFO, "Zuletzt aktualisiert am " + formatiert))
 						.setActionRow(refreshButton).queue();

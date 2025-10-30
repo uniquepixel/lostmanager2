@@ -19,21 +19,20 @@ public class ActionValue {
 	private Integer value;
 
 	@JsonCreator
-    public ActionValue(@JsonProperty("type") ACTIONVALUETYPE type, 
-                       @JsonProperty("reason") KickpointReason reason,
-                       @JsonProperty("value") Integer value) {
-        if(type != null) {
-            this.saved = kind.type;
-            this.type = type;
-        } else if(reason != null) {
-            this.saved = kind.reason;
-            this.reason = reason;
-        } else if(value != null) {
-            this.saved = kind.value;
-            this.value = value;
-        }
-    }
-	
+	public ActionValue(@JsonProperty("type") ACTIONVALUETYPE type, @JsonProperty("reason") KickpointReason reason,
+			@JsonProperty("value") Integer value) {
+		if (type != null) {
+			this.saved = kind.type;
+			this.type = type;
+		} else if (reason != null) {
+			this.saved = kind.reason;
+			this.reason = reason;
+		} else if (value != null) {
+			this.saved = kind.value;
+			this.value = value;
+		}
+	}
+
 	public ActionValue(ACTIONVALUETYPE type) {
 		this.saved = kind.type;
 		this.type = type;
@@ -50,16 +49,19 @@ public class ActionValue {
 	}
 
 	public kind getSaved() {
-        return saved;
-    }
-    public ACTIONVALUETYPE getType() {
-        return type;
-    }
-    public KickpointReason getReason() {
-        return reason;
-    }
-    public Integer getValue() {
-        return value;
-    }
+		return saved;
+	}
+
+	public ACTIONVALUETYPE getType() {
+		return type;
+	}
+
+	public KickpointReason getReason() {
+		return reason;
+	}
+
+	public Integer getValue() {
+		return value;
+	}
 
 }
