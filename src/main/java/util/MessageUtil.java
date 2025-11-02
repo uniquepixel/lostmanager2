@@ -28,7 +28,7 @@ public class MessageUtil {
 		if (footer.equals("")) {
 			embedreply.setFooter(footer);
 		} else {
-			embedreply.setFooter(additionalfooter + "\n\r" + footer);
+			embedreply.setFooter(additionalfooter + "\n" + footer);
 		}
 		switch (type) {
 		case INFO:

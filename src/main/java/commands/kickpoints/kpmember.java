@@ -1,7 +1,6 @@
 package commands.kickpoints;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -261,9 +260,9 @@ public class kpmember extends ListenerAdapter {
 				long kptotal = p.getTotalKickpoints();
 				desc += "" + kptotal;
 
-				LocalDateTime jetzt = LocalDateTime.now();
+				ZonedDateTime jetzt = ZonedDateTime.now(ZoneId.of("Europe/Berlin"));
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy 'um' HH:mm 'Uhr'");
-				String formatiert = jetzt.atZone(ZoneId.of("Europe/Berlin")).format(formatter);
+				String formatiert = jetzt.format(formatter);
 
 				event.getInteraction().getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc.toString(),
 						MessageUtil.EmbedType.INFO, "Zuletzt aktualisiert am " + formatiert)).queue();

@@ -1,6 +1,5 @@
 package commands.kickpoints;
 
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -172,9 +171,9 @@ public class kpclan extends ListenerAdapter {
 					desc += key + ": " + sorted.get(key) + " " + kp + "\n\n";
 				}
 
-				LocalDateTime jetzt = LocalDateTime.now();
+				ZonedDateTime jetzt = ZonedDateTime.now(ZoneId.of("Europe/Berlin"));
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy 'um' HH:mm 'Uhr'");
-				String formatiert = jetzt.atZone(ZoneId.of("Europe/Berlin")).format(formatter);
+				String formatiert = jetzt.format(formatter);
 
 				event.getInteraction().getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc,
 						MessageUtil.EmbedType.INFO, "Zuletzt aktualisiert am " + formatiert)).queue();

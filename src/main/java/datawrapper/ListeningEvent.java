@@ -11,7 +11,7 @@ import datautil.DBUtil;
 public class ListeningEvent {
 
 	public enum LISTENINGTYPE {
-		CW, RAID, CWLDAY, CS, FIXTIMEINTERVAL
+		CW, RAID, CWLDAY, CS, FIXTIMEINTERVAL, CWLEND
 	}
 
 	public enum ACTIONTYPE {
@@ -156,6 +156,11 @@ public class ListeningEvent {
 			case FIXTIMEINTERVAL:
 				timestamptofire = getDurationUntilEnd();
 				break;
+			case CWLEND:
+				
+				break;
+			default:
+				break;
 			}
 		}
 		return timestamptofire;
@@ -178,14 +183,24 @@ public class ListeningEvent {
 				break;
 			}
 			break;
+			
 		case CW:
 
 			break;
+			
 		case CWLDAY:
 
 			break;
+			
 		case RAID:
 
+			break;
+			
+		case FIXTIMEINTERVAL:
+			
+			break;
+			
+		default:
 			break;
 		}
 	}

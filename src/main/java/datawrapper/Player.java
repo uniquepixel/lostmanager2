@@ -502,10 +502,29 @@ public class Player {
 	public void addAchievementDataToDB(AchievementData.Type type, Timestamp timestamp) {
 		AchievementData data = getAchievementDataAPI(type, timestamp);
 		HashMap<Type, ArrayList<AchievementData>> datalists = getAchievementDatasDB();
+		boolean exists = true;
+		if (datalists == null) {
+			exists = false;
+			datalists = new HashMap<>();
+			for (AchievementData.Type t : AchievementData.Type.values()) {
+				datalists.put(t, new ArrayList<>());
+			}
+		}
 		ArrayList<AchievementData> datalist = datalists.get(type);
 		datalist.add(data);
 		datalists.put(type, datalist);
-		DBUtil.executeUpdate("UPDATE achievements SET data = ? WHERE tag = ?", datalists, tag);
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonlist = null;
+		try {
+			jsonlist = mapper.writeValueAsString(datalists);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		if (exists) {
+			DBUtil.executeUpdate("UPDATE achievements SET data = ? WHERE tag = ?", jsonlist, tag);
+		} else {
+			DBUtil.executeUpdate("INSERT achievements (tag, data) VALUES ", tag, jsonlist);
+		}
 	}
 
 	private AchievementData getAchievementDataAPI(AchievementData.Type type, Timestamp timestamp) {
