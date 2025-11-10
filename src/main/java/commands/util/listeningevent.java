@@ -95,10 +95,34 @@ public class listeningevent extends ListenerAdapter {
 
 		String clantag = clanOption.getAsString();
 		String type = typeOption.getAsString();
-		long duration = durationOption.getAsLong();
+		String durationStr = durationOption.getAsString();
 		String actionTypeStr = actionTypeOption.getAsString();
 		String channelId = channelOption.getAsChannel().getId();
 		String kickpointReasonName = kickpointReasonOption != null ? kickpointReasonOption.getAsString() : null;
+
+		// Parse duration
+		long duration;
+		boolean isStartTrigger = false;
+		try {
+			if (durationStr.equalsIgnoreCase("start") || durationStr.equalsIgnoreCase("cwstart")) {
+				// Special "start" value for CW start detection
+				if (!type.equals("cw")) {
+					event.replyEmbeds(MessageUtil.buildEmbed(title,
+						"'start' kann nur bei Clan War Events verwendet werden!",
+						MessageUtil.EmbedType.ERROR)).queue();
+					return;
+				}
+				duration = -1; // Special marker for start trigger
+				isStartTrigger = true;
+			} else {
+				duration = parseDuration(durationStr);
+			}
+		} catch (IllegalArgumentException e) {
+			event.replyEmbeds(MessageUtil.buildEmbed(title,
+				"Ungültiges Dauer-Format: " + e.getMessage() + "\nBeispiele: 0, 1h, 2d, 24h, start",
+				MessageUtil.EmbedType.ERROR)).queue();
+			return;
+		}
 
 		// Validate action type
 		if (!actionTypeStr.equals("infomessage") && !actionTypeStr.equals("kickpoint") 
@@ -127,7 +151,7 @@ public class listeningevent extends ListenerAdapter {
 					.setMaxLength(2000)
 					.build();
 			
-			Modal modal = Modal.create("listeningevent_custommessage_" + clantag + "_" + type + "_" + duration + "_" + channelId, 
+			Modal modal = Modal.create("listeningevent_custommessage_" + clantag + "_" + type + "_" + duration + "_" + channelId,
 					"Benutzerdefinierte Nachricht eingeben")
 					.addActionRows(ActionRow.of(messageInput))
 					.build();
@@ -339,6 +363,42 @@ public class listeningevent extends ListenerAdapter {
 			event.replyChoices(choices).queue(success -> {
 			}, error -> {
 			});
+		} else if (focused.equals("duration")) {
+			// Provide autocomplete for duration
+			List<Command.Choice> choices = new ArrayList<>();
+			
+			// Get the event type to provide contextual suggestions
+			OptionMapping typeOption = event.getOption("type");
+			String eventType = typeOption != null ? typeOption.getAsString() : "";
+			
+			// Common suggestions
+			choices.add(new Command.Choice("Sofort / Am Ende (0)", "0"));
+			choices.add(new Command.Choice("1 Stunde vorher (1h)", "1h"));
+			choices.add(new Command.Choice("2 Stunden vorher (2h)", "2h"));
+			choices.add(new Command.Choice("3 Stunden vorher (3h)", "3h"));
+			choices.add(new Command.Choice("6 Stunden vorher (6h)", "6h"));
+			choices.add(new Command.Choice("12 Stunden vorher (12h)", "12h"));
+			choices.add(new Command.Choice("24 Stunden vorher (24h/1d)", "24h"));
+			choices.add(new Command.Choice("2 Tage vorher (2d)", "2d"));
+			
+			// Add CW-specific options
+			if (eventType.equals("cw")) {
+				choices.add(new Command.Choice("⭐ Bei CW Start (start)", "start"));
+			}
+			
+			// Filter based on input
+			List<Command.Choice> filtered = new ArrayList<>();
+			for (Command.Choice choice : choices) {
+				if (choice.getName().toLowerCase().contains(input.toLowerCase()) || 
+				    choice.getAsString().toLowerCase().contains(input.toLowerCase())) {
+					filtered.add(choice);
+					if (filtered.size() >= 25) break;
+				}
+			}
+			
+			event.replyChoices(filtered).queue(success -> {
+			}, error -> {
+			});
 		} else if (focused.equals("kickpoint_reason")) {
 			// Get the clan from the command to filter kickpoint reasons
 			OptionMapping clanOption = event.getOption("clan");
@@ -351,6 +411,57 @@ public class listeningevent extends ListenerAdapter {
 			} else {
 				event.replyChoices(new ArrayList<>()).queue();
 			}
+		}
+	}
+	
+	/**
+	 * Parses a duration string into milliseconds.
+	 * Supports: 0, plain numbers (ms), h (hours), d (days), m (minutes), s (seconds)
+	 * Examples: 0, 1h, 24h, 2d, 30m, 3600000
+	 */
+	private long parseDuration(String durationStr) throws IllegalArgumentException {
+		durationStr = durationStr.trim().toLowerCase();
+		
+		// Handle 0 or empty
+		if (durationStr.equals("0") || durationStr.isEmpty()) {
+			return 0;
+		}
+		
+		// Try to parse as plain number (milliseconds)
+		try {
+			return Long.parseLong(durationStr);
+		} catch (NumberFormatException e) {
+			// Not a plain number, try parsing with units
+		}
+		
+		// Parse with units
+		long multiplier = 1;
+		String numPart = durationStr;
+		
+		if (durationStr.endsWith("ms")) {
+			multiplier = 1;
+			numPart = durationStr.substring(0, durationStr.length() - 2);
+		} else if (durationStr.endsWith("s")) {
+			multiplier = 1000;
+			numPart = durationStr.substring(0, durationStr.length() - 1);
+		} else if (durationStr.endsWith("m")) {
+			multiplier = 60 * 1000;
+			numPart = durationStr.substring(0, durationStr.length() - 1);
+		} else if (durationStr.endsWith("h")) {
+			multiplier = 60 * 60 * 1000;
+			numPart = durationStr.substring(0, durationStr.length() - 1);
+		} else if (durationStr.endsWith("d")) {
+			multiplier = 24 * 60 * 60 * 1000;
+			numPart = durationStr.substring(0, durationStr.length() - 1);
+		} else {
+			throw new IllegalArgumentException("Unbekannte Einheit. Verwende: ms, s, m, h, d");
+		}
+		
+		try {
+			long num = Long.parseLong(numPart.trim());
+			return num * multiplier;
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException("Ungültige Zahl: " + numPart);
 		}
 	}
 }

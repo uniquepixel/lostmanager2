@@ -285,8 +285,8 @@ public class Bot extends ListenerAdapter {
 																	new Command.Choice("Clan War", "cw"),
 																	new Command.Choice("CWL Tag", "cwlday"),
 																	new Command.Choice("Raid", "raid")))
-													.addOptions(new OptionData(OptionType.INTEGER, "duration",
-															"Zeit bis Event-Ende in Millisekunden (0 = am Ende)", true))
+													.addOptions(new OptionData(OptionType.STRING, "duration",
+															"Dauer/Zeitpunkt (z.B. 1h, 24h, start, 0)", true).setAutoComplete(true))
 													.addOptions(new OptionData(OptionType.STRING, "actiontype",
 															"Aktionstyp", true).setAutoComplete(true))
 													.addOptions(new OptionData(OptionType.CHANNEL, "channel",

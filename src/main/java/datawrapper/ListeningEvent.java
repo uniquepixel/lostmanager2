@@ -249,9 +249,11 @@ public class ListeningEvent {
 		org.json.JSONObject cwJson = clan.getCWJson();
 		String state = cwJson.getString("state");
 		
-		// Check if it's a "filler" action at start
-		boolean isFillerAction = getActionType() == ACTIONTYPE.FILLER || getActionType() == ACTIONTYPE.CWDONATOR;
-		if (!isFillerAction) {
+		// Check if it's a "filler" or "cwdonator" action at start
+		boolean isFillerAction = getActionType() == ACTIONTYPE.FILLER;
+		boolean isCWDonatorAction = getActionType() == ACTIONTYPE.CWDONATOR;
+		
+		if (!isFillerAction && !isCWDonatorAction) {
 			// Also check action values for backward compatibility
 			for (ActionValue av : getActionValues()) {
 				if (av.getSaved() == ActionValue.kind.type && 
@@ -262,11 +264,98 @@ public class ListeningEvent {
 			}
 		}
 		
-		if (isFillerAction && state.equals("preparation")) {
-			handleCWFiller(clan, cwJson);
+		if ((isFillerAction || isCWDonatorAction) && state.equals("preparation")) {
+			if (isCWDonatorAction) {
+				handleCWDonator(clan, cwJson);
+			} else {
+				handleCWFiller(clan, cwJson);
+			}
 		} else if (state.equals("inWar") || state.equals("warEnded")) {
 			handleCWMissedAttacks(clan, cwJson);
 		}
+	}
+	
+	private void handleCWDonator(Clan clan, org.json.JSONObject cwJson) {
+		// Execute cwdonator command logic automatically
+		ArrayList<Player> warMemberList = clan.getWarMemberList();
+		
+		if (warMemberList == null) {
+			return; // Can't execute if no war members
+		}
+		
+		int cwsize = warMemberList.size();
+		
+		// Use the same mapping logic as cwdonator command
+		HashMap<Integer, ArrayList<util.Tuple<Integer, Integer>>> mappings = getCWDonatorMappings();
+		ArrayList<util.Tuple<Integer, Integer>> currentmap = mappings.get(cwsize);
+		
+		if (currentmap == null) {
+			sendMessageToChannel("CW-Donator kann nicht ausgeführt werden: Keine Zuordnung für Kriegsgröße " + cwsize);
+			return;
+		}
+		
+		StringBuilder message = new StringBuilder();
+		message.append("## CW-Spender (automatisch)\n\n");
+		message.append("Folgende Mitglieder wurden zufällig als Spender ausgewählt:\n\n");
+		
+		for (util.Tuple<Integer, Integer> map : currentmap) {
+			java.util.Collections.shuffle(warMemberList);
+			Player chosen = warMemberList.get(0);
+			int mapposition = chosen.getWarMapPosition();
+			int i = 0;
+			while (i < warMemberList.size()) {
+				chosen = warMemberList.get(i);
+				mapposition = chosen.getWarMapPosition();
+				
+				// Skip if position is in the donation range
+				if (mapposition >= map.getFirst() && mapposition <= map.getSecond()) {
+					i++;
+					continue;
+				}
+				// Skip if opted out
+				if (!chosen.getWarPreference()) {
+					i++;
+					continue;
+				}
+				break;
+			}
+			
+			warMemberList.remove(chosen);
+			message.append(map.getFirst()).append("-").append(map.getSecond()).append(": ")
+					.append(chosen.getNameAPI());
+			if (chosen.getUser() != null) {
+				message.append(" (<@").append(chosen.getUser().getUserID()).append(">)");
+			} else {
+				message.append(" (nicht verlinkt)");
+			}
+			message.append(" (Nr. ").append(mapposition).append(")\n");
+		}
+		
+		sendMessageToChannel(message.toString());
+	}
+	
+	private HashMap<Integer, ArrayList<util.Tuple<Integer, Integer>>> getCWDonatorMappings() {
+		// Same mapping logic as cwdonator command
+		HashMap<Integer, ArrayList<util.Tuple<Integer, Integer>>> map = new HashMap<>();
+		
+		map.put(50, new ArrayList<>(java.util.Arrays.asList(
+			new util.Tuple<>(1, 5), new util.Tuple<>(6, 10), new util.Tuple<>(11, 15),
+			new util.Tuple<>(16, 20), new util.Tuple<>(21, 25))));
+		map.put(40, new ArrayList<>(java.util.Arrays.asList(
+			new util.Tuple<>(1, 5), new util.Tuple<>(6, 10), new util.Tuple<>(11, 15),
+			new util.Tuple<>(16, 20))));
+		map.put(30, new ArrayList<>(java.util.Arrays.asList(
+			new util.Tuple<>(1, 5), new util.Tuple<>(6, 10), new util.Tuple<>(11, 15))));
+		map.put(25, new ArrayList<>(java.util.Arrays.asList(
+			new util.Tuple<>(1, 5), new util.Tuple<>(6, 10))));
+		map.put(20, new ArrayList<>(java.util.Arrays.asList(
+			new util.Tuple<>(1, 5), new util.Tuple<>(6, 10))));
+		map.put(15, new ArrayList<>(java.util.Arrays.asList(
+			new util.Tuple<>(1, 5))));
+		map.put(10, new ArrayList<>(java.util.Arrays.asList(
+			new util.Tuple<>(1, 3))));
+		
+		return map;
 	}
 	
 	private void handleCWFiller(Clan clan, org.json.JSONObject cwJson) {
