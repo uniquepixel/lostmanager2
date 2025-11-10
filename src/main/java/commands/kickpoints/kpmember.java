@@ -130,13 +130,12 @@ public class kpmember extends ListenerAdapter {
 				Button refreshButton = Button.secondary("kpmember_" + playertag, "\u200B")
 						.withEmoji(Emoji.fromUnicode("🔁"));
 
-
 				ZonedDateTime jetzt = ZonedDateTime.now(ZoneId.of("Europe/Berlin"));
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy 'um' HH:mm 'Uhr'");
 				String formatiert = jetzt.format(formatter);
-				
-				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.INFO, "Zuletzt aktualisiert am " + formatiert))
-						.setActionRow(refreshButton).queue();
+
+				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.INFO,
+						"Zuletzt aktualisiert am " + formatiert)).setActionRow(refreshButton).queue();
 
 			}
 		}).start();
@@ -154,8 +153,8 @@ public class kpmember extends ListenerAdapter {
 		if (focused.equals("player")) {
 			List<Command.Choice> choices = DBManager.getPlayerlistAutocomplete(input, DBManager.InClanType.INCLAN);
 
-			event.replyChoices(choices).queue(success -> {
-			}, failure -> {
+			event.replyChoices(choices).queue(_ -> {
+			}, _ -> {
 			});
 		}
 	}

@@ -109,16 +109,14 @@ public class memberstatus extends ListenerAdapter {
 		desc += "**Im Clan, falsche Rolle:**\n";
 		desc += wrongrolestr == "" ? "---\n\n" : MessageUtil.unformat(wrongrolestr) + "\n";
 
-		Button refreshButton = Button.secondary("memberstatus_" + clantag, "\u200B")
-				.withEmoji(Emoji.fromUnicode("🔁"));
-
+		Button refreshButton = Button.secondary("memberstatus_" + clantag, "\u200B").withEmoji(Emoji.fromUnicode("🔁"));
 
 		ZonedDateTime jetzt = ZonedDateTime.now(ZoneId.of("Europe/Berlin"));
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy 'um' HH:mm 'Uhr'");
 		String formatiert = jetzt.format(formatter);
-		
-		event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.INFO, "Zuletzt aktualisiert am " + formatiert))
-				.setActionRow(refreshButton).queue();
+
+		event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.INFO,
+				"Zuletzt aktualisiert am " + formatiert)).setActionRow(refreshButton).queue();
 
 	}
 
@@ -133,8 +131,8 @@ public class memberstatus extends ListenerAdapter {
 		if (focused.equals("clan")) {
 			List<Command.Choice> choices = DBManager.getClansAutocomplete(input);
 
-			event.replyChoices(choices).queue(success -> {
-			}, failure -> {
+			event.replyChoices(choices).queue(_ -> {
+			}, _ -> {
 			});
 		}
 	}
@@ -247,13 +245,12 @@ public class memberstatus extends ListenerAdapter {
 				Button refreshButton = Button.secondary("memberstatus_" + clantag, "\u200B")
 						.withEmoji(Emoji.fromUnicode("🔁"));
 
-
 				ZonedDateTime jetzt = ZonedDateTime.now(ZoneId.of("Europe/Berlin"));
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy 'um' HH:mm 'Uhr'");
 				String formatiert = jetzt.format(formatter);
-				
-				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.INFO, "Zuletzt aktualisiert am " + formatiert))
-						.setActionRow(refreshButton).queue();
+
+				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.INFO,
+						"Zuletzt aktualisiert am " + formatiert)).setActionRow(refreshButton).queue();
 
 			}
 		}).start();

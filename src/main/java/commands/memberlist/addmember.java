@@ -153,15 +153,15 @@ public class addmember extends ListenerAdapter {
 		if (focused.equals("clan")) {
 			List<Command.Choice> choices = DBManager.getClansAutocomplete(input);
 
-			event.replyChoices(choices).queue(success -> {
-			}, failure -> {
+			event.replyChoices(choices).queue(_ -> {
+			}, _ -> {
 			});
 		}
 		if (focused.equals("player")) {
 			List<Command.Choice> choices = DBManager.getPlayerlistAutocomplete(input, DBManager.InClanType.NOTINCLAN);
 
-			event.replyChoices(choices).queue(success -> {
-			}, failure -> {
+			event.replyChoices(choices).queue(_ -> {
+			}, _ -> {
 			});
 		}
 		if (focused.equals("role")) {
@@ -170,8 +170,8 @@ public class addmember extends ListenerAdapter {
 			choices.add(new Command.Choice("Vize-Anführer", "coLeader"));
 			choices.add(new Command.Choice("Ältester", "admin"));
 			choices.add(new Command.Choice("Mitglied", "member"));
-			event.replyChoices(choices).queue(success -> {
-			}, failure -> {
+			event.replyChoices(choices).queue(_ -> {
+			}, _ -> {
 			});
 		}
 	}

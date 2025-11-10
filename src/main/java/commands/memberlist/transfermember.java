@@ -220,8 +220,8 @@ public class transfermember extends ListenerAdapter {
 		if (focused.equals("player")) {
 			List<Command.Choice> choices = DBManager.getPlayerlistAutocomplete(input, DBManager.InClanType.INCLAN);
 
-			event.replyChoices(choices).queue(success -> {
-			}, failure -> {
+			event.replyChoices(choices).queue(_ -> {
+			}, _ -> {
 			});
 		}
 		if (focused.equals("clan")) {
@@ -241,8 +241,8 @@ public class transfermember extends ListenerAdapter {
 				choices.remove(todelete);
 			}
 
-			event.replyChoices(choices).queue(success -> {
-			}, failure -> {
+			event.replyChoices(choices).queue(_ -> {
+			}, _ -> {
 			});
 		}
 	}

@@ -60,9 +60,10 @@ public class editmember extends ListenerAdapter {
 				|| userexecuted.getClanRoles().get(clantag) == Player.RoleType.LEADER
 				|| userexecuted.getClanRoles().get(clantag) == Player.RoleType.COLEADER)) {
 			event.getHook()
-			.editOriginalEmbeds(MessageUtil.buildEmbed(title,
-					"Du musst mindestens Vize-Anführer des Clans sein, um diesen Befehl ausführen zu können.",
-					MessageUtil.EmbedType.ERROR)).queue();
+					.editOriginalEmbeds(MessageUtil.buildEmbed(title,
+							"Du musst mindestens Vize-Anführer des Clans sein, um diesen Befehl ausführen zu können.",
+							MessageUtil.EmbedType.ERROR))
+					.queue();
 			return;
 		}
 
@@ -116,7 +117,9 @@ public class editmember extends ListenerAdapter {
 		if (focused.equals("player")) {
 			List<Command.Choice> choices = DBManager.getPlayerlistAutocomplete(input, DBManager.InClanType.INCLAN);
 
-			event.replyChoices(choices).queue(success ->{}, failure -> {});
+			event.replyChoices(choices).queue(_ -> {
+			}, _ -> {
+			});
 		}
 		if (focused.equals("role")) {
 			List<Command.Choice> choices = new ArrayList<>();
@@ -124,7 +127,9 @@ public class editmember extends ListenerAdapter {
 			choices.add(new Command.Choice("Vize-Anführer", "coLeader"));
 			choices.add(new Command.Choice("Ältester", "admin"));
 			choices.add(new Command.Choice("Mitglied", "member"));
-			event.replyChoices(choices).queue(success ->{}, failure -> {});
+			event.replyChoices(choices).queue(_ -> {
+			}, _ -> {
+			});
 		}
 	}
 

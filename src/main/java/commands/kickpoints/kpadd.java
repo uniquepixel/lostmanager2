@@ -222,8 +222,8 @@ public class kpadd extends ListenerAdapter {
 		if (focused.equals("player")) {
 			List<Command.Choice> choices = DBManager.getPlayerlistAutocomplete(input, DBManager.InClanType.INCLAN);
 
-			event.replyChoices(choices).queue(success -> {
-			}, failure -> {
+			event.replyChoices(choices).queue(_ -> {
+			}, _ -> {
 			});
 		}
 		if (focused.equals("reason")) {
@@ -236,8 +236,8 @@ public class kpadd extends ListenerAdapter {
 			String clantag = c.getTag();
 			List<Command.Choice> choices = DBManager.getKPReasonsAutocomplete(input, clantag);
 
-			event.replyChoices(choices).queue(success -> {
-			}, failure -> {
+			event.replyChoices(choices).queue(_ -> {
+			}, _ -> {
 			});
 		}
 	}

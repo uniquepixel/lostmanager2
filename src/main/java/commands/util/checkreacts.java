@@ -92,7 +92,7 @@ public class checkreacts extends ListenerAdapter {
 					}
 				});
 			});
-		}, failure -> {
+		}, _ -> {
 			event.getHook()
 					.editOriginalEmbeds(MessageUtil.buildEmbed(title,
 							"Nachricht mit dieser ID konnte nicht gefunden werden.", MessageUtil.EmbedType.ERROR))

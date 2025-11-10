@@ -95,8 +95,8 @@ public class setnick extends ListenerAdapter {
 					}
 				}
 			}
-			event.replyChoices(choices).queue(success -> {
-			}, failure -> {
+			event.replyChoices(choices).queue(_ -> {
+			}, _ -> {
 			});
 		}
 	}

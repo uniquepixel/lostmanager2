@@ -171,8 +171,8 @@ public class raidping extends ListenerAdapter {
 		if (focused.equals("clan")) {
 			List<Command.Choice> choices = DBManager.getClansAutocomplete(input);
 
-			event.replyChoices(choices).queue(success -> {
-			}, failure -> {
+			event.replyChoices(choices).queue(_ -> {
+			}, _ -> {
 			});
 		}
 	}
