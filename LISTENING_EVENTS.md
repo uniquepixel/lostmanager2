@@ -6,35 +6,37 @@ The Listening Events feature automates tracking and notification for various Cla
 ## Command Usage
 
 ### `/listeningevent add`
-Creates a new listening event for a clan.
+Creates a new listening event for a clan with inline parameters (no modal required).
 
 **Parameters:**
 - `clan` (required): The clan to monitor (autocomplete enabled)
-- `type` (required): Type of event to track
-  - `cs` - Clan Games
-  - `cw` - Clan War
-  - `cwlday` - CWL Day
-  - `raid` - Raid Weekend
-
-**Modal Fields:**
-- **Duration** (required): Time in milliseconds before event end to trigger
+- `type` (required): Type of event to track (choice selection)
+  - `Clan Games` - Clan Games event
+  - `Clan War` - Clan War event
+  - `CWL Tag` - CWL Day event
+  - `Raid` - Raid Weekend event
+- `duration` (required): Time in milliseconds before event end to trigger
   - Example: `3600000` for 1 hour before end
   - Example: `0` to trigger at event end
-- **Action Type** (required): What action to take when event fires
-  - `infomessage` - Send informational message
-  - `custommessage` - Send custom message
-  - `kickpoint` - Automatically add kickpoints
-  - `cwdonator` - Check war preferences (filler action)
-- **Channel ID** (required): Discord channel ID where messages are sent
-- **Action Values** (optional): JSON configuration for actions
-  - Example: `[{"type":"FILLER"}]` for war preference check
-  - Example: `[{"reason":{"name":"Missed CW Attack","clan_tag":"#ABCD1234"}}]` for kickpoint
+- `actiontype` (required): What action to take when event fires (choice selection)
+  - `Info-Nachricht` - Send informational message only
+  - `Kickpoint` - Automatically add kickpoints to violators
+  - `CW Donator (Filler)` - Check war preferences (filler action)
+- `channel` (required): Discord channel where messages are sent (channel picker)
+- `kickpoint_reason` (optional): Kickpoint reason to use (autocomplete from clan's configured reasons)
+  - **Required** when `actiontype` is `Kickpoint`
+  - Autocomplete shows reasons configured for the selected clan
+
+**Example Usage:**
+```
+/listeningevent add clan:LOST_F2P type:Clan_War duration:0 actiontype:Kickpoint channel:#war-logs kickpoint_reason:CW_Attack_vergessen
+```
 
 ### `/listeningevent list`
 Lists all configured listening events.
 
 **Parameters:**
-- `clan` (optional): Filter events by clan
+- `clan` (optional): Filter events by clan (autocomplete enabled)
 
 **Output:**
 - Event ID
@@ -66,10 +68,7 @@ Tracks player performance during Clan Games by comparing achievement points betw
 
 **Example Setup:**
 ```
-Duration: 0 (fires at end)
-Action Type: kickpoint
-Channel ID: 1234567890
-Action Values: [{"reason":{"name":"Clan Games < 4000","clan_tag":"#ABCD1234"}}]
+/listeningevent add clan:LOST_F2P type:Clan_Games duration:0 actiontype:Kickpoint channel:#clan-logs kickpoint_reason:Clangames_unter_4000
 ```
 
 ### Clan War (CW)
@@ -84,10 +83,7 @@ Tracks clan war participation and attacks.
    
    **Example Setup:**
    ```
-   Duration: 86400000 (24 hours before war end = during prep)
-   Action Type: cwdonator
-   Channel ID: 1234567890
-   Action Values: [{"type":"FILLER"}]
+   /listeningevent add clan:LOST_F2P type:Clan_War duration:86400000 actiontype:CW_Donator_(Filler) channel:#war-prep
    ```
 
 2. **Missed Attacks (End of War)**
@@ -97,10 +93,7 @@ Tracks clan war participation and attacks.
    
    **Example Setup:**
    ```
-   Duration: 0 (at war end)
-   Action Type: kickpoint
-   Channel ID: 1234567890
-   Action Values: []
+   /listeningevent add clan:LOST_F2P type:Clan_War duration:0 actiontype:Kickpoint channel:#war-logs kickpoint_reason:CW_Angriff_verpasst
    ```
 
 ### CWL Day (CWLDAY)
@@ -113,10 +106,7 @@ Tracks missed attacks for each day of Clan War League.
 
 **Example Setup:**
 ```
-Duration: 0 (at day end)
-Action Type: kickpoint
-Channel ID: 1234567890
-Action Values: [{"reason":{"name":"CWL No Attack","clan_tag":"#ABCD1234"}}]
+/listeningevent add clan:LOST_F2P type:CWL_Tag duration:0 actiontype:Kickpoint channel:#cwl-logs kickpoint_reason:CWL_Angriff_verpasst
 ```
 
 ### Raid Weekend (RAID)
@@ -130,10 +120,7 @@ Tracks raid participation and attacks.
 
 **Example Setup:**
 ```
-Duration: 0 (at raid end)
-Action Type: kickpoint  
-Channel ID: 1234567890
-Action Values: []
+/listeningevent add clan:LOST_F2P type:Raid duration:0 actiontype:Kickpoint channel:#raid-logs kickpoint_reason:Raid_nicht_gemacht
 ```
 
 ## Action Types Explained
@@ -145,17 +132,24 @@ Sends an informational message to the configured channel without taking any acti
 - Simple notifications
 - Tracking without penalties
 
-### custommessage
-Placeholder for custom message functionality (not fully implemented).
+**Usage:**
+```
+/listeningevent add ... actiontype:Info-Nachricht channel:#notifications
+```
 
 ### kickpoint
 Automatically adds kickpoints to players who violate rules.
 
 **Configuration:**
-- Can specify custom kickpoint reason in action values
-- Amount comes from kickpoint reason if configured
-- Default amount is 1 if no reason specified
+- Must specify `kickpoint_reason` parameter
+- Reason must be configured via `/kpaddreason` first
+- Amount comes from the kickpoint reason configuration
 - Kickpoints expire based on clan settings
+
+**Usage:**
+```
+/listeningevent add ... actiontype:Kickpoint channel:#penalties kickpoint_reason:CW_Missed_Attack
+```
 
 ### cwdonator (filler)
 Special action type for Clan War start events.
@@ -166,9 +160,21 @@ Special action type for Clan War start events.
 - Does NOT add kickpoints
 - Useful for roster management
 
+**Usage:**
+```
+/listeningevent add ... actiontype:CW_Donator_(Filler) channel:#war-prep
+```
+
 ## Action Values JSON Format
 
-Action values allow fine-tuning event behavior:
+**Note:** With the updated command interface, you no longer need to manually configure action values JSON. The command automatically builds the appropriate action values based on your parameter selections:
+
+- When `actiontype` is `CW Donator (Filler)`: Automatically adds FILLER type
+- When `actiontype` is `Kickpoint`: Uses the selected `kickpoint_reason` to configure the kickpoint
+
+### Legacy Information (for reference)
+
+If you need to manually configure events in the database, action values use this JSON format:
 
 ### Type-based Actions
 ```json
@@ -221,22 +227,27 @@ CREATE TABLE listening_events (
 
 ## Tips and Best Practices
 
-1. **Test with INFOMESSAGE first**: Before adding kickpoints, test with `infomessage` to verify behavior
+1. **Use descriptive kickpoint reasons**: Create clear reason names via `/kpaddreason` before using them in events
 
-2. **Use appropriate durations**:
+2. **Test with infomessage first**: Before adding kickpoints, test with `actiontype:Info-Nachricht` to verify behavior
+
+3. **Use appropriate durations**:
    - Clan Games: `0` (fires at end)
    - CW Filler: `86400000` (24 hours before end = during prep)
    - CW Missed Attacks: `0` (at war end)
    - CWL: `0` (at each day end)
    - Raid: `0` (at raid end)
 
-3. **Channel permissions**: Ensure bot has send message permissions in target channel
+4. **Channel permissions**: Ensure bot has send message permissions in target channel
 
-4. **Kickpoint reasons**: Configure reasons via `/kpaddreason` before using in events
+5. **Kickpoint reasons**: Configure reasons via `/kpaddreason` before using in events
+   - Example: `/kpaddreason clan:LOST_F2P reason:CW_Angriff_verpasst amount:2`
 
-5. **Monitor and adjust**: Use `/listeningevent list` to review active events
+6. **Monitor and adjust**: Use `/listeningevent list` to review active events
 
-6. **Cleanup**: Remove old/test events with `/listeningevent remove`
+7. **Cleanup**: Remove old/test events with `/listeningevent remove`
+
+8. **Autocomplete helps**: Use autocomplete for clans and kickpoint reasons to avoid typos
 
 ## Troubleshooting
 
