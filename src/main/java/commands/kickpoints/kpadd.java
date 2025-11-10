@@ -102,7 +102,7 @@ public class kpadd extends ListenerAdapter {
 					.setMinLength(1).build();
 		}
 		TextInput dateti = TextInput.create("date", "Datum", TextInputStyle.SHORT).setPlaceholder("z.B. 31.01.2025")
-				.setMinLength(1).build();
+				.setValue(LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))).setMinLength(1).build();
 
 		TextInput playertagti = TextInput.create("tag", "Spieler-Tag", TextInputStyle.SHORT)
 				.setPlaceholder("z.B. #Y0RYLP0Q").setValue(playertag).setMinLength(1).build();
@@ -222,8 +222,8 @@ public class kpadd extends ListenerAdapter {
 		if (focused.equals("player")) {
 			List<Command.Choice> choices = DBManager.getPlayerlistAutocomplete(input, DBManager.InClanType.INCLAN);
 
-			event.replyChoices(choices).queue(success -> {
-			}, failure -> {
+			event.replyChoices(choices).queue(_ -> {
+			}, _ -> {
 			});
 		}
 		if (focused.equals("reason")) {
@@ -236,8 +236,8 @@ public class kpadd extends ListenerAdapter {
 			String clantag = c.getTag();
 			List<Command.Choice> choices = DBManager.getKPReasonsAutocomplete(input, clantag);
 
-			event.replyChoices(choices).queue(success -> {
-			}, failure -> {
+			event.replyChoices(choices).queue(_ -> {
+			}, _ -> {
 			});
 		}
 	}

@@ -3,6 +3,7 @@ package commands.admin;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import datawrapper.User;
 import net.dv8tion.jda.api.entities.Message;
@@ -42,6 +43,14 @@ public class deletemessages extends ListenerAdapter {
 
 		MessageChannelUnion channel = event.getChannel();
 
+		if (channel == null) {
+			event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, "Der Channel konnte nicht geladen werden.",
+					MessageUtil.EmbedType.ERROR)).queue(message -> {
+						message.delete().queueAfter(10, TimeUnit.SECONDS);
+					});
+			return;
+		}
+
 		channel.getIterableHistory().takeAsync(amount).thenAccept(messages -> {
 			List<Message> recent = new ArrayList<>();
 			List<Message> old = new ArrayList<>();
@@ -72,14 +81,7 @@ public class deletemessages extends ListenerAdapter {
 						amount + " Nachrichten wurden gelöscht. Diese Nachricht wird auch wieder gelöscht.",
 						MessageUtil.EmbedType.SUCCESS))
 				.queue(message -> {
-					new Thread(() -> {
-						try {
-							Thread.sleep(10000);
-							message.delete().queue();
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}).start();
+					message.delete().queueAfter(10, TimeUnit.SECONDS);
 				});
 
 	}

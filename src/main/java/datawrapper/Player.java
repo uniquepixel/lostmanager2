@@ -4,19 +4,28 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import datautil.APIUtil;
 import datautil.Connection;
 import datautil.DBUtil;
+import datawrapper.AchievementData.Type;
 import lostmanager.Bot;
 
 public class Player {
@@ -39,7 +48,10 @@ public class Player {
 	private Clan clanapi;
 	private ArrayList<Kickpoint> kickpoints;
 	private Long kickpointstotal;
-	private RoleType role;
+	private RoleType roledb;
+	private RoleType roleapi;
+	private AchievementData achievementDataAPI;
+	private HashMap<AchievementData.Type, ArrayList<AchievementData>> achievementDatasInDB;
 
 	public Player(String tag) {
 		this.tag = tag;
@@ -61,7 +73,10 @@ public class Player {
 		clanapi = null;
 		kickpoints = null;
 		kickpointstotal = null;
-		role = null;
+		roledb = null;
+		roleapi = null;
+		achievementDataAPI = null;
+		achievementDatasInDB = null;
 		return this;
 	}
 
@@ -134,8 +149,8 @@ public class Player {
 		return this;
 	}
 
-	public Player setRole(RoleType role) {
-		this.role = role;
+	public Player setRoleDB(RoleType role) {
+		this.roledb = role;
 		return this;
 	}
 
@@ -222,7 +237,7 @@ public class Player {
 		try {
 			String encodedTag = URLEncoder.encode(tag, "UTF-8");
 			// Clash of Clans API-Endpunkt
-			URL url = new URL("https://api.clashofclans.com/v1/players/" + encodedTag);
+			URL url = new URI("https://api.clashofclans.com/v1/players/" + encodedTag).toURL();
 
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("GET");
@@ -254,7 +269,7 @@ public class Player {
 	public boolean verifyCocTokenAPI(String playerApiToken) {
 		try {
 			String encodedTag = URLEncoder.encode(tag, "UTF-8");
-			URL url = new URL("https://api.clashofclans.com/v1/players/" + encodedTag + "/verifytoken");
+			URL url = new URI("https://api.clashofclans.com/v1/players/" + encodedTag + "/verifytoken").toURL();
 
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("POST");
@@ -412,8 +427,8 @@ public class Player {
 		return kickpointstotal;
 	}
 
-	public RoleType getRole() {
-		if (role == null) {
+	public RoleType getRoleDB() {
+		if (roledb == null) {
 			if (new Player(tag).getClanDB() == null) {
 				return RoleType.NOTINCLAN;
 			}
@@ -423,7 +438,7 @@ public class Player {
 				try (ResultSet rs = pstmt.executeQuery()) {
 					if (rs.next()) {
 						String rolestring = rs.getString("clan_role");
-						role = rolestring.equals("leader") ? RoleType.LEADER
+						roledb = rolestring.equals("leader") ? RoleType.LEADER
 								: rolestring.equals("coLeader") ? RoleType.COLEADER
 										: rolestring.equals("admin") ? RoleType.ELDER
 												: rolestring.equals("member") ? RoleType.MEMBER : null;
@@ -433,6 +448,120 @@ public class Player {
 				e.printStackTrace();
 			}
 		}
-		return role;
+		return roledb;
 	}
+
+	public RoleType getRoleAPI() {
+		if (roleapi == null) {
+			JSONObject jsonObject = new JSONObject(APIUtil.getPlayerJson(tag));
+			String rolestring = jsonObject.getString("role");
+			roleapi = rolestring.equalsIgnoreCase("leader") ? RoleType.LEADER
+					: rolestring.equalsIgnoreCase("coleader") ? RoleType.COLEADER
+							: rolestring.equalsIgnoreCase("admin") ? RoleType.ELDER
+									: rolestring.equalsIgnoreCase("member") ? RoleType.MEMBER
+											: rolestring.equalsIgnoreCase("not_member") ? RoleType.NOTINCLAN : null;
+		}
+		return roleapi;
+	}
+
+	public HashMap<Type, ArrayList<AchievementData>> getAchievementDatasDB() {
+		if (achievementDatasInDB == null) {
+			String jsonindb = DBUtil.getValueFromSQL("SELECT data FROM achievements WHERE tag = ?", String.class, tag);
+			if (jsonindb != null) {
+				ObjectMapper mapper = new ObjectMapper();
+				try {
+					achievementDatasInDB = mapper.readValue(jsonindb,
+							new TypeReference<HashMap<Type, ArrayList<AchievementData>>>() {
+							});
+				} catch (JsonProcessingException e) {
+					e.printStackTrace();
+				}
+			} else {
+				achievementDatasInDB = new HashMap<>();
+				for (AchievementData.Type type : AchievementData.Type.values()) {
+					achievementDatasInDB.put(type, new ArrayList<>());
+				}
+				DBUtil.executeUpdate("INSERT INTO achievements (tag, data) VALUES (?, ?)", tag, achievementDatasInDB);
+				return null;
+			}
+		}
+		return achievementDatasInDB;
+	}
+
+	// Helpers
+
+	public AchievementData getDataFromDateIfAvailable(AchievementData.Type type, Timestamp timestamp) {
+		HashMap<Type, ArrayList<AchievementData>> alldata = getAchievementDatasDB();
+		ArrayList<AchievementData> data = alldata.get(type);
+		for (AchievementData x : data) {
+			if (x.getTimeExtracted().getTime() == timestamp.getTime()) {
+				return x;
+			}
+		}
+		return null;
+	}
+
+	public void addAchievementDataToDB(AchievementData.Type type, Timestamp timestamp) {
+		AchievementData data = getAchievementDataAPI(type, timestamp);
+		HashMap<Type, ArrayList<AchievementData>> datalists = getAchievementDatasDB();
+		boolean exists = true;
+		if (datalists == null) {
+			exists = false;
+			datalists = new HashMap<>();
+			for (AchievementData.Type t : AchievementData.Type.values()) {
+				datalists.put(t, new ArrayList<>());
+			}
+		}
+		ArrayList<AchievementData> datalist = datalists.get(type);
+		datalist.add(data);
+		datalists.put(type, datalist);
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonlist = null;
+		try {
+			jsonlist = mapper.writeValueAsString(datalists);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		if (exists) {
+			DBUtil.executeUpdate("UPDATE achievements SET data = ? WHERE tag = ?", jsonlist, tag);
+		} else {
+			DBUtil.executeUpdate("INSERT achievements (tag, data) VALUES ", tag, jsonlist);
+		}
+	}
+
+	private AchievementData getAchievementDataAPI(AchievementData.Type type, Timestamp timestamp) {
+		if (achievementDataAPI == null) {
+			Integer value = null;
+
+			switch (type) {
+			case WINS:
+				value = Integer.valueOf(getAchievementAPI("Conqueror"));
+				achievementDataAPI = new AchievementData(timestamp, value, Type.WINS);
+				break;
+			case CLANGAMES_POINTS:
+				value = Integer.valueOf(getAchievementAPI("Games Champion"));
+				achievementDataAPI = new AchievementData(timestamp, value, Type.WINS);
+				break;
+			default:
+				return null;
+			}
+		}
+		return achievementDataAPI;
+	}
+
+	private Integer getAchievementAPI(String achievementName) {
+		Integer value = null;
+		JSONObject jsonObject = new JSONObject(APIUtil.getPlayerJson(tag));
+		JSONArray achievementarray = jsonObject.getJSONArray("achievements");
+		for (int i = 0; i < achievementarray.length(); i++) {
+			JSONObject achievement = achievementarray.getJSONObject(i);
+			String achievementname = achievement.getString("name");
+			if (achievementname.equals(achievementname)) {
+				value = achievement.getInt("value");
+				break;
+			}
+		}
+		return value;
+	}
+
 }

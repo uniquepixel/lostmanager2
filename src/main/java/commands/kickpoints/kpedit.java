@@ -1,6 +1,7 @@
 package commands.kickpoints;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -44,7 +45,7 @@ public class kpedit extends ListenerAdapter {
 		Kickpoint kp = new Kickpoint(id);
 
 		String clantag = kp.getPlayer().getClanDB().getTag();
-		
+
 		User userexecuted = new User(event.getUser().getId());
 		if (!(userexecuted.getClanRoles().get(clantag) == Player.RoleType.ADMIN
 				|| userexecuted.getClanRoles().get(clantag) == Player.RoleType.LEADER
@@ -54,7 +55,7 @@ public class kpedit extends ListenerAdapter {
 					MessageUtil.EmbedType.ERROR)).queue();
 			return;
 		}
-		
+
 		String desc = "";
 
 		if (kp.getDescription() != null) {
@@ -115,9 +116,11 @@ public class kpedit extends ListenerAdapter {
 			ZoneId zone = ZoneId.of("Europe/Berlin");
 			ZonedDateTime zonedDateTime = dateTime.atZone(zone);
 			Timestamp timestampcreated = Timestamp.from(zonedDateTime.toInstant());
+			Timestamp timestampnow = Timestamp.from(Instant.now());
 
-			DBUtil.executeUpdate("UPDATE kickpoints SET description = ?, amount = ?, date = ? WHERE id = ?", reason,
-					amount, timestampcreated, id);
+			DBUtil.executeUpdate(
+					"UPDATE kickpoints SET description = ?, amount = ?, date = ?, updated_at = ? WHERE id = ?", reason,
+					amount, timestampcreated, timestampnow, id);
 
 			String desc = "### Der Kickpunkt wurde bearbeitet.\n";
 			desc += "ID: " + id + "\n";

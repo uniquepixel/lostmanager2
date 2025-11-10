@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import datautil.DBManager;
 import datautil.DBUtil;
+import lostmanager.Bot;
 
 public class User {
 
@@ -59,7 +60,8 @@ public class User {
 			boolean admin = false;
 			if (DBUtil.getValueFromSQL("SELECT is_admin FROM users WHERE discord_id = ?", Boolean.class,
 					userid) == null) {
-				DBUtil.executeUpdate("INSERT INTO users (discord_id, is_admin) VALUES (?, ?)", userid, false);
+				DBUtil.executeUpdate("INSERT INTO users (discord_id, name, is_admin) VALUES (?, ?, ?)", userid,
+						Bot.getJda().getGuildById(Bot.guild_id).getMemberById(userid).getEffectiveName(), false);
 			}
 			if (DBUtil.getValueFromSQL("SELECT is_admin FROM users WHERE discord_id = ?", Boolean.class, userid)) {
 				admin = true;
@@ -75,7 +77,7 @@ public class User {
 			} else {
 				for (Player p : linkedaccs) {
 					if (p.getClanDB() != null) {
-						clanroles.put(p.getClanDB().getTag(), p.getRole());
+						clanroles.put(p.getClanDB().getTag(), p.getRoleDB());
 					}
 				}
 			}

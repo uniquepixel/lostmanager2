@@ -92,13 +92,13 @@ public class kpeditreason extends ListenerAdapter {
 		if (focused.equals("clan")) {
 			List<Command.Choice> choices = DBManager.getClansAutocomplete(input);
 
-			event.replyChoices(choices).queue(success ->{}, failure -> {});
+			event.replyChoices(choices).queue(_ ->{}, _ -> {});
 		}
 		if (focused.equals("reason")) {
 			List<Command.Choice> choices = DBManager.getKPReasonsAutocomplete(input,
 					event.getOption("clan").getAsString());
 
-			event.replyChoices(choices).queue(success ->{}, failure -> {});
+			event.replyChoices(choices).queue(_ ->{}, _ -> {});
 		}
 	}
 

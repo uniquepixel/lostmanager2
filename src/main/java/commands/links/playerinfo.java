@@ -42,7 +42,6 @@ public class playerinfo extends ListenerAdapter {
 		String userid = null;
 		String playertag = null;
 		ArrayList<Player> linkedaccs = new ArrayList<>();
-
 		Player player = null;
 
 		enum ConvertionType {
@@ -128,8 +127,8 @@ public class playerinfo extends ListenerAdapter {
 		if (focused.equals("player")) {
 			List<Command.Choice> choices = DBManager.getPlayerlistAutocomplete(input, DBManager.InClanType.ALL);
 
-			event.replyChoices(choices).queue(success -> {
-			}, failure -> {
+			event.replyChoices(choices).queue(_ -> {
+			}, _ -> {
 			});
 		}
 	}

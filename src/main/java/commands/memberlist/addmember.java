@@ -43,15 +43,25 @@ public class addmember extends ListenerAdapter {
 		String playertag = playeroption.getAsString();
 		String clantag = clanOption.getAsString();
 		String role = roleoption.getAsString();
+		Clan c = new Clan(clantag);
+
+		if (!c.ExistsDB()) {
+			event.getHook()
+					.editOriginalEmbeds(
+							MessageUtil.buildEmbed(title, "Dieser Clan existiert nicht.", MessageUtil.EmbedType.ERROR))
+					.queue();
+			return;
+		}
 
 		User userexecuted = new User(event.getUser().getId());
 		if (!(userexecuted.getClanRoles().get(clantag) == Player.RoleType.ADMIN
 				|| userexecuted.getClanRoles().get(clantag) == Player.RoleType.LEADER
 				|| userexecuted.getClanRoles().get(clantag) == Player.RoleType.COLEADER)) {
 			event.getHook()
-			.editOriginalEmbeds(MessageUtil.buildEmbed(title,
-					"Du musst mindestens Vize-Anführer des Clans sein, um diesen Befehl ausführen zu können.",
-					MessageUtil.EmbedType.ERROR)).queue();
+					.editOriginalEmbeds(MessageUtil.buildEmbed(title,
+							"Du musst mindestens Vize-Anführer des Clans sein, um diesen Befehl ausführen zu können.",
+							MessageUtil.EmbedType.ERROR))
+					.queue();
 			return;
 		}
 
@@ -80,19 +90,10 @@ public class addmember extends ListenerAdapter {
 		}
 
 		Player p = new Player(playertag);
-		Clan c = new Clan(clantag);
 
 		if (!p.IsLinked()) {
 			event.getHook().editOriginalEmbeds(
 					MessageUtil.buildEmbed(title, "Dieser Spieler ist nicht verlinkt.", MessageUtil.EmbedType.ERROR))
-					.queue();
-			return;
-		}
-
-		if (!c.ExistsDB()) {
-			event.getHook()
-					.editOriginalEmbeds(
-							MessageUtil.buildEmbed(title, "Dieser Clan existiert nicht.", MessageUtil.EmbedType.ERROR))
 					.queue();
 			return;
 		}
@@ -102,7 +103,7 @@ public class addmember extends ListenerAdapter {
 					"Dieser Spieler ist bereits in einem Clan.", MessageUtil.EmbedType.ERROR)).queue();
 			return;
 		}
-		
+
 		DBUtil.executeUpdate("INSERT INTO clan_members (player_tag, clan_tag, clan_role) VALUES (?, ?, ?)", playertag,
 				clantag, role);
 		String rolestring = role.equals("leader") ? "Anführer"
@@ -130,7 +131,8 @@ public class addmember extends ListenerAdapter {
 				desc += "\n\n**Dem User <@" + userid + "> wurde die Rolle <@&" + memberroleid + "> hinzugefügt.**";
 			}
 		} else {
-			desc += "\n\n**Der User <@" + userid + "> existiert nicht auf dem Server. Ihm wurde somit keine Rolle hinzugefügt.**";
+			desc += "\n\n**Der User <@" + userid
+					+ "> existiert nicht auf dem Server. Ihm wurde somit keine Rolle hinzugefügt.**";
 		}
 
 		MessageChannelUnion channel = event.getChannel();
@@ -151,12 +153,16 @@ public class addmember extends ListenerAdapter {
 		if (focused.equals("clan")) {
 			List<Command.Choice> choices = DBManager.getClansAutocomplete(input);
 
-			event.replyChoices(choices).queue(success ->{}, failure -> {});
+			event.replyChoices(choices).queue(_ -> {
+			}, _ -> {
+			});
 		}
 		if (focused.equals("player")) {
 			List<Command.Choice> choices = DBManager.getPlayerlistAutocomplete(input, DBManager.InClanType.NOTINCLAN);
 
-			event.replyChoices(choices).queue(success ->{}, failure -> {});
+			event.replyChoices(choices).queue(_ -> {
+			}, _ -> {
+			});
 		}
 		if (focused.equals("role")) {
 			List<Command.Choice> choices = new ArrayList<>();
@@ -164,7 +170,9 @@ public class addmember extends ListenerAdapter {
 			choices.add(new Command.Choice("Vize-Anführer", "coLeader"));
 			choices.add(new Command.Choice("Ältester", "admin"));
 			choices.add(new Command.Choice("Mitglied", "member"));
-			event.replyChoices(choices).queue(success ->{}, failure -> {});
+			event.replyChoices(choices).queue(_ -> {
+			}, _ -> {
+			});
 		}
 	}
 }

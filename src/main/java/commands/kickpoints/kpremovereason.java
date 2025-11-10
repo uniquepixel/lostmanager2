@@ -94,7 +94,7 @@ public class kpremovereason extends ListenerAdapter {
 			List<Command.Choice> choices = DBManager.getKPReasonsAutocomplete(input,
 					event.getOption("clan").getAsString());
 
-			event.replyChoices(choices).queue(success ->{}, failure -> {});
+			event.replyChoices(choices).queue(_ ->{}, _ -> {});
 		}
 	}
 
