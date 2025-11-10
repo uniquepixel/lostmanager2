@@ -109,7 +109,8 @@ public class ListeningEvent {
 					id);
 			actiontype = type.equals("infomessage") ? ACTIONTYPE.INFOMESSAGE
 					: type.equals("custommessage") ? ACTIONTYPE.CUSTOMMESSAGE
-							: type.equals("kickpoint") ? ACTIONTYPE.KICKPOINT : null;
+							: type.equals("kickpoint") ? ACTIONTYPE.KICKPOINT 
+							: type.equals("cwdonator") ? ACTIONTYPE.CWDONATOR : null;
 		}
 		return actiontype;
 	}
