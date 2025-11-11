@@ -701,6 +701,12 @@ public class Clan {
 	}
 
 	public String getJson() {
+		// Check if clan_tag is null before encoding
+		if (clan_tag == null) {
+			System.err.println("Clan tag is null, cannot retrieve clan data");
+			return null;
+		}
+		
 		// URL-kodieren des Spieler-Tags (# -> %23)
 		String encodedTag = java.net.URLEncoder.encode(clan_tag, java.nio.charset.StandardCharsets.UTF_8);
 
@@ -719,13 +725,18 @@ public class Clan {
 			return null;
 		}
 
-		if (response.statusCode() == 200) {
+		// Check if response is null before accessing it
+		if (response != null && response.statusCode() == 200) {
 			String responseBody = response.body();
 			// Einfacher JSON-Name-Parser ohne Bibliotheken:
 			return responseBody;
 		} else {
-			System.err.println("Fehler beim Abrufen: HTTP " + response.statusCode());
-			System.err.println("Antwort: " + response.body());
+			if (response != null) {
+				System.err.println("Fehler beim Abrufen: HTTP " + response.statusCode());
+				System.err.println("Antwort: " + response.body());
+			} else {
+				System.err.println("Fehler beim Abrufen: response is null");
+			}
 			return null;
 		}
 	}
