@@ -527,6 +527,7 @@ public class Bot extends ListenerAdapter {
 	
 	/**
 	 * Monitors for CW start events and fires triggers with duration=-1
+	 * Also monitors war state changes to reschedule events with updated timestamps
 	 * Checks every 5 minutes for war state changes
 	 */
 	private static void startCWStartMonitoring() {
@@ -535,24 +536,33 @@ public class Bot extends ListenerAdapter {
 		
 		Runnable monitoringTask = () -> {
 			try {
-				// Get all CW start triggers (duration = -1)
-				String sql = "SELECT id FROM listening_events WHERE listeningtype = 'cw' AND listeningvalue = -1";
-				ArrayList<Long> startTriggerIds = DBUtil.getArrayListFromSQL(sql, Long.class);
+				// Get all CW events (both start triggers and regular events)
+				String sql = "SELECT DISTINCT clan_tag FROM listening_events WHERE listeningtype = 'cw'";
+				ArrayList<String> clanTags = DBUtil.getArrayListFromSQL(sql, String.class);
 				
-				if (startTriggerIds.isEmpty()) {
-					return; // No start triggers to monitor
+				if (clanTags.isEmpty()) {
+					return; // No CW events to monitor
 				}
 				
-				// Group by clan to minimize API calls
-				java.util.HashMap<String, java.util.ArrayList<Long>> triggersByClan = new java.util.HashMap<>();
-				for (Long id : startTriggerIds) {
-					ListeningEvent le = new ListeningEvent(id);
-					String clanTag = le.getClanTag();
-					triggersByClan.computeIfAbsent(clanTag, _ -> new java.util.ArrayList<>()).add(id);
+				// Get all start trigger IDs for firing
+				String startSql = "SELECT id, clan_tag FROM listening_events WHERE listeningtype = 'cw' AND listeningvalue = -1";
+				java.util.HashMap<String, java.util.ArrayList<Long>> startTriggersByClan = new java.util.HashMap<>();
+				
+				// We need to query and group manually since we need both id and clan_tag
+				try (java.sql.PreparedStatement pstmt = datautil.Connection.getConnection().prepareStatement(startSql)) {
+					try (java.sql.ResultSet rs = pstmt.executeQuery()) {
+						while (rs.next()) {
+							Long id = rs.getLong("id");
+							String clanTag = rs.getString("clan_tag");
+							startTriggersByClan.computeIfAbsent(clanTag, k -> new java.util.ArrayList<>()).add(id);
+						}
+					}
+				} catch (Exception e) {
+					System.err.println("Error fetching start triggers: " + e.getMessage());
 				}
 				
 				// Check each clan's war state
-				for (String clanTag : triggersByClan.keySet()) {
+				for (String clanTag : clanTags) {
 					try {
 						datawrapper.Clan clan = new datawrapper.Clan(clanTag);
 						
@@ -574,24 +584,36 @@ public class Bot extends ListenerAdapter {
 							warJustStarted = true;
 						}
 						
+						// Detect any state change (for rescheduling events)
+						boolean stateChanged = !lastState.isEmpty() && !lastState.equals(currentState);
+						
 						// Update last state
 						setCWLastState(clanTag, currentState);
 						
 						// Fire all start triggers for this clan if war just started
 						if (warJustStarted) {
 							System.out.println("CW Start detected for clan " + clanTag + ". Firing start triggers...");
-							for (Long triggerId : triggersByClan.get(clanTag)) {
-								ListeningEvent le = new ListeningEvent(triggerId);
-								// Execute in separate thread to avoid blocking
-								schedulertasks.execute(() -> {
-									try {
-										le.fireEvent();
-									} catch (Exception e) {
-										System.err.println("Error firing start trigger " + triggerId + ": " + e.getMessage());
-										e.printStackTrace();
-									}
-								});
+							java.util.ArrayList<Long> triggers = startTriggersByClan.get(clanTag);
+							if (triggers != null) {
+								for (Long triggerId : triggers) {
+									ListeningEvent le = new ListeningEvent(triggerId);
+									// Execute in separate thread to avoid blocking
+									schedulertasks.execute(() -> {
+										try {
+											le.fireEvent();
+										} catch (Exception e) {
+											System.err.println("Error firing start trigger " + triggerId + ": " + e.getMessage());
+											e.printStackTrace();
+										}
+									});
+								}
 							}
+						}
+						
+						// Reschedule all events when war state changes to update timestamps
+						if (stateChanged) {
+							System.out.println("War state changed for clan " + clanTag + " from " + lastState + " to " + currentState + ". Rescheduling all events...");
+							restartAllEvents();
 						}
 					} catch (Exception e) {
 						System.err.println("Error checking CW state for clan " + clanTag + ": " + e.getMessage());
@@ -612,8 +634,8 @@ public class Bot extends ListenerAdapter {
 	 */
 	private static void initializeCWLastStates() {
 		try {
-			// Get all CW start triggers (duration = -1)
-			String sql = "SELECT DISTINCT clan_tag FROM listening_events WHERE listeningtype = 'cw' AND listeningvalue = -1";
+			// Get all clans with CW events (not just start triggers)
+			String sql = "SELECT DISTINCT clan_tag FROM listening_events WHERE listeningtype = 'cw'";
 			ArrayList<String> clanTags = DBUtil.getArrayListFromSQL(sql, String.class);
 			
 			for (String clanTag : clanTags) {
