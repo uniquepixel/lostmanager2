@@ -530,6 +530,9 @@ public class Bot extends ListenerAdapter {
 					}
 				}
 				
+				// Track clan state updates to apply after processing all events
+				java.util.Map<String, String> clanStateUpdates = new java.util.HashMap<>();
+				
 				for (Long id : ids) {
 					try {
 						ListeningEvent le = new ListeningEvent(id);
@@ -558,13 +561,11 @@ public class Bot extends ListenerAdapter {
 										lastState.equals("notInWar") && 
 										(currentState.equals("preparation") || currentState.equals("inWar"));
 									
-									// Update state (only once per clan)
-									if (warJustStarted) {
-										setCWLastState(clanTag, currentState);
-									}
-									
 									// Fire immediately if war just started AND not already fired in this war
 									if (warJustStarted) {
+										// Mark state for update AFTER all events are processed
+										clanStateUpdates.put(clanTag, currentState);
+										
 										// Get or create set of fired events for this clan
 										java.util.Set<Long> clanFiredEvents = firedStartEvents.computeIfAbsent(clanTag, k -> java.util.concurrent.ConcurrentHashMap.newKeySet());
 										
@@ -639,6 +640,12 @@ public class Bot extends ListenerAdapter {
 						System.err.println("Error processing event " + id + ": " + e.getMessage());
 						e.printStackTrace();
 					}
+				}
+				
+				// Apply clan state updates after processing all events
+				for (java.util.Map.Entry<String, String> entry : clanStateUpdates.entrySet()) {
+					setCWLastState(entry.getKey(), entry.getValue());
+					System.out.println("Updated CW state for clan " + entry.getKey() + " to " + entry.getValue());
 				}
 			} catch (Exception e) {
 				System.err.println("Error in event polling: " + e.getMessage());
