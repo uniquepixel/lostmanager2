@@ -546,7 +546,7 @@ public class Bot extends ListenerAdapter {
 							// For start triggers, group by clan for batch processing
 							if (le.getListeningType() == ListeningEvent.LISTENINGTYPE.CW) {
 								String clanTag = le.getClanTag();
-								cwStartEventsByClan.computeIfAbsent(clanTag, k -> new java.util.ArrayList<>()).add(id);
+								cwStartEventsByClan.computeIfAbsent(clanTag, _ -> new java.util.ArrayList<>()).add(id);
 							}
 							continue; // Don't process start triggers as regular time-based events yet
 						}
@@ -625,7 +625,7 @@ public class Bot extends ListenerAdapter {
 							clanStateUpdates.put(clanTag, currentState);
 							
 							// Get or create set of fired events for this clan
-							java.util.Set<Long> clanFiredEvents = firedStartEvents.computeIfAbsent(clanTag, k -> java.util.concurrent.ConcurrentHashMap.newKeySet());
+							java.util.Set<Long> clanFiredEvents = firedStartEvents.computeIfAbsent(clanTag, _ -> java.util.concurrent.ConcurrentHashMap.newKeySet());
 							
 							// Fire all events that haven't been fired yet for this war
 							for (Long eventId : eventIds) {
