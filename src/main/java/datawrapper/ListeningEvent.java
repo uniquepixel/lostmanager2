@@ -1,12 +1,16 @@
 package datawrapper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.json.JSONObject;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import datautil.DBUtil;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 public class ListeningEvent {
 
@@ -237,7 +241,7 @@ public class ListeningEvent {
 			if (beforeActualEnd) {
 				// Fetch fresh data from API
 				try {
-					org.json.JSONObject playerJson = p.getJSON();
+					org.json.JSONObject playerJson = new JSONObject(p.getJson());
 					org.json.JSONArray achievements = playerJson.getJSONArray("achievements");
 					
 					// Find clan games achievement
@@ -562,7 +566,7 @@ public class ListeningEvent {
 			for (int w = 0; w < warTags.length(); w++) {
 				String warTag = warTags.getString(w);
 				try {
-					org.json.JSONObject warData = clan.getCWLDayJson(warTag);
+					org.json.JSONObject warData = Clan.getCWLDayJson(warTag);
 					
 					// Check if this war involves our clan (could be in "clan" or "opponent" field)
 					org.json.JSONObject clanData = warData.getJSONObject("clan");
@@ -615,7 +619,7 @@ public class ListeningEvent {
 		for (int w = 0; w < lastRoundWarTags.length(); w++) {
 			String warTag = lastRoundWarTags.getString(w);
 			try {
-				org.json.JSONObject warData = clan.getCWLDayJson(warTag);
+				org.json.JSONObject warData = Clan.getCWLDayJson(warTag);
 				
 				// Check if this war involves our clan (could be in "clan" or "opponent" field)
 				org.json.JSONObject clanData = warData.getJSONObject("clan");
@@ -768,7 +772,7 @@ public class ListeningEvent {
 		String channelId = getChannelID();
 		if (channelId != null && !channelId.isEmpty()) {
 			try {
-				net.dv8tion.jda.api.entities.channel.concrete.TextChannel channel = 
+				TextChannel channel = 
 					lostmanager.Bot.getJda().getTextChannelById(channelId);
 				if (channel != null) {
 					channel.sendMessage(message).queue();

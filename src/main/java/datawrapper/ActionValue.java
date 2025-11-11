@@ -10,7 +10,7 @@ public class ActionValue {
 	}
 
 	public enum ACTIONVALUETYPE {
-		FILLER, REMINDER
+		FILLER, REMINDER, VALUE
 	}
 
 	private kind saved;
@@ -64,4 +64,8 @@ public class ActionValue {
 		return value;
 	}
 
+	
+	public void setValue(Long value) {
+		this.value = value;
+	}
 }

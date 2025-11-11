@@ -1,12 +1,16 @@
 package datawrapper;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,7 +26,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import datautil.APIUtil;
 import datautil.Connection;
 import datautil.DBUtil;
 import datawrapper.AchievementData.Type;
@@ -308,7 +311,7 @@ public class Player {
 
 	public boolean getWarPreference() {
 		if (warpreference == null) {
-			JSONObject jsonObject = new JSONObject(APIUtil.getPlayerJson(tag));
+			JSONObject jsonObject = new JSONObject(getJson());
 			warpreference = jsonObject.getString("warPreference").equals("in");
 		}
 		return warpreference;
@@ -354,7 +357,7 @@ public class Player {
 
 	public String getNameAPI() {
 		if (nameapi == null) {
-			JSONObject jsonObject = new JSONObject(APIUtil.getPlayerJson(tag));
+			JSONObject jsonObject = new JSONObject(getJson());
 			nameapi = jsonObject.getString("name");
 		}
 		return nameapi;
@@ -378,7 +381,7 @@ public class Player {
 
 	public Clan getClanAPI() {
 		if (clanapi == null) {
-			JSONObject jsonObject = new JSONObject(APIUtil.getPlayerJson(tag));
+			JSONObject jsonObject = new JSONObject(getJson());
 			if (jsonObject.has("clan") && !jsonObject.isNull("clan")) {
 				JSONObject clanObject = jsonObject.getJSONObject("clan");
 				if (clanObject.has("tag")) {
@@ -453,7 +456,7 @@ public class Player {
 
 	public RoleType getRoleAPI() {
 		if (roleapi == null) {
-			JSONObject jsonObject = new JSONObject(APIUtil.getPlayerJson(tag));
+			JSONObject jsonObject = new JSONObject(getJson());
 			String rolestring = jsonObject.getString("role");
 			roleapi = rolestring.equalsIgnoreCase("leader") ? RoleType.LEADER
 					: rolestring.equalsIgnoreCase("coleader") ? RoleType.COLEADER
@@ -551,7 +554,7 @@ public class Player {
 
 	private Integer getAchievementAPI(String achievementName) {
 		Integer value = null;
-		JSONObject jsonObject = new JSONObject(APIUtil.getPlayerJson(tag));
+		JSONObject jsonObject = new JSONObject(getJson());
 		JSONArray achievementarray = jsonObject.getJSONArray("achievements");
 		for (int i = 0; i < achievementarray.length(); i++) {
 			JSONObject achievement = achievementarray.getJSONObject(i);
@@ -564,4 +567,33 @@ public class Player {
 		return value;
 	}
 
+	public String getJson() {
+		// URL-kodieren des Spieler-Tags (# -> %23)
+		String encodedTag = java.net.URLEncoder.encode(tag, java.nio.charset.StandardCharsets.UTF_8);
+
+		String url = "https://api.clashofclans.com/v1/players/" + encodedTag;
+
+		HttpClient client = HttpClient.newHttpClient();
+
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url))
+				.header("Authorization", "Bearer " + Bot.api_key).header("Accept", "application/json").GET().build();
+
+		HttpResponse<String> response = null;
+		try {
+			response = client.send(request, HttpResponse.BodyHandlers.ofString());
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		if (response.statusCode() == 200) {
+			String responseBody = response.body();
+			// Einfacher JSON-Name-Parser ohne Bibliotheken:
+			return responseBody;
+		} else {
+			System.err.println("Fehler beim Abrufen: HTTP " + response.statusCode());
+			System.err.println("Antwort: " + response.body());
+			return null;
+		}
+	}
 }

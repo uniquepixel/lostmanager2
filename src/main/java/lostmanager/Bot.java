@@ -48,6 +48,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -412,7 +413,7 @@ public class Bot extends ListenerAdapter {
 				for (Long id : startTriggerIds) {
 					ListeningEvent le = new ListeningEvent(id);
 					String clanTag = le.getClanTag();
-					triggersByClan.computeIfAbsent(clanTag, k -> new java.util.ArrayList<>()).add(id);
+					triggersByClan.computeIfAbsent(clanTag, _ -> new java.util.ArrayList<>()).add(id);
 				}
 				
 				// Check each clan's war state

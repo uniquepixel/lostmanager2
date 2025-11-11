@@ -102,7 +102,6 @@ public class listeningevent extends ListenerAdapter {
 
 		// Parse duration
 		long duration;
-		boolean isStartTrigger = false;
 		try {
 			if (durationStr.equalsIgnoreCase("start") || durationStr.equalsIgnoreCase("cwstart")) {
 				// Special "start" value for CW start detection
@@ -113,7 +112,6 @@ public class listeningevent extends ListenerAdapter {
 					return;
 				}
 				duration = -1; // Special marker for start trigger
-				isStartTrigger = true;
 			} else {
 				duration = parseDuration(durationStr);
 			}
@@ -459,8 +457,8 @@ public class listeningevent extends ListenerAdapter {
 
 		if (focused.equals("clan")) {
 			List<Command.Choice> choices = DBManager.getClansAutocomplete(input);
-			event.replyChoices(choices).queue(success -> {
-			}, error -> {
+			event.replyChoices(choices).queue(_ -> {
+			}, _ -> {
 			});
 		} else if (focused.equals("actiontype")) {
 			// Provide autocomplete for action types
@@ -476,8 +474,8 @@ public class listeningevent extends ListenerAdapter {
 				}
 			}
 			
-			event.replyChoices(choices).queue(success -> {
-			}, error -> {
+			event.replyChoices(choices).queue(_ -> {
+			}, _ -> {
 			});
 		} else if (focused.equals("duration")) {
 			// Provide autocomplete for duration
@@ -512,8 +510,8 @@ public class listeningevent extends ListenerAdapter {
 				}
 			}
 			
-			event.replyChoices(filtered).queue(success -> {
-			}, error -> {
+			event.replyChoices(filtered).queue(_ -> {
+			}, _ -> {
 			});
 		} else if (focused.equals("kickpoint_reason")) {
 			// Get the clan from the command to filter kickpoint reasons
@@ -521,8 +519,8 @@ public class listeningevent extends ListenerAdapter {
 			if (clanOption != null) {
 				String clantag = clanOption.getAsString();
 				List<Command.Choice> choices = DBManager.getKPReasonsAutocomplete(input, clantag);
-				event.replyChoices(choices).queue(success -> {
-				}, error -> {
+				event.replyChoices(choices).queue(_ -> {
+				}, _ -> {
 				});
 			} else {
 				event.replyChoices(new ArrayList<>()).queue();
