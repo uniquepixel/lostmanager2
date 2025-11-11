@@ -65,20 +65,23 @@ public class listeningevent extends ListenerAdapter {
 			return;
 		}
 
-		switch (subcommand) {
-		case "add":
-			handleAdd(event, title);
-			break;
-		case "list":
-			handleList(event, title);
-			break;
-		case "remove":
-			handleRemove(event, title);
-			break;
-		default:
-			event.replyEmbeds(MessageUtil.buildEmbed(title, "Unbekannter Unterbefehl.",
-					MessageUtil.EmbedType.ERROR)).queue();
-		}
+		// Execute subcommand handling in a separate thread to avoid blocking with HTTP requests
+		new Thread(() -> {
+			switch (subcommand) {
+			case "add":
+				handleAdd(event, title);
+				break;
+			case "list":
+				handleList(event, title);
+				break;
+			case "remove":
+				handleRemove(event, title);
+				break;
+			default:
+				event.replyEmbeds(MessageUtil.buildEmbed(title, "Unbekannter Unterbefehl.",
+						MessageUtil.EmbedType.ERROR)).queue();
+			}
+		}, "ListeningeventCommand-" + event.getUser().getId()).start();
 	}
 
 	private void handleAdd(SlashCommandInteractionEvent event, String title) {
