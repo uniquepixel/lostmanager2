@@ -142,8 +142,50 @@ public class listeningevent extends ListenerAdapter {
 			return;
 		}
 
-		// If custommessage, show modal
-		if (actionTypeStr.equals("custommessage")) {
+		// Determine if we need a modal based on event type and action type
+		boolean needsModal = false;
+		String modalId = "";
+		Modal modal = null;
+		
+		// CS + (infomessage or kickpoint) => ask for threshold
+		if (type.equals("cs") && (actionTypeStr.equals("infomessage") || actionTypeStr.equals("kickpoint"))) {
+			needsModal = true;
+			modalId = "listeningevent_cs_threshold_" + clantag + "_" + duration + "_" + actionTypeStr + "_" + channelId + "_" + (kickpointReasonName != null ? kickpointReasonName : "");
+			
+			TextInput thresholdInput = TextInput.create("threshold", "Threshold (Punkte)", TextInputStyle.SHORT)
+					.setPlaceholder("z.B. 4000")
+					.setRequired(true)
+					.setMinLength(1)
+					.setMaxLength(10)
+					.setValue("4000")
+					.build();
+			
+			modal = Modal.create(modalId, "Clan Games Threshold eingeben")
+					.addActionRows(ActionRow.of(thresholdInput))
+					.build();
+		}
+		// CW + (infomessage or kickpoint) => ask for required attacks
+		else if (type.equals("cw") && (actionTypeStr.equals("infomessage") || actionTypeStr.equals("kickpoint"))) {
+			needsModal = true;
+			modalId = "listeningevent_cw_attacks_" + clantag + "_" + duration + "_" + actionTypeStr + "_" + channelId + "_" + (kickpointReasonName != null ? kickpointReasonName : "");
+			
+			TextInput attacksInput = TextInput.create("required_attacks", "Benötigte Angriffe", TextInputStyle.SHORT)
+					.setPlaceholder("1 oder 2")
+					.setRequired(true)
+					.setMinLength(1)
+					.setMaxLength(1)
+					.setValue("2")
+					.build();
+			
+			modal = Modal.create(modalId, "Benötigte Angriffe eingeben")
+					.addActionRows(ActionRow.of(attacksInput))
+					.build();
+		}
+		// custommessage => ask for custom message
+		else if (actionTypeStr.equals("custommessage")) {
+			needsModal = true;
+			modalId = "listeningevent_custommessage_" + clantag + "_" + type + "_" + duration + "_" + channelId;
+			
 			TextInput messageInput = TextInput.create("custommessage", "Benutzerdefinierte Nachricht", TextInputStyle.PARAGRAPH)
 					.setPlaceholder("Gib die Nachricht ein, die gesendet werden soll...")
 					.setRequired(true)
@@ -151,23 +193,24 @@ public class listeningevent extends ListenerAdapter {
 					.setMaxLength(2000)
 					.build();
 			
-			Modal modal = Modal.create("listeningevent_custommessage_" + clantag + "_" + type + "_" + duration + "_" + channelId,
-					"Benutzerdefinierte Nachricht eingeben")
+			modal = Modal.create(modalId, "Benutzerdefinierte Nachricht eingeben")
 					.addActionRows(ActionRow.of(messageInput))
 					.build();
-			
+		}
+		
+		if (needsModal) {
 			event.replyModal(modal).queue();
 			return;
 		}
 
-		// Otherwise process normally
+		// Otherwise process normally (no modal needed)
 		event.deferReply().queue();
-		processEventCreation(event.getHook(), title, clantag, type, duration, actionTypeStr, channelId, kickpointReasonName, null);
+		processEventCreation(event.getHook(), title, clantag, type, duration, actionTypeStr, channelId, kickpointReasonName, null, null);
 	}
 
 	private void processEventCreation(net.dv8tion.jda.api.interactions.InteractionHook hook, String title, 
 			String clantag, String type, long duration, String actionTypeStr, String channelId, 
-			String kickpointReasonName, String customMessage) {
+			String kickpointReasonName, String customMessage, Integer thresholdOrAttacks) {
 		
 		// Build action values
 		ArrayList<ActionValue> actionValues = new ArrayList<>();
@@ -177,6 +220,13 @@ public class listeningevent extends ListenerAdapter {
 			// Create KickpointReason with name and clan tag
 			KickpointReason kpReason = new KickpointReason(kickpointReasonName, clantag);
 			actionValues.add(new ActionValue(kpReason));
+		}
+		
+		// Add threshold or required attacks if provided
+		if (thresholdOrAttacks != null) {
+			ActionValue valueAV = new ActionValue(ActionValue.ACTIONVALUETYPE.VALUE);
+			valueAV.setValue((long) thresholdOrAttacks.intValue());
+			actionValues.add(valueAV);
 		}
 
 		// Convert action values to JSON
@@ -193,14 +243,8 @@ public class listeningevent extends ListenerAdapter {
 		// For custom message, store it in actionvalues as a value type
 		if (customMessage != null && !customMessage.isEmpty()) {
 			// Store custom message text
-			actionValuesJson = "[{\"value\":" + customMessage.length() + "}]";
-			// We'll store the actual message separately in a custom_message column or in actionvalues
-			// For simplicity, let's encode it in actionvalues as a JSON string
 			try {
 				ObjectMapper mapper = new ObjectMapper();
-				ArrayList<ActionValue> customValues = new ArrayList<>();
-				// We'll use the value field to store the message length as marker
-				// and prepend the message to the JSON
 				actionValuesJson = mapper.writeValueAsString(java.util.Collections.singletonMap("message", customMessage));
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
@@ -224,6 +268,13 @@ public class listeningevent extends ListenerAdapter {
 		if (customMessage != null) {
 			desc += "**Nachricht:** " + customMessage.substring(0, Math.min(100, customMessage.length())) + 
 					(customMessage.length() > 100 ? "..." : "") + "\n";
+		}
+		if (thresholdOrAttacks != null) {
+			if (type.equals("cs")) {
+				desc += "**Threshold:** " + thresholdOrAttacks + " Punkte\n";
+			} else if (type.equals("cw")) {
+				desc += "**Benötigte Angriffe:** " + thresholdOrAttacks + "\n";
+			}
 		}
 
 		hook.editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.SUCCESS))
@@ -312,11 +363,13 @@ public class listeningevent extends ListenerAdapter {
 
 	@Override
 	public void onModalInteraction(ModalInteractionEvent event) {
-		if (event.getModalId().startsWith("listeningevent_custommessage_")) {
+		String modalId = event.getModalId();
+		
+		if (modalId.startsWith("listeningevent_custommessage_")) {
 			event.deferReply().queue();
 			String title = "Listening Event";
 			
-			String[] parts = event.getModalId().split("_");
+			String[] parts = modalId.split("_");
 			if (parts.length < 6) {
 				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title,
 					"Fehler beim Verarbeiten der Modal-Daten.", MessageUtil.EmbedType.ERROR)).queue();
@@ -329,7 +382,70 @@ public class listeningevent extends ListenerAdapter {
 			String channelId = parts[5];
 			String customMessage = event.getValue("custommessage").getAsString();
 			
-			processEventCreation(event.getHook(), title, clantag, type, duration, "custommessage", channelId, null, customMessage);
+			processEventCreation(event.getHook(), title, clantag, type, duration, "custommessage", channelId, null, customMessage, null);
+		}
+		else if (modalId.startsWith("listeningevent_cs_threshold_")) {
+			event.deferReply().queue();
+			String title = "Listening Event";
+			
+			// Parse: listeningevent_cs_threshold_{clantag}_{duration}_{actiontype}_{channelid}_{kpreason}
+			String[] parts = modalId.split("_");
+			if (parts.length < 7) {
+				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title,
+					"Fehler beim Verarbeiten der Modal-Daten.", MessageUtil.EmbedType.ERROR)).queue();
+				return;
+			}
+			
+			String clantag = parts[3];
+			long duration = Long.parseLong(parts[4]);
+			String actionTypeStr = parts[5];
+			String channelId = parts[6];
+			String kickpointReasonName = parts.length > 7 && !parts[7].isEmpty() ? parts[7] : null;
+			
+			String thresholdStr = event.getValue("threshold").getAsString();
+			int threshold;
+			try {
+				threshold = Integer.parseInt(thresholdStr);
+			} catch (NumberFormatException e) {
+				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title,
+					"Ungültiger Threshold-Wert: " + thresholdStr, MessageUtil.EmbedType.ERROR)).queue();
+				return;
+			}
+			
+			processEventCreation(event.getHook(), title, clantag, "cs", duration, actionTypeStr, channelId, kickpointReasonName, null, threshold);
+		}
+		else if (modalId.startsWith("listeningevent_cw_attacks_")) {
+			event.deferReply().queue();
+			String title = "Listening Event";
+			
+			// Parse: listeningevent_cw_attacks_{clantag}_{duration}_{actiontype}_{channelid}_{kpreason}
+			String[] parts = modalId.split("_");
+			if (parts.length < 7) {
+				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title,
+					"Fehler beim Verarbeiten der Modal-Daten.", MessageUtil.EmbedType.ERROR)).queue();
+				return;
+			}
+			
+			String clantag = parts[3];
+			long duration = Long.parseLong(parts[4]);
+			String actionTypeStr = parts[5];
+			String channelId = parts[6];
+			String kickpointReasonName = parts.length > 7 && !parts[7].isEmpty() ? parts[7] : null;
+			
+			String requiredAttacksStr = event.getValue("required_attacks").getAsString();
+			int requiredAttacks;
+			try {
+				requiredAttacks = Integer.parseInt(requiredAttacksStr);
+				if (requiredAttacks < 1 || requiredAttacks > 2) {
+					throw new NumberFormatException();
+				}
+			} catch (NumberFormatException e) {
+				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title,
+					"Ungültiger Wert für Angriffe: " + requiredAttacksStr + " (Erlaubt: 1 oder 2)", MessageUtil.EmbedType.ERROR)).queue();
+				return;
+			}
+			
+			processEventCreation(event.getHook(), title, clantag, "cw", duration, actionTypeStr, channelId, kickpointReasonName, null, requiredAttacks);
 		}
 	}
 

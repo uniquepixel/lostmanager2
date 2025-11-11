@@ -204,40 +204,87 @@ public class ListeningEvent {
 	}
 	
 	private void handleClanGamesEvent(Clan clan) {
+		// Get threshold from action values (default 4000)
+		int threshold = 4000;
+		for (ActionValue av : getActionValues()) {
+			if (av.getSaved() == ActionValue.kind.value && av.getValue() != null) {
+				threshold = av.getValue().intValue();
+				break;
+			}
+		}
+		
 		// Get before/after values from achievements database
 		java.sql.Timestamp startTime = java.sql.Timestamp.from(
 			lostmanager.Bot.getPrevious22thAt7am().toInstant()
 		);
 		java.sql.Timestamp endTime = java.sql.Timestamp.from(
-			lostmanager.Bot.getPrevious28thAt12pm().toInstant()
+			lostmanager.Bot.getPrevious28thAt12pm().toInstant()  // Actual end time (12:00)
 		);
+		
+		// Check if we're firing before the actual end time (12:00)
+		// If so, fetch fresh data from API instead of using stored data
+		boolean beforeActualEnd = System.currentTimeMillis() < endTime.getTime();
 		
 		// Get all players in clan
 		ArrayList<Player> players = clan.getPlayersDB();
 		StringBuilder message = new StringBuilder();
-		message.append("## Clan Games Results\n\n");
+		message.append("## Clan Games Results (Threshold: " + threshold + ")\n\n");
 		
 		boolean hasViolations = false;
 		for (Player p : players) {
-			// Get achievement data at start and end
-			String sql = "SELECT data FROM achievement_data WHERE player_tag = ? AND type = 'CLANGAMES_POINTS' AND time = ? ORDER BY time LIMIT 1";
-			Integer pointsStart = DBUtil.getValueFromSQL(sql, Integer.class, p.getTag(), startTime);
-			Integer pointsEnd = DBUtil.getValueFromSQL(sql, Integer.class, p.getTag(), endTime);
+			int difference = 0;
 			
-			if (pointsStart != null && pointsEnd != null) {
-				int difference = pointsEnd - pointsStart;
-				if (difference < 4000) { // Example threshold
-					hasViolations = true;
-					message.append(p.getNameAPI()).append(": ").append(difference).append(" points");
-					if (p.getUser() != null) {
-						message.append(" (<@").append(p.getUser().getUserID()).append(">)");
-					}
-					message.append("\n");
+			if (beforeActualEnd) {
+				// Fetch fresh data from API
+				try {
+					org.json.JSONObject playerJson = p.getJSON();
+					org.json.JSONArray achievements = playerJson.getJSONArray("achievements");
 					
-					// Handle action type
-					if (getActionType() == ACTIONTYPE.KICKPOINT) {
-						addKickpointForPlayer(p, "Clan Games nicht erreicht (" + difference + " points)");
+					// Find clan games achievement
+					for (int i = 0; i < achievements.length(); i++) {
+						org.json.JSONObject achievement = achievements.getJSONObject(i);
+						if (achievement.getString("name").equals("Games Champion")) {
+							int currentPoints = achievement.getInt("value");
+							
+							// Get start value from database
+							String sql = "SELECT data FROM achievement_data WHERE player_tag = ? AND type = 'CLANGAMES_POINTS' AND time = ? ORDER BY time LIMIT 1";
+							Integer pointsStart = DBUtil.getValueFromSQL(sql, Integer.class, p.getTag(), startTime);
+							
+							if (pointsStart != null) {
+								difference = currentPoints - pointsStart;
+							}
+							break;
+						}
 					}
+				} catch (Exception e) {
+					System.err.println("Error fetching fresh API data for player " + p.getTag() + ": " + e.getMessage());
+					continue;
+				}
+			} else {
+				// Use stored data from database
+				String sql = "SELECT data FROM achievement_data WHERE player_tag = ? AND type = 'CLANGAMES_POINTS' AND time = ? ORDER BY time LIMIT 1";
+				Integer pointsStart = DBUtil.getValueFromSQL(sql, Integer.class, p.getTag(), startTime);
+				Integer pointsEnd = DBUtil.getValueFromSQL(sql, Integer.class, p.getTag(), endTime);
+				
+				if (pointsStart != null && pointsEnd != null) {
+					difference = pointsEnd - pointsStart;
+				} else {
+					continue; // Skip if no data
+				}
+			}
+			
+			// Check against threshold
+			if (difference < threshold) {
+				hasViolations = true;
+				message.append(p.getNameAPI()).append(": ").append(difference).append(" points");
+				if (p.getUser() != null) {
+					message.append(" (<@").append(p.getUser().getUserID()).append(">)");
+				}
+				message.append("\n");
+				
+				// Handle action type
+				if (getActionType() == ACTIONTYPE.KICKPOINT) {
+					addKickpointForPlayer(p, "Clan Games nicht erreicht (" + difference + " points)");
 				}
 			}
 		}
@@ -425,6 +472,15 @@ public class ListeningEvent {
 		org.json.JSONArray members = clanData.getJSONArray("members");
 		int attacksPerMember = cwJson.getInt("attacksPerMember");
 		
+		// Get required attacks from action values (default to attacksPerMember from API)
+		int requiredAttacks = attacksPerMember;
+		for (ActionValue av : getActionValues()) {
+			if (av.getSaved() == ActionValue.kind.value && av.getValue() != null) {
+				requiredAttacks = av.getValue().intValue();
+				break;
+			}
+		}
+		
 		// Get war end time to match with fillers
 		String endTimeStr = cwJson.getString("endTime");
 		java.time.OffsetDateTime endTime = java.time.OffsetDateTime.parse(endTimeStr, 
@@ -436,7 +492,7 @@ public class ListeningEvent {
 		ArrayList<String> fillerTags = DBUtil.getArrayListFromSQL(fillerSql, String.class, clan.getTag(), endTimeTs);
 		
 		StringBuilder message = new StringBuilder();
-		message.append("## Clan War - Missed Attacks\n\n");
+		message.append("## Clan War - Missed Attacks (Required: " + requiredAttacks + ")\n\n");
 		
 		boolean hasMissedAttacks = false;
 		for (int i = 0; i < members.length(); i++) {
@@ -449,7 +505,7 @@ public class ListeningEvent {
 				attacks = member.getJSONArray("attacks").length();
 			}
 			
-			if (attacks < attacksPerMember) {
+			if (attacks < requiredAttacks) {
 				// Check if this player is a filler
 				boolean isFiller = fillerTags.contains(tag);
 				
@@ -461,7 +517,7 @@ public class ListeningEvent {
 				hasMissedAttacks = true;
 				Player p = new Player(tag);
 				message.append("- ").append(name).append(": ").append(attacks).append("/")
-						.append(attacksPerMember).append(" attacks");
+						.append(requiredAttacks).append(" attacks");
 				if (p.getUser() != null) {
 					message.append(" (<@").append(p.getUser().getUserID()).append(">)");
 				}
@@ -469,7 +525,7 @@ public class ListeningEvent {
 				
 				// Handle kickpoint action
 				if (getActionType() == ACTIONTYPE.KICKPOINT) {
-					addKickpointForPlayer(p, "CW Angriffe verpasst (" + attacks + "/" + attacksPerMember + ")");
+					addKickpointForPlayer(p, "CW Angriffe verpasst (" + attacks + "/" + requiredAttacks + ")");
 				}
 			}
 		}

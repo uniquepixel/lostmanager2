@@ -627,5 +627,54 @@ public class Bot extends ListenerAdapter {
 		ZonedDateTime zdt = target.atZone(ZoneId.systemDefault());
 		return zdt;
 	}
+	
+	/**
+	 * Get next 28th at 13:00 (1pm) - used for listening events to ensure API data has propagated
+	 * This is 1 hour after the actual clan games end time
+	 */
+	public static ZonedDateTime getNext28thAt1pm() {
+		LocalDateTime now = LocalDateTime.now();
+		int year = now.getYear();
+		int month = now.getMonthValue();
+
+		LocalDateTime target = LocalDateTime.of(year, month, 28, 13, 0, 0, 0);
+
+		// Wenn jetzt >= 28. um 13:00 Uhr dann nächsten Monat nehmen
+		if (!now.isBefore(target)) {
+			month++;
+			if (month > 12) {
+				month = 1;
+				year++;
+			}
+			target = LocalDateTime.of(year, month, 28, 13, 0, 0, 0);
+		}
+
+		ZonedDateTime zdt = target.atZone(ZoneId.systemDefault());
+		return zdt;
+	}
+	
+	/**
+	 * Get previous 28th at 13:00 (1pm) - used for listening events
+	 */
+	public static ZonedDateTime getPrevious28thAt1pm() {
+		LocalDateTime now = LocalDateTime.now();
+		int year = now.getYear();
+		int month = now.getMonthValue();
+
+		LocalDateTime target = LocalDateTime.of(year, month, 28, 13, 0, 0, 0);
+
+		// Wenn jetzt < 28. um 13:00 Uhr, dann vorherigen Monat nehmen
+		if (now.isBefore(target)) {
+			month--;
+			if (month < 1) {
+				month = 12;
+				year--;
+			}
+			target = LocalDateTime.of(year, month, 28, 13, 0, 0, 0);
+		}
+
+		ZonedDateTime zdt = target.atZone(ZoneId.systemDefault());
+		return zdt;
+	}
 
 }
