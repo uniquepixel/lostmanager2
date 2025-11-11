@@ -81,6 +81,10 @@ public class ListeningEvent {
 		return id;
 	}
 
+	public Long getId() {
+		return id;
+	}
+
 	public String getClanTag() {
 		if (clan_tag == null) {
 			clan_tag = DBUtil.getValueFromSQL("SELECT clan_tag FROM listening_events WHERE id = ?", String.class, id);
@@ -152,18 +156,31 @@ public class ListeningEvent {
 			}
 			
 			Clan c = new Clan(clan_tag);
+			Long endTimeMillis = null;
 			switch (getListeningType()) {
 			case CS:
-				timestamptofire = c.getCGEndTimeMillis() - getDurationUntilEnd();
+				endTimeMillis = c.getCGEndTimeMillis();
+				if (endTimeMillis != null) {
+					timestamptofire = endTimeMillis - getDurationUntilEnd();
+				}
 				break;
 			case CW:
-				timestamptofire = c.getCWEndTimeMillis() - getDurationUntilEnd();
+				endTimeMillis = c.getCWEndTimeMillis();
+				if (endTimeMillis != null) {
+					timestamptofire = endTimeMillis - getDurationUntilEnd();
+				}
 				break;
 			case CWLDAY:
-				timestamptofire = c.getCWLDayEndTimeMillis() - getDurationUntilEnd();
+				endTimeMillis = c.getCWLDayEndTimeMillis();
+				if (endTimeMillis != null) {
+					timestamptofire = endTimeMillis - getDurationUntilEnd();
+				}
 				break;
 			case RAID:
-				timestamptofire = c.getRaidEndTimeMillis() - getDurationUntilEnd();
+				endTimeMillis = c.getRaidEndTimeMillis();
+				if (endTimeMillis != null) {
+					timestamptofire = endTimeMillis - getDurationUntilEnd();
+				}
 				break;
 			case FIXTIMEINTERVAL:
 				timestamptofire = getDurationUntilEnd();
@@ -174,36 +191,51 @@ public class ListeningEvent {
 			default:
 				break;
 			}
+			
+			// If timestamptofire is still null, return a far future time to prevent scheduling errors
+			if (timestamptofire == null) {
+				System.err.println("Warning: Unable to calculate timestamp for listening event. endTime may be missing from API response.");
+				return Long.MAX_VALUE;
+			}
 		}
 		return timestamptofire;
 	}
 
 	public void fireEvent() {
-		Clan clan = new Clan(getClanTag());
+		System.out.println("Starting fireEvent for event ID " + getId() + ", type: " + getListeningType() + ", clan: " + getClanTag());
 		
-		switch (getListeningType()) {
-		case CS:
-			handleClanGamesEvent(clan);
-			break;
+		try {
+			Clan clan = new Clan(getClanTag());
 			
-		case CW:
-			handleClanWarEvent(clan);
-			break;
+			switch (getListeningType()) {
+			case CS:
+				handleClanGamesEvent(clan);
+				break;
+				
+			case CW:
+				handleClanWarEvent(clan);
+				break;
+				
+			case CWLDAY:
+				handleCWLDayEvent(clan);
+				break;
+				
+			case RAID:
+				handleRaidEvent(clan);
+				break;
+				
+			case FIXTIMEINTERVAL:
+				// For custom timed events
+				break;
+				
+			default:
+				break;
+			}
 			
-		case CWLDAY:
-			handleCWLDayEvent(clan);
-			break;
-			
-		case RAID:
-			handleRaidEvent(clan);
-			break;
-			
-		case FIXTIMEINTERVAL:
-			// For custom timed events
-			break;
-			
-		default:
-			break;
+			System.out.println("Completed fireEvent for event ID " + getId());
+		} catch (Exception e) {
+			System.err.println("Error in fireEvent for event ID " + getId() + ": " + e.getMessage());
+			throw e; // Re-throw to be caught by retry logic
 		}
 	}
 	

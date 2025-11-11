@@ -39,6 +39,7 @@ import commands.util.raidping;
 import commands.util.setnick;
 import datautil.DBUtil;
 import datawrapper.AchievementData.Type;
+import datawrapper.Clan;
 import datawrapper.ListeningEvent;
 import datawrapper.Player;
 import net.dv8tion.jda.api.JDA;
@@ -364,6 +365,18 @@ public class Bot extends ListenerAdapter {
 	}
 	
 	public static void restartAllEvents() {
+		// Run in a separate thread to avoid crashing the bot if there are errors
+		new Thread(() -> {
+			try {
+				restartAllEventsInternal();
+			} catch (Exception e) {
+				System.err.println("Error in restartAllEvents: " + e.getMessage());
+				e.printStackTrace();
+			}
+		}, "RestartAllEventsThread").start();
+	}
+	
+	private static void restartAllEventsInternal() {
 		schedulertasks.shutdown();
 		schedulertasks = Executors.newSingleThreadScheduledExecutor();
 		endClanGamesSavings();
@@ -373,24 +386,143 @@ public class Bot extends ListenerAdapter {
 		ArrayList<Long> ids = DBUtil.getArrayListFromSQL(sql, Long.class);
 		
 		for (Long id : ids) {
-			ListeningEvent le = new ListeningEvent(id);
-			long duration = le.getDurationUntilEnd();
-			
-			// Check if this is a "start" trigger (duration = -1)
-			if (duration == -1 && le.getListeningType() == ListeningEvent.LISTENINGTYPE.CW) {
-				// Start triggers are handled by the CW start monitoring task
-				continue;
+			try {
+				ListeningEvent le = new ListeningEvent(id);
+				long duration = le.getDurationUntilEnd();
+				
+				// Check if this is a "start" trigger (duration = -1)
+				if (duration == -1 && le.getListeningType() == ListeningEvent.LISTENINGTYPE.CW) {
+					// Start triggers are handled by the CW start monitoring task
+					continue;
+				}
+				
+				Long timestamp = le.getTimestamp();
+				// Skip if timestamp is null or invalid
+				if (timestamp == null || timestamp == Long.MAX_VALUE) {
+					System.err.println("Skipping event " + id + " due to invalid timestamp");
+					continue;
+				}
+				
+				long timeuntilfire = timestamp - System.currentTimeMillis();
+				
+				schedulertasks.schedule(() -> {
+					executeEventWithRetry(le, id, 3);
+				}, timeuntilfire, TimeUnit.MILLISECONDS);
+			} catch (Exception e) {
+				System.err.println("Error scheduling event " + id + ": " + e.getMessage());
+				e.printStackTrace();
 			}
-			
-			long timeuntilfire = le.getTimestamp() - System.currentTimeMillis();
-			
-			schedulertasks.schedule(() -> {
-			    le.fireEvent();
-			}, timeuntilfire, TimeUnit.MILLISECONDS);
 		}
 		
 		// Start CW start monitoring for all "start" triggers
 		startCWStartMonitoring();
+	}
+	
+	/**
+	 * Execute an event with retry logic and validation
+	 * @param le The listening event to execute
+	 * @param eventId The event ID for logging
+	 * @param maxRetries Maximum number of retry attempts
+	 */
+	private static void executeEventWithRetry(ListeningEvent le, Long eventId, int maxRetries) {
+		int attempt = 0;
+		boolean success = false;
+		
+		while (attempt <= maxRetries && !success) {
+			try {
+				System.out.println("Executing event " + eventId + " (attempt " + (attempt + 1) + "/" + (maxRetries + 1) + ")");
+				
+				// Validate that the event should still fire
+				if (!shouldEventFire(le)) {
+					System.out.println("Event " + eventId + " validation failed - conditions no longer met, skipping");
+					return;
+				}
+				
+				// Execute the event
+				le.fireEvent();
+				
+				// If we reach here, event fired successfully
+				System.out.println("Event " + eventId + " executed successfully");
+				success = true;
+				
+			} catch (Exception e) {
+				System.err.println("Event " + eventId + " execution failed (attempt " + (attempt + 1) + "/" + (maxRetries + 1) + "): " + e.getMessage());
+				e.printStackTrace();
+				
+				// If not the last attempt, wait before retrying
+				if (attempt < maxRetries) {
+					long waitTime = (long) Math.pow(2, attempt) * 5000; // 5s, 10s, 20s
+					System.err.println("Retrying event " + eventId + " in " + (waitTime / 1000) + " seconds...");
+					try {
+						Thread.sleep(waitTime);
+					} catch (InterruptedException ie) {
+						Thread.currentThread().interrupt();
+						System.err.println("Event " + eventId + " retry interrupted");
+						return;
+					}
+				} else {
+					System.err.println("Event " + eventId + " failed after " + (maxRetries + 1) + " attempts");
+				}
+			}
+			attempt++;
+		}
+	}
+	
+	/**
+	 * Validate if an event should still fire by checking current state
+	 * @param le The listening event
+	 * @return true if the event should fire, false otherwise
+	 */
+	private static boolean shouldEventFire(ListeningEvent le) {
+		try {
+			Clan clan = new Clan(le.getClanTag());
+			
+			// Check based on event type
+			switch (le.getListeningType()) {
+			case CS:
+				// Clan Games events should fire regardless (they check historical data)
+				return true;
+				
+			case CW:
+				// Check if clan war is actually active
+				Boolean cwActive = clan.isCWActive();
+				if (cwActive == null || !cwActive) {
+					System.out.println("CW event validation: No active clan war");
+					return false;
+				}
+				return true;
+				
+			case CWLDAY:
+				// Check if CWL is active
+				Boolean cwlActive = clan.isCWLActive();
+				if (cwlActive == null || !cwlActive) {
+					System.out.println("CWL event validation: No active CWL");
+					return false;
+				}
+				return true;
+				
+			case RAID:
+				// Check if raid is active
+				boolean raidActive = clan.RaidActive();
+				if (!raidActive) {
+					System.out.println("Raid event validation: No active raid");
+					return false;
+				}
+				return true;
+				
+			case FIXTIMEINTERVAL:
+				// Fixed time events should always fire
+				return true;
+				
+			default:
+				// Unknown types should fire (conservative approach)
+				return true;
+			}
+		} catch (Exception e) {
+			// If validation fails, log but allow event to fire (conservative approach)
+			System.err.println("Event validation check failed: " + e.getMessage() + " - allowing event to fire");
+			return true;
+		}
 	}
 	
 	/**
