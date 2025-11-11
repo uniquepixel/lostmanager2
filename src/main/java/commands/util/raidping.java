@@ -28,6 +28,8 @@ public class raidping extends ListenerAdapter {
 		String title = "Raid-Ping";
 		event.deferReply().queue();
 
+		new Thread(() -> {
+
 		OptionMapping clanOption = event.getOption("clan");
 
 		if (clanOption == null) {
@@ -158,12 +160,15 @@ public class raidping extends ListenerAdapter {
 				message.editMessage(newmessage).queue();
 			});
 		}
-	}
+		}, "RaidpingCommand-" + event.getUser().getId()).start();
 
+	}
 	@Override
 	public void onCommandAutoCompleteInteraction(CommandAutoCompleteInteractionEvent event) {
 		if (!event.getName().equals("raidping"))
 			return;
+
+		new Thread(() -> {
 
 		String focused = event.getFocusedOption().getName();
 		String input = event.getFocusedOption().getValue();
@@ -175,6 +180,6 @@ public class raidping extends ListenerAdapter {
 			}, _ -> {
 			});
 		}
+		}, "RaidpingAutocomplete-" + event.getUser().getId()).start();
 	}
-
 }

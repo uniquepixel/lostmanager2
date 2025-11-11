@@ -27,118 +27,121 @@ public class addmember extends ListenerAdapter {
 		if (!event.getName().equals("addmember"))
 			return;
 		event.deferReply().queue();
-		String title = "Memberverwaltung";
 
-		OptionMapping clanOption = event.getOption("clan");
-		OptionMapping playeroption = event.getOption("player");
-		OptionMapping roleoption = event.getOption("role");
+		new Thread(() -> {
+			String title = "Memberverwaltung";
 
-		if (clanOption == null || playeroption == null || roleoption == null) {
-			event.getHook().editOriginalEmbeds(
-					MessageUtil.buildEmbed(title, "Alle Parameter sind erforderlich!", MessageUtil.EmbedType.ERROR))
-					.queue();
-			return;
-		}
+			OptionMapping clanOption = event.getOption("clan");
+			OptionMapping playeroption = event.getOption("player");
+			OptionMapping roleoption = event.getOption("role");
 
-		String playertag = playeroption.getAsString();
-		String clantag = clanOption.getAsString();
-		String role = roleoption.getAsString();
-		Clan c = new Clan(clantag);
-
-		if (!c.ExistsDB()) {
-			event.getHook()
-					.editOriginalEmbeds(
-							MessageUtil.buildEmbed(title, "Dieser Clan existiert nicht.", MessageUtil.EmbedType.ERROR))
-					.queue();
-			return;
-		}
-
-		User userexecuted = new User(event.getUser().getId());
-		if (!(userexecuted.getClanRoles().get(clantag) == Player.RoleType.ADMIN
-				|| userexecuted.getClanRoles().get(clantag) == Player.RoleType.LEADER
-				|| userexecuted.getClanRoles().get(clantag) == Player.RoleType.COLEADER)) {
-			event.getHook()
-					.editOriginalEmbeds(MessageUtil.buildEmbed(title,
-							"Du musst mindestens Vize-Anführer des Clans sein, um diesen Befehl ausführen zu können.",
-							MessageUtil.EmbedType.ERROR))
-					.queue();
-			return;
-		}
-
-		if (!(role.equals("leader") || role.equals("coLeader") || role.equals("admin") || role.equals("member"))) {
-			event.getHook()
-					.editOriginalEmbeds(
-							MessageUtil.buildEmbed(title, "Gib eine gültige Rolle an.", MessageUtil.EmbedType.ERROR))
-					.queue();
-			return;
-		}
-		if (role.equals("leader") && userexecuted.getClanRoles().get(clantag) != Player.RoleType.ADMIN) {
-			event.getHook()
-					.editOriginalEmbeds(MessageUtil.buildEmbed(title,
-							"Um jemanden als Leader hinzuzufügen, musst du Admin sein.", MessageUtil.EmbedType.ERROR))
-					.queue();
-			return;
-		}
-		if (role.equals("coLeader") && !(userexecuted.getClanRoles().get(clantag) == Player.RoleType.ADMIN
-				|| userexecuted.getClanRoles().get(clantag) == Player.RoleType.LEADER)) {
-			event.getHook()
-					.editOriginalEmbeds(MessageUtil.buildEmbed(title,
-							"Um jemanden als Vize-Anführer hinzuzufügen, musst du Admin oder Anführer sein.",
-							MessageUtil.EmbedType.ERROR))
-					.queue();
-			return;
-		}
-
-		Player p = new Player(playertag);
-
-		if (!p.IsLinked()) {
-			event.getHook().editOriginalEmbeds(
-					MessageUtil.buildEmbed(title, "Dieser Spieler ist nicht verlinkt.", MessageUtil.EmbedType.ERROR))
-					.queue();
-			return;
-		}
-
-		if (new Player(playertag).getClanDB() != null) {
-			event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title,
-					"Dieser Spieler ist bereits in einem Clan.", MessageUtil.EmbedType.ERROR)).queue();
-			return;
-		}
-
-		DBUtil.executeUpdate("INSERT INTO clan_members (player_tag, clan_tag, clan_role) VALUES (?, ?, ?)", playertag,
-				clantag, role);
-		String rolestring = role.equals("leader") ? "Anführer"
-				: role.equals("coLeader") ? "Vize-Anführer"
-						: role.equals("admin") ? "Ältester" : role.equals("member") ? "Mitglied" : null;
-
-		String desc = "";
-		try {
-			desc += "Der Spieler " + MessageUtil.unformat(p.getInfoStringDB()) + " wurde erfolgreich dem Clan "
-					+ new Clan(clantag).getInfoString() + " als " + rolestring + " hinzugefügt.";
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		String userid = p.getUser().getUserID();
-		Guild guild = Bot.getJda().getGuildById(Bot.guild_id);
-		Member member = guild.getMemberById(userid);
-		String memberroleid = c.getRoleID(Clan.Role.MEMBER);
-		Role memberrole = guild.getRoleById(memberroleid);
-		if (member != null) {
-			if (member.getRoles().contains(memberrole)) {
-				desc += "\n\n**Der User <@" + userid + "> hat bereits die Rolle <@&" + memberroleid + ">.**";
-			} else {
-				guild.addRoleToMember(member, memberrole).queue();
-				desc += "\n\n**Dem User <@" + userid + "> wurde die Rolle <@&" + memberroleid + "> hinzugefügt.**";
+			if (clanOption == null || playeroption == null || roleoption == null) {
+				event.getHook().editOriginalEmbeds(
+						MessageUtil.buildEmbed(title, "Alle Parameter sind erforderlich!", MessageUtil.EmbedType.ERROR))
+						.queue();
+				return;
 			}
-		} else {
-			desc += "\n\n**Der User <@" + userid
-					+ "> existiert nicht auf dem Server. Ihm wurde somit keine Rolle hinzugefügt.**";
-		}
 
-		MessageChannelUnion channel = event.getChannel();
-		MessageUtil.sendUserPingHidden(channel, userid);
+			String playertag = playeroption.getAsString();
+			String clantag = clanOption.getAsString();
+			String role = roleoption.getAsString();
+			Clan c = new Clan(clantag);
 
-		event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.SUCCESS)).queue();
+			if (!c.ExistsDB()) {
+				event.getHook()
+						.editOriginalEmbeds(
+								MessageUtil.buildEmbed(title, "Dieser Clan existiert nicht.", MessageUtil.EmbedType.ERROR))
+						.queue();
+				return;
+			}
+
+			User userexecuted = new User(event.getUser().getId());
+			if (!(userexecuted.getClanRoles().get(clantag) == Player.RoleType.ADMIN
+					|| userexecuted.getClanRoles().get(clantag) == Player.RoleType.LEADER
+					|| userexecuted.getClanRoles().get(clantag) == Player.RoleType.COLEADER)) {
+				event.getHook()
+						.editOriginalEmbeds(MessageUtil.buildEmbed(title,
+								"Du musst mindestens Vize-Anführer des Clans sein, um diesen Befehl ausführen zu können.",
+								MessageUtil.EmbedType.ERROR))
+						.queue();
+				return;
+			}
+
+			if (!(role.equals("leader") || role.equals("coLeader") || role.equals("admin") || role.equals("member"))) {
+				event.getHook()
+						.editOriginalEmbeds(
+								MessageUtil.buildEmbed(title, "Gib eine gültige Rolle an.", MessageUtil.EmbedType.ERROR))
+						.queue();
+				return;
+			}
+			if (role.equals("leader") && userexecuted.getClanRoles().get(clantag) != Player.RoleType.ADMIN) {
+				event.getHook()
+						.editOriginalEmbeds(MessageUtil.buildEmbed(title,
+								"Um jemanden als Leader hinzuzufügen, musst du Admin sein.", MessageUtil.EmbedType.ERROR))
+						.queue();
+				return;
+			}
+			if (role.equals("coLeader") && !(userexecuted.getClanRoles().get(clantag) == Player.RoleType.ADMIN
+					|| userexecuted.getClanRoles().get(clantag) == Player.RoleType.LEADER)) {
+				event.getHook()
+						.editOriginalEmbeds(MessageUtil.buildEmbed(title,
+								"Um jemanden als Vize-Anführer hinzuzufügen, musst du Admin oder Anführer sein.",
+								MessageUtil.EmbedType.ERROR))
+						.queue();
+				return;
+			}
+
+			Player p = new Player(playertag);
+
+			if (!p.IsLinked()) {
+				event.getHook().editOriginalEmbeds(
+						MessageUtil.buildEmbed(title, "Dieser Spieler ist nicht verlinkt.", MessageUtil.EmbedType.ERROR))
+						.queue();
+				return;
+			}
+
+			if (new Player(playertag).getClanDB() != null) {
+				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title,
+						"Dieser Spieler ist bereits in einem Clan.", MessageUtil.EmbedType.ERROR)).queue();
+				return;
+			}
+
+			DBUtil.executeUpdate("INSERT INTO clan_members (player_tag, clan_tag, clan_role) VALUES (?, ?, ?)", playertag,
+					clantag, role);
+			String rolestring = role.equals("leader") ? "Anführer"
+					: role.equals("coLeader") ? "Vize-Anführer"
+							: role.equals("admin") ? "Ältester" : role.equals("member") ? "Mitglied" : null;
+
+			String desc = "";
+			try {
+				desc += "Der Spieler " + MessageUtil.unformat(p.getInfoStringDB()) + " wurde erfolgreich dem Clan "
+						+ new Clan(clantag).getInfoString() + " als " + rolestring + " hinzugefügt.";
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			String userid = p.getUser().getUserID();
+			Guild guild = Bot.getJda().getGuildById(Bot.guild_id);
+			Member member = guild.getMemberById(userid);
+			String memberroleid = c.getRoleID(Clan.Role.MEMBER);
+			Role memberrole = guild.getRoleById(memberroleid);
+			if (member != null) {
+				if (member.getRoles().contains(memberrole)) {
+					desc += "\n\n**Der User <@" + userid + "> hat bereits die Rolle <@&" + memberroleid + ">.**";
+				} else {
+					guild.addRoleToMember(member, memberrole).queue();
+					desc += "\n\n**Dem User <@" + userid + "> wurde die Rolle <@&" + memberroleid + "> hinzugefügt.**";
+				}
+			} else {
+				desc += "\n\n**Der User <@" + userid
+						+ "> existiert nicht auf dem Server. Ihm wurde somit keine Rolle hinzugefügt.**";
+			}
+
+			MessageChannelUnion channel = event.getChannel();
+			MessageUtil.sendUserPingHidden(channel, userid);
+
+			event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.SUCCESS)).queue();
+		}, "AddMemberCommand-" + event.getUser().getId()).start();
 
 	}
 
@@ -147,32 +150,34 @@ public class addmember extends ListenerAdapter {
 		if (!event.getName().equals("addmember"))
 			return;
 
-		String focused = event.getFocusedOption().getName();
-		String input = event.getFocusedOption().getValue();
+		new Thread(() -> {
+			String focused = event.getFocusedOption().getName();
+			String input = event.getFocusedOption().getValue();
 
-		if (focused.equals("clan")) {
-			List<Command.Choice> choices = DBManager.getClansAutocomplete(input);
+			if (focused.equals("clan")) {
+				List<Command.Choice> choices = DBManager.getClansAutocomplete(input);
 
-			event.replyChoices(choices).queue(_ -> {
-			}, _ -> {
-			});
-		}
-		if (focused.equals("player")) {
-			List<Command.Choice> choices = DBManager.getPlayerlistAutocomplete(input, DBManager.InClanType.NOTINCLAN);
+				event.replyChoices(choices).queue(_ -> {
+				}, _ -> {
+				});
+			}
+			if (focused.equals("player")) {
+				List<Command.Choice> choices = DBManager.getPlayerlistAutocomplete(input, DBManager.InClanType.NOTINCLAN);
 
-			event.replyChoices(choices).queue(_ -> {
-			}, _ -> {
-			});
-		}
-		if (focused.equals("role")) {
-			List<Command.Choice> choices = new ArrayList<>();
-			choices.add(new Command.Choice("Anführer", "leader"));
-			choices.add(new Command.Choice("Vize-Anführer", "coLeader"));
-			choices.add(new Command.Choice("Ältester", "admin"));
-			choices.add(new Command.Choice("Mitglied", "member"));
-			event.replyChoices(choices).queue(_ -> {
-			}, _ -> {
-			});
-		}
+				event.replyChoices(choices).queue(_ -> {
+				}, _ -> {
+				});
+			}
+			if (focused.equals("role")) {
+				List<Command.Choice> choices = new ArrayList<>();
+				choices.add(new Command.Choice("Anführer", "leader"));
+				choices.add(new Command.Choice("Vize-Anführer", "coLeader"));
+				choices.add(new Command.Choice("Ältester", "admin"));
+				choices.add(new Command.Choice("Mitglied", "member"));
+				event.replyChoices(choices).queue(_ -> {
+				}, _ -> {
+				});
+			}
+		}, "AddMemberAutocomplete-" + event.getUser().getId()).start();
 	}
 }
