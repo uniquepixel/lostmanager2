@@ -530,8 +530,14 @@ public class Bot extends ListenerAdapter {
 					}
 				}
 				
+				// First pass: Detect clan war state changes ONCE per clan
+				// Map of clan tag -> whether war just started
+				java.util.Map<String, Boolean> clanWarStarted = new java.util.HashMap<>();
 				// Track clan state updates to apply after processing all events
 				java.util.Map<String, String> clanStateUpdates = new java.util.HashMap<>();
+				
+				// Group events by clan and type to process start triggers efficiently
+				java.util.Map<String, java.util.List<Long>> cwStartEventsByClan = new java.util.HashMap<>();
 				
 				for (Long id : ids) {
 					try {
@@ -540,62 +546,12 @@ public class Bot extends ListenerAdapter {
 						
 						// Handle "start" triggers (duration = -1) specially
 						if (duration == -1) {
-							// For start triggers, check if a war just started
+							// For start triggers, group by clan for batch processing
 							if (le.getListeningType() == ListeningEvent.LISTENINGTYPE.CW) {
 								String clanTag = le.getClanTag();
-								try {
-									datawrapper.Clan clan = new datawrapper.Clan(clanTag);
-									
-									// Get last known state
-									String lastState = getCWLastState(clanTag);
-									
-									// Get current state
-									String currentState = "notInWar";
-									if (clan.isCWActive()) {
-										org.json.JSONObject cwJson = clan.getCWJson();
-										currentState = cwJson.getString("state");
-									}
-									
-									// Check if war just started
-									boolean warJustStarted = !lastState.isEmpty() && 
-										lastState.equals("notInWar") && 
-										(currentState.equals("preparation") || currentState.equals("inWar"));
-									
-									// Fire immediately if war just started AND not already fired in this war
-									if (warJustStarted) {
-										// Mark state for update AFTER all events are processed
-										clanStateUpdates.put(clanTag, currentState);
-										
-										// Get or create set of fired events for this clan
-										java.util.Set<Long> clanFiredEvents = firedStartEvents.computeIfAbsent(clanTag, k -> java.util.concurrent.ConcurrentHashMap.newKeySet());
-										
-										// Check if this specific event was already fired for this clan's current war
-										if (!clanFiredEvents.contains(id)) {
-											System.out.println("CW Start detected for clan " + clanTag + ", firing event " + id);
-											clanFiredEvents.add(id);
-											schedulertasks.execute(() -> {
-												try {
-													le.fireEvent();
-													System.out.println("Successfully fired start event " + id + " for clan " + clanTag);
-												} catch (Exception e) {
-													System.err.println("Error firing start trigger " + id + ": " + e.getMessage());
-													e.printStackTrace();
-													// Remove from fired set to allow retry in next poll
-													clanFiredEvents.remove(id);
-												}
-											});
-										} else {
-											System.out.println("Start event " + id + " already fired for current war in clan " + clanTag + ", skipping");
-										}
-									} else if (currentState.equals("notInWar")) {
-										// War ended, clear fired events for this clan to allow re-firing on next war
-										firedStartEvents.remove(clanTag);
-									}
-								} catch (Exception e) {
-									System.err.println("Error checking war state for event " + id + ": " + e.getMessage());
-								}
+								cwStartEventsByClan.computeIfAbsent(clanTag, k -> new java.util.ArrayList<>()).add(id);
 							}
-							continue; // Don't process start triggers as regular time-based events
+							continue; // Don't process start triggers as regular time-based events yet
 						}
 						
 						// Skip if already scheduled (only for non-start events)
@@ -639,6 +595,71 @@ public class Bot extends ListenerAdapter {
 					} catch (Exception e) {
 						System.err.println("Error processing event " + id + ": " + e.getMessage());
 						e.printStackTrace();
+					}
+				}
+				
+				// Second pass: Check clan war states ONCE per clan and fire all start events for that clan
+				for (java.util.Map.Entry<String, java.util.List<Long>> entry : cwStartEventsByClan.entrySet()) {
+					String clanTag = entry.getKey();
+					java.util.List<Long> eventIds = entry.getValue();
+					
+					try {
+						datawrapper.Clan clan = new datawrapper.Clan(clanTag);
+						
+						// Get last known state (only once per clan)
+						String lastState = getCWLastState(clanTag);
+						
+						// Get current state (only once per clan)
+						String currentState = "notInWar";
+						if (clan.isCWActive()) {
+							org.json.JSONObject cwJson = clan.getCWJson();
+							currentState = cwJson.getString("state");
+						}
+						
+						// Check if war just started (only once per clan)
+						boolean warJustStarted = !lastState.isEmpty() && 
+							lastState.equals("notInWar") && 
+							(currentState.equals("preparation") || currentState.equals("inWar"));
+						
+						// Fire all start events for this clan if war just started
+						if (warJustStarted) {
+							System.out.println("CW Start detected for clan " + clanTag + ", firing " + eventIds.size() + " events");
+							// Mark state for update AFTER all events are processed
+							clanStateUpdates.put(clanTag, currentState);
+							
+							// Get or create set of fired events for this clan
+							java.util.Set<Long> clanFiredEvents = firedStartEvents.computeIfAbsent(clanTag, k -> java.util.concurrent.ConcurrentHashMap.newKeySet());
+							
+							// Fire all events that haven't been fired yet for this war
+							for (Long eventId : eventIds) {
+								if (!clanFiredEvents.contains(eventId)) {
+									System.out.println("Firing start event " + eventId + " for clan " + clanTag);
+									clanFiredEvents.add(eventId);
+									
+									// Create a final reference for use in lambda
+									final Long finalEventId = eventId;
+									schedulertasks.execute(() -> {
+										try {
+											ListeningEvent le = new ListeningEvent(finalEventId);
+											le.fireEvent();
+											System.out.println("Successfully fired start event " + finalEventId + " for clan " + clanTag);
+										} catch (Exception e) {
+											System.err.println("Error firing start trigger " + finalEventId + ": " + e.getMessage());
+											e.printStackTrace();
+											// Remove from fired set to allow retry in next poll
+											clanFiredEvents.remove(finalEventId);
+										}
+									});
+								} else {
+									System.out.println("Start event " + eventId + " already fired for current war in clan " + clanTag + ", skipping");
+								}
+							}
+						} else if (currentState.equals("notInWar")) {
+							// War ended, clear fired events for this clan to allow re-firing on next war
+							firedStartEvents.remove(clanTag);
+						}
+					} catch (Exception e) {
+						System.err.println("Error checking war state for clan " + clanTag + ": " + e.getMessage());
 					}
 				}
 				
