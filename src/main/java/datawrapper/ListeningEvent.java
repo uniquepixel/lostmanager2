@@ -419,7 +419,6 @@ public class ListeningEvent {
 		// Get war members and check preferences
 		org.json.JSONObject clanData = cwJson.getJSONObject("clan");
 		org.json.JSONArray members = clanData.getJSONArray("members");
-		String warTag = cwJson.has("tag") ? cwJson.getString("tag") : null;
 		
 		// Calculate war end time to associate fillers with this specific war
 		String endTimeStr = cwJson.getString("endTime");
