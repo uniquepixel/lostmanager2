@@ -479,7 +479,6 @@ public class Clan {
 	public Long getCWEndTimeMillis() {
 		if (CWEndTimeMillis == null) {
 			isCWActive();
-
 		}
 		return CWEndTimeMillis;
 	}

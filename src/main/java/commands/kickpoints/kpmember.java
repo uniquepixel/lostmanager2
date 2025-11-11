@@ -52,7 +52,7 @@ public class kpmember extends ListenerAdapter {
 				Clan c = p.getClanDB();
 
 				if (c == null) {
-					event.replyEmbeds(MessageUtil.buildEmbed(title,
+					event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title,
 							"Dieser Spieler existiert nicht oder ist in keinem Clan.", MessageUtil.EmbedType.ERROR))
 							.queue();
 					return;

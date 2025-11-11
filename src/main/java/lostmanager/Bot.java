@@ -91,7 +91,7 @@ public class Bot extends ListenerAdapter {
 
 		// sql.Connection.tablesExists();
 		startNameUpdates();
-		restartAllEvents();
+		//restartAllEvents();
 
 		JDABuilder.createDefault(token).enableIntents(GatewayIntent.GUILD_MEMBERS)
 				.setMemberCachePolicy(MemberCachePolicy.ALL).setChunkingFilter(ChunkingFilter.ALL)
