@@ -159,7 +159,7 @@ public class ListeningEvent {
 				return Long.MAX_VALUE; // Return far future to prevent scheduling
 			}
 
-			Clan c = new Clan(clan_tag);
+			Clan c = new Clan(getClanTag());
 			Long endTimeMillis = null;
 			switch (getListeningType()) {
 			case CS:

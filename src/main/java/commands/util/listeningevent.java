@@ -346,7 +346,43 @@ public class listeningevent extends ListenerAdapter {
 					desc.append("**Feuert in:** ").append(fireDescription).append("\n");
 				} else {
 					long minutesUntilFire = (timestamp - System.currentTimeMillis()) / 1000 / 60;
-					desc.append("**Feuert in:** ").append(minutesUntilFire).append(" Minuten\n");
+					
+					// Check if the timestamp is in the past (negative minutes)
+					if (minutesUntilFire < 0) {
+						long minutesSinceFire = Math.abs(minutesUntilFire);
+						
+						// Format based on event type for better user experience
+						if (le.getListeningType() == ListeningEvent.LISTENINGTYPE.CW) {
+							// Check if war is actually ended
+							try {
+								Clan clan = new Clan(le.getClanTag());
+								if (clan.isCWActive()) {
+									// War is still active but event already fired
+									desc.append("**Feuert in:** Event bereits gefeuert vor ").append(minutesSinceFire).append(" Minuten\n");
+								} else {
+									// War has ended
+									long hours = minutesSinceFire / 60;
+									long days = hours / 24;
+									
+									if (days > 0) {
+										desc.append("**Feuert in:** Letzter CW ist vor ").append(days).append(" Tagen geendet und es wurde bisher keiner gestartet\n");
+									} else if (hours > 0) {
+										desc.append("**Feuert in:** Letzter CW ist vor ").append(hours).append(" Stunden geendet und es wurde bisher keiner gestartet\n");
+									} else {
+										desc.append("**Feuert in:** Letzter CW ist vor ").append(minutesSinceFire).append(" Minuten geendet und es wurde bisher keiner gestartet\n");
+									}
+								}
+							} catch (Exception e) {
+								// Fallback if we can't check war status
+								desc.append("**Feuert in:** Event bereits gefeuert vor ").append(minutesSinceFire).append(" Minuten\n");
+							}
+						} else {
+							// For other event types, just show that it already fired
+							desc.append("**Feuert in:** Event bereits gefeuert vor ").append(minutesSinceFire).append(" Minuten\n");
+						}
+					} else {
+						desc.append("**Feuert in:** ").append(minutesUntilFire).append(" Minuten\n");
+					}
 				}
 				
 				desc.append("\n");
