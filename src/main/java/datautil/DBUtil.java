@@ -54,7 +54,12 @@ public class DBUtil {
 
 			try (ResultSet rs = pstmt.executeQuery()) {
 				if (rs.next()) {
-					result = rs.getObject(sql.split(" ")[1], clazz);
+					// Use getString() for String class to handle JSONB columns properly
+					if (clazz == String.class) {
+						result = clazz.cast(rs.getString(sql.split(" ")[1]));
+					} else {
+						result = rs.getObject(sql.split(" ")[1], clazz);
+					}
 				}
 				Statement stmt = rs.getStatement();
 				stmt.close();
@@ -101,7 +106,12 @@ public class DBUtil {
 
 			try (ResultSet rs = pstmt.executeQuery()) {
 				while (rs.next()) {
-					result.add(rs.getObject(sql.split(" ")[1], clazz));
+					// Use getString() for String class to handle JSONB columns properly
+					if (clazz == String.class) {
+						result.add(clazz.cast(rs.getString(sql.split(" ")[1])));
+					} else {
+						result.add(rs.getObject(sql.split(" ")[1], clazz));
+					}
 				}
 				Statement stmt = rs.getStatement();
 				rs.close();
