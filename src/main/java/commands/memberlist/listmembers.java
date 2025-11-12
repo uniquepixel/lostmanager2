@@ -49,19 +49,28 @@ public class listmembers extends ListenerAdapter {
 			String coleaderlist = "";
 			String elderlist = "";
 			String memberlist = "";
+			int totalMembersCount = 0;
 
 			for (Player p : playerlist) {
 				if (p.getRoleDB() == Player.RoleType.LEADER) {
 					leaderlist += p.getInfoStringDB() + "\n";
+					totalMembersCount++;
 				}
 				if (p.getRoleDB() == Player.RoleType.COLEADER) {
-					coleaderlist += p.getInfoStringDB() + "\n";
+					if (p.isHiddenColeader()) {
+						coleaderlist += p.getInfoStringDB() + " (versteckt)\n";
+					} else {
+						coleaderlist += p.getInfoStringDB() + "\n";
+						totalMembersCount++;
+					}
 				}
 				if (p.getRoleDB() == Player.RoleType.ELDER) {
 					elderlist += p.getInfoStringDB() + "\n";
+					totalMembersCount++;
 				}
 				if (p.getRoleDB() == Player.RoleType.MEMBER) {
 					memberlist += p.getInfoStringDB() + "\n";
+					totalMembersCount++;
 				}
 			}
 			String desc = "## " + c.getInfoString() + "\n";
@@ -73,7 +82,7 @@ public class listmembers extends ListenerAdapter {
 			desc += elderlist == "" ? "---\n\n" : MessageUtil.unformat(elderlist) + "\n";
 			desc += "**Mitglied:**\n";
 			desc += memberlist == "" ? "---\n\n" : MessageUtil.unformat(memberlist) + "\n";
-			desc += "\nInsgesamte Mitglieder des Clans: " + playerlist.size();
+			desc += "\nInsgesamte Mitglieder des Clans: " + totalMembersCount;
 
 			Button refreshButton = Button.secondary("listmembers_" + clantag, "\u200B")
 					.withEmoji(Emoji.fromUnicode("🔁"));
@@ -135,19 +144,28 @@ public class listmembers extends ListenerAdapter {
 				String coleaderlist = "";
 				String elderlist = "";
 				String memberlist = "";
+				int totalMembersCount = 0;
 
 				for (Player p : playerlist) {
 					if (p.getRoleDB() == Player.RoleType.LEADER) {
 						leaderlist += p.getInfoStringDB() + "\n";
+						totalMembersCount++;
 					}
 					if (p.getRoleDB() == Player.RoleType.COLEADER) {
-						coleaderlist += p.getInfoStringDB() + "\n";
+						if (p.isHiddenColeader()) {
+							coleaderlist += p.getInfoStringDB() + " (versteckt)\n";
+						} else {
+							coleaderlist += p.getInfoStringDB() + "\n";
+							totalMembersCount++;
+						}
 					}
 					if (p.getRoleDB() == Player.RoleType.ELDER) {
 						elderlist += p.getInfoStringDB() + "\n";
+						totalMembersCount++;
 					}
 					if (p.getRoleDB() == Player.RoleType.MEMBER) {
 						memberlist += p.getInfoStringDB() + "\n";
+						totalMembersCount++;
 					}
 				}
 				String desc = "## " + c.getInfoString() + "\n";
@@ -159,7 +177,7 @@ public class listmembers extends ListenerAdapter {
 				desc += elderlist == "" ? "---\n\n" : MessageUtil.unformat(elderlist) + "\n";
 				desc += "**Mitglied:**\n";
 				desc += memberlist == "" ? "---\n\n" : MessageUtil.unformat(memberlist) + "\n";
-				desc += "\nInsgesamte Mitglieder des Clans: " + playerlist.size();
+				desc += "\nInsgesamte Mitglieder des Clans: " + totalMembersCount;
 
 				Button refreshButton = Button.secondary("listmembers_" + clantag, "\u200B")
 						.withEmoji(Emoji.fromUnicode("🔁"));

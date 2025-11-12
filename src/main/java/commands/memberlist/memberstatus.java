@@ -59,7 +59,10 @@ public class memberstatus extends ListenerAdapter {
 
 		for (String s : taglistdb) {
 			if (!taglistapi.contains(s)) {
-				membernotinclan.add(new Player(s));
+				Player p = new Player(s);
+				if (!p.isHiddenColeader()) {
+					membernotinclan.add(p);
+				}
 			}
 		}
 
@@ -195,7 +198,10 @@ public class memberstatus extends ListenerAdapter {
 
 				for (String s : taglistdb) {
 					if (!taglistapi.contains(s)) {
-						membernotinclan.add(new Player(s));
+						Player p = new Player(s);
+						if (!p.isHiddenColeader()) {
+							membernotinclan.add(p);
+						}
 					}
 				}
 
