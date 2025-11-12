@@ -250,20 +250,38 @@ public class wins extends ListenerAdapter {
 
 		// For current month: use last saved data and current API data
 		if (selectedMonth.equals(currentMonth)) {
-			// Find the most recent timestamp in current month or the season start (1st of
-			// month)
+			// Find the data point from the start of the current season
+			// Season starts on the 1st of the month, so we need data from then
 			AchievementData startData = null;
-			Timestamp latestTimestamp = null;
 
+			// Look for data from the current month that was saved at season start
+			// This would be on the 1st day of the month
 			for (AchievementData data : winsData) {
 				Timestamp ts = data.getTimeExtracted();
 				YearMonth dataMonth = YearMonth.from(ts.toLocalDateTime());
 
-				// Get the last data point from previous month or beginning of current month
-				if (dataMonth.isBefore(currentMonth) || dataMonth.equals(currentMonth)) {
-					if (latestTimestamp == null || ts.after(latestTimestamp)) {
-						latestTimestamp = ts;
+				// We want data from the beginning of the current month (season start)
+				if (dataMonth.equals(currentMonth)) {
+					// Take the earliest data from this month (should be from season start on 1st)
+					if (startData == null || ts.before(startData.getTimeExtracted())) {
 						startData = data;
+					}
+				}
+			}
+
+			// If no data from current month, try to find from end of previous month
+			if (startData == null) {
+				YearMonth previousMonth = currentMonth.minusMonths(1);
+				Timestamp latestFromPrevious = null;
+				for (AchievementData data : winsData) {
+					Timestamp ts = data.getTimeExtracted();
+					YearMonth dataMonth = YearMonth.from(ts.toLocalDateTime());
+					
+					if (dataMonth.equals(previousMonth)) {
+						if (latestFromPrevious == null || ts.after(latestFromPrevious)) {
+							latestFromPrevious = ts;
+							startData = data;
+						}
 					}
 				}
 			}
@@ -291,6 +309,7 @@ public class wins extends ListenerAdapter {
 			}
 		} else {
 			// For past months: find season start and season end data
+			// Season for a month starts on 1st and ends on 1st of next month
 			AchievementData startData = null;
 			AchievementData endData = null;
 
@@ -301,16 +320,36 @@ public class wins extends ListenerAdapter {
 				Timestamp ts = data.getTimeExtracted();
 				YearMonth dataMonth = YearMonth.from(ts.toLocalDateTime());
 
-				// Find data at the start of selected month (or last data before it)
-				if (dataMonth.equals(startMonth) || (dataMonth.isBefore(startMonth)
-						&& (startData == null || ts.after(startData.getTimeExtracted())))) {
-					startData = data;
+				// Find earliest data from the start month (season start)
+				if (dataMonth.equals(startMonth)) {
+					if (startData == null || ts.before(startData.getTimeExtracted())) {
+						startData = data;
+					}
 				}
 
-				// Find data at the start of next month (season end)
-				if (dataMonth.equals(endMonth) || (dataMonth.equals(startMonth)
-						&& (endData == null || ts.after(endData.getTimeExtracted())))) {
-					endData = data;
+				// Find earliest data from the end month (season end)
+				if (dataMonth.equals(endMonth)) {
+					if (endData == null || ts.before(endData.getTimeExtracted())) {
+						endData = data;
+					}
+				}
+			}
+
+			// Fallback: if no data from exact months, try to find closest data
+			if (startData == null) {
+				// Look for latest data before the start month
+				YearMonth previousMonth = startMonth.minusMonths(1);
+				Timestamp latestBeforeStart = null;
+				for (AchievementData data : winsData) {
+					Timestamp ts = data.getTimeExtracted();
+					YearMonth dataMonth = YearMonth.from(ts.toLocalDateTime());
+					
+					if (dataMonth.equals(previousMonth)) {
+						if (latestBeforeStart == null || ts.after(latestBeforeStart)) {
+							latestBeforeStart = ts;
+							startData = data;
+						}
+					}
 				}
 			}
 

@@ -548,22 +548,23 @@ public class Player {
 		}
 	}
 
-	private AchievementData getAchievementDataAPI(AchievementData.Type type, Timestamp timestamp) {
+	public AchievementData getAchievementDataAPI(AchievementData.Type type, Timestamp timestamp) {
 		Integer value = null;
+		AchievementData data = null;
 
 		switch (type) {
 		case WINS:
 			value = Integer.valueOf(getAchievementAPI("Conqueror"));
-			achievementDataAPI = new AchievementData(timestamp, value, Type.WINS);
+			data = new AchievementData(timestamp, value, Type.WINS);
 			break;
 		case CLANGAMES_POINTS:
 			value = Integer.valueOf(getAchievementAPI("Games Champion"));
-			achievementDataAPI = new AchievementData(timestamp, value, Type.CLANGAMES_POINTS);
+			data = new AchievementData(timestamp, value, Type.CLANGAMES_POINTS);
 			break;
 		default:
 			return null;
 		}
-		return achievementDataAPI;
+		return data;
 	}
 
 	private Integer getAchievementAPI(String achievementName) {

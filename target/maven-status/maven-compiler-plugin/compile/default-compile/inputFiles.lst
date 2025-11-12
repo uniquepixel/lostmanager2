@@ -24,6 +24,7 @@
 /home/runner/work/lostmanager2/lostmanager2/src/main/java/commands/coc/util/listeningevent.java
 /home/runner/work/lostmanager2/lostmanager2/src/main/java/commands/coc/util/raidping.java
 /home/runner/work/lostmanager2/lostmanager2/src/main/java/commands/coc/util/setnick.java
+/home/runner/work/lostmanager2/lostmanager2/src/main/java/commands/coc/util/wins.java
 /home/runner/work/lostmanager2/lostmanager2/src/main/java/commands/discord/admin/deletemessages.java
 /home/runner/work/lostmanager2/lostmanager2/src/main/java/commands/discord/admin/restart.java
 /home/runner/work/lostmanager2/lostmanager2/src/main/java/commands/discord/util/checkreacts.java
@@ -41,5 +42,6 @@
 /home/runner/work/lostmanager2/lostmanager2/src/main/java/dbutil/DBUtil.java
 /home/runner/work/lostmanager2/lostmanager2/src/main/java/lostmanager/Bot.java
 /home/runner/work/lostmanager2/lostmanager2/src/main/java/util/MessageUtil.java
+/home/runner/work/lostmanager2/lostmanager2/src/main/java/util/SeasonUtil.java
 /home/runner/work/lostmanager2/lostmanager2/src/main/java/util/Triplet.java
 /home/runner/work/lostmanager2/lostmanager2/src/main/java/util/Tuple.java
