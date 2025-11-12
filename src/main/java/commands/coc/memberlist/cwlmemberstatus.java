@@ -96,6 +96,11 @@ public class cwlmemberstatus extends ListenerAdapter {
 				event.replyChoices(choices).queue(success -> {
 				}, failure -> {
 				});
+			} else if (focused.equals("cwl_clan_tag")) {
+				List<Command.Choice> choices = DBManager.getSideClansAutocomplete(input);
+				event.replyChoices(choices).queue(success -> {
+				}, failure -> {
+				});
 			}
 		}, "CWLMemberstatusAutocomplete-" + event.getUser().getId()).start();
 	}

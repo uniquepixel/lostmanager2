@@ -92,6 +92,34 @@ public class DBManager {
 		return choices;
 	}
 
+	public static List<Command.Choice> getSideClansAutocomplete(String input) {
+		List<Command.Choice> choices = new ArrayList<>();
+
+		String sql = "SELECT name, clan_tag FROM sideclans ORDER BY name ASC";
+
+		try (PreparedStatement pstmt = Connection.getConnection().prepareStatement(sql)) {
+			try (ResultSet rs = pstmt.executeQuery()) {
+				while (rs.next()) {
+					String tag = rs.getString("clan_tag");
+					String name = rs.getString("name");
+
+					String display = name + " (" + tag + ")";
+
+					if (display.toLowerCase().contains(input.toLowerCase())
+							|| tag.toLowerCase().startsWith(input.toLowerCase())) {
+						choices.add(new Command.Choice(display, tag));
+						if (choices.size() == 25) {
+							break;
+						}
+					}
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return choices;
+	}
+
 	public static List<Command.Choice> getPlayerlistAutocomplete(String input, InClanType inclantype) {
 		List<Command.Choice> choices = new ArrayList<>();
 
