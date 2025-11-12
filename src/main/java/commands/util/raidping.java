@@ -81,6 +81,11 @@ public class raidping extends ListenerAdapter {
 		ArrayList<Player> notdone = new ArrayList<>();
 
 		for (Player dbPlayer : dbmemberlist) {
+			// Skip hidden co-leaders as they don't need to be in clan/raid
+			if (dbPlayer.isHiddenColeader()) {
+				continue;
+			}
+			
 			boolean b = false;
 			for (Player raidPlayer : raidmembers) {
 				if (raidPlayer.getTag().equals(dbPlayer.getTag())) {

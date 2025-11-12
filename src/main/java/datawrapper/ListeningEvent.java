@@ -275,6 +275,11 @@ public class ListeningEvent {
 
 		boolean hasViolations = false;
 		for (Player p : players) {
+			// Skip hidden co-leaders as they don't need to participate in clan games
+			if (p.isHiddenColeader()) {
+				continue;
+			}
+			
 			int difference = 0;
 
 			if (beforeActualEnd) {
@@ -787,6 +792,11 @@ public class ListeningEvent {
 
 		// Check members who didn't raid at all
 		for (Player dbPlayer : dbMembers) {
+			// Skip hidden co-leaders as they don't need to be in clan/raid
+			if (dbPlayer.isHiddenColeader()) {
+				continue;
+			}
+			
 			boolean foundInRaid = false;
 			for (Player raidPlayer : raidMembers) {
 				if (raidPlayer.getTag().equals(dbPlayer.getTag())) {
