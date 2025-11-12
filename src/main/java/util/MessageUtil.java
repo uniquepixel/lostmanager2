@@ -74,22 +74,4 @@ public class MessageUtil {
 		});
 	}
 
-	public static void sendMultipleUserPingHidden(MessageChannelUnion channel, String... uuid) {
-		channel.sendMessage(".").queue(sentMessage -> {
-			new Thread(() -> {
-				try {
-					Thread.sleep(100);
-					for (String id : uuid) {
-						sentMessage.editMessage("<@" + id + ">").queue();
-						Thread.sleep(100);
-					}
-					Thread.sleep(100);
-					sentMessage.delete().queue();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}).start();
-		});
-	}
-	
 }
