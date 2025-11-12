@@ -442,7 +442,7 @@ public class Player {
 					if (rs.next()) {
 						String rolestring = rs.getString("clan_role");
 						roledb = rolestring.equals("leader") ? RoleType.LEADER
-								: rolestring.equals("coLeader") ? RoleType.COLEADER
+								: rolestring.equals("coLeader") || rolestring.equals("hiddencoleader") ? RoleType.COLEADER
 										: rolestring.equals("admin") ? RoleType.ELDER
 												: rolestring.equals("member") ? RoleType.MEMBER : null;
 					}
@@ -452,6 +452,22 @@ public class Player {
 			}
 		}
 		return roledb;
+	}
+
+	public boolean isHiddenColeader() {
+		String sql = "SELECT clan_role FROM clan_members WHERE player_tag = ?";
+		try (PreparedStatement pstmt = Connection.getConnection().prepareStatement(sql)) {
+			pstmt.setString(1, tag);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					String rolestring = rs.getString("clan_role");
+					return rolestring != null && rolestring.equals("hiddencoleader");
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	public RoleType getRoleAPI() {
