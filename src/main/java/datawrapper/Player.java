@@ -442,7 +442,8 @@ public class Player {
 					if (rs.next()) {
 						String rolestring = rs.getString("clan_role");
 						roledb = rolestring.equals("leader") ? RoleType.LEADER
-								: rolestring.equals("coLeader") || rolestring.equals("hiddencoleader") ? RoleType.COLEADER
+								: rolestring.equals("coLeader") || rolestring.equals("hiddencoleader")
+										? RoleType.COLEADER
 										: rolestring.equals("admin") ? RoleType.ELDER
 												: rolestring.equals("member") ? RoleType.MEMBER : null;
 					}
@@ -549,22 +550,23 @@ public class Player {
 	}
 
 	public AchievementData getAchievementDataAPI(AchievementData.Type type, Timestamp timestamp) {
-		Integer value = null;
-		AchievementData data = null;
+		if (achievementDataAPI == null) {
+			Integer value = null;
 
-		switch (type) {
-		case WINS:
-			value = Integer.valueOf(getAchievementAPI("Conqueror"));
-			data = new AchievementData(timestamp, value, Type.WINS);
-			break;
-		case CLANGAMES_POINTS:
-			value = Integer.valueOf(getAchievementAPI("Games Champion"));
-			data = new AchievementData(timestamp, value, Type.CLANGAMES_POINTS);
-			break;
-		default:
-			return null;
+			switch (type) {
+			case WINS:
+				value = Integer.valueOf(getAchievementAPI("Conqueror"));
+				achievementDataAPI = new AchievementData(timestamp, value, Type.WINS);
+				break;
+			case CLANGAMES_POINTS:
+				value = Integer.valueOf(getAchievementAPI("Games Champion"));
+				achievementDataAPI = new AchievementData(timestamp, value, Type.CLANGAMES_POINTS);
+				break;
+			default:
+				return null;
+			}
 		}
-		return data;
+		return achievementDataAPI;
 	}
 
 	private Integer getAchievementAPI(String achievementName) {
@@ -584,38 +586,39 @@ public class Player {
 
 	/**
 	 * Helper method to perform HTTP requests with retry logic
-	 * @param url The URL to request
+	 * 
+	 * @param url        The URL to request
 	 * @param maxRetries Maximum number of retry attempts
 	 * @return HttpResponse or null if all retries failed
 	 */
 	private HttpResponse<String> performHttpRequestWithRetry(String url, int maxRetries) {
 		HttpClient client = HttpClient.newHttpClient();
 		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url))
-				.header("Authorization", "Bearer " + Bot.api_key)
-				.header("Accept", "application/json")
-				.GET()
-				.build();
-		
+				.header("Authorization", "Bearer " + Bot.api_key).header("Accept", "application/json").GET().build();
+
 		int attempt = 0;
 		while (attempt <= maxRetries) {
 			try {
 				HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-				
-				// If successful (200) or client error (4xx), return immediately (no retry for client errors)
+
+				// If successful (200) or client error (4xx), return immediately (no retry for
+				// client errors)
 				if (response.statusCode() == 200 || (response.statusCode() >= 400 && response.statusCode() < 500)) {
 					return response;
 				}
-				
+
 				// For server errors (5xx) or other errors, retry
 				if (attempt < maxRetries) {
 					long waitTime = (long) Math.pow(2, attempt) * 1000; // Exponential backoff: 1s, 2s, 4s
-					System.err.println("Request failed with status " + response.statusCode() + ", retrying in " + waitTime + "ms (attempt " + (attempt + 1) + "/" + maxRetries + ")");
+					System.err.println("Request failed with status " + response.statusCode() + ", retrying in "
+							+ waitTime + "ms (attempt " + (attempt + 1) + "/" + maxRetries + ")");
 					Thread.sleep(waitTime);
 				}
 			} catch (IOException | InterruptedException e) {
 				if (attempt < maxRetries) {
 					long waitTime = (long) Math.pow(2, attempt) * 1000; // Exponential backoff
-					System.err.println("Request failed with exception: " + e.getMessage() + ", retrying in " + waitTime + "ms (attempt " + (attempt + 1) + "/" + maxRetries + ")");
+					System.err.println("Request failed with exception: " + e.getMessage() + ", retrying in " + waitTime
+							+ "ms (attempt " + (attempt + 1) + "/" + maxRetries + ")");
 					try {
 						Thread.sleep(waitTime);
 					} catch (InterruptedException ie) {
@@ -629,7 +632,7 @@ public class Player {
 			}
 			attempt++;
 		}
-		
+
 		System.err.println("All retry attempts failed for URL: " + url);
 		return null;
 	}
@@ -640,7 +643,7 @@ public class Player {
 			System.err.println("Player tag is null, cannot retrieve player data");
 			return null;
 		}
-		
+
 		// URL-kodieren des Spieler-Tags (# -> %23)
 		String encodedTag = java.net.URLEncoder.encode(tag, java.nio.charset.StandardCharsets.UTF_8);
 		String url = "https://api.clashofclans.com/v1/players/" + encodedTag;

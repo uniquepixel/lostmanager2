@@ -85,7 +85,7 @@ public class wins extends ListenerAdapter {
 				desc += "Season: " + selectedMonth.format(DateTimeFormatter.ofPattern("MMMM yyyy", Locale.GERMAN))
 						+ "\n\n";
 
-				ArrayList<Player> members = clan.getAllMembers();
+				ArrayList<Player> members = clan.getPlayersDB();
 				if (members == null || members.isEmpty()) {
 					desc += "Keine Mitglieder gefunden.\n";
 				} else {
