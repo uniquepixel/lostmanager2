@@ -105,12 +105,53 @@ public class teamcheck extends ListenerAdapter {
 	@Override
 	public void onButtonInteraction(ButtonInteractionEvent event) {
 		String id = event.getComponentId();
-		if (!id.startsWith("tc_"))
+		if (!id.startsWith("tc_") && !id.startsWith("tcping_"))
 			return;
 
 		event.deferEdit().queue();
 
 		String title = "Team-Check";
+		
+		// Handle ping loading button
+		if (id.startsWith("tcping_")) {
+			event.getInteraction().getHook()
+					.editOriginalEmbeds(MessageUtil.buildEmbed(title, "Pings werden geladen...", MessageUtil.EmbedType.LOADING))
+					.queue();
+
+			new Thread(() -> {
+				Guild guild = event.getGuild();
+				if (guild == null) {
+					return;
+				}
+
+				// Decode button ID to extract role lists
+				List<Role> memberRoles = new ArrayList<>();
+				List<Role> teamRoles = new ArrayList<>();
+
+				try {
+					decodeButtonId(id.replace("tcping_", "tc_"), guild, memberRoles, teamRoles);
+				} catch (Exception e) {
+					event.getHook()
+							.editOriginalEmbeds(MessageUtil.buildEmbed(title,
+									"Fehler: Button-Daten konnten nicht dekodiert werden.", MessageUtil.EmbedType.ERROR))
+							.queue();
+					return;
+				}
+
+				if (memberRoles.isEmpty()) {
+					event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title,
+							"Fehler: Rollen konnten nicht gefunden werden.", MessageUtil.EmbedType.ERROR)).queue();
+					return;
+				}
+
+				// Load pings for all members with member roles
+				loadPingsForMembers(event.getHook(), guild, title, memberRoles, teamRoles, id.replace("tcping_", "tc_"));
+
+			}, "TeamCheckLoadPings-" + event.getUser().getId()).start();
+			return;
+		}
+		
+		// Handle refresh button
 		event.getInteraction().getHook()
 				.editOriginalEmbeds(MessageUtil.buildEmbed(title, "Wird geladen...", MessageUtil.EmbedType.LOADING))
 				.queue();
@@ -250,6 +291,9 @@ public class teamcheck extends ListenerAdapter {
 
 			// Create refresh button
 			Button refreshButton = Button.secondary(buttonId, "\u200B").withEmoji(Emoji.fromUnicode("🔁"));
+			
+			// Create ping loading button
+			Button loadPingsButton = Button.primary("tcping_" + buttonId.substring(3), "Pings laden");
 
 			// Add timestamp
 			ZonedDateTime jetzt = ZonedDateTime.now(ZoneId.of("Europe/Berlin"));
@@ -258,7 +302,41 @@ public class teamcheck extends ListenerAdapter {
 
 			// Always use INFO color
 			hook.editOriginalEmbeds(MessageUtil.buildEmbed(title, description.toString(), MessageUtil.EmbedType.INFO,
-					"Zuletzt aktualisiert am " + formatiert)).setActionRow(refreshButton).queue();
+					"Zuletzt aktualisiert am " + formatiert)).setActionRow(refreshButton, loadPingsButton).queue();
+		});
+	}
+
+	private void loadPingsForMembers(net.dv8tion.jda.api.interactions.InteractionHook hook, Guild guild, String title,
+			List<Role> memberRoles, List<Role> teamRoles, String buttonId) {
+
+		if (guild == null) {
+			hook.editOriginalEmbeds(MessageUtil.buildEmbed(title,
+					"Dieser Befehl kann nur auf einem Server ausgeführt werden.", MessageUtil.EmbedType.ERROR)).queue();
+			return;
+		}
+
+		// Load all members with any of the member roles
+		guild.loadMembers().onSuccess(allMembers -> {
+			// Combine members from all member roles (no duplicates)
+			List<Member> membersWithRole = allMembers.stream().filter(member -> {
+				for (Role memberRole : memberRoles) {
+					if (member.getRoles().contains(memberRole)) {
+						return true;
+					}
+				}
+				return false;
+			}).distinct().toList();
+
+			// Extract user IDs
+			String[] userIds = membersWithRole.stream()
+					.map(member -> member.getId())
+					.toArray(String[]::new);
+
+			// Send hidden pings in a separate thread (MessageUtil already does this)
+			MessageUtil.sendMultipleUserPingHidden(hook.getInteraction().getMessageChannel(), userIds);
+
+			// Re-run the team check to restore the original message with buttons enabled
+			performTeamCheck(hook, guild, title, memberRoles, teamRoles, buttonId);
 		});
 	}
 
