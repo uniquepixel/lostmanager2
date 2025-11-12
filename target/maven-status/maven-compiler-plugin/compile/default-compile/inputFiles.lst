@@ -14,6 +14,7 @@
 /home/runner/work/lostmanager2/lostmanager2/src/main/java/commands/coc/links/unlink.java
 /home/runner/work/lostmanager2/lostmanager2/src/main/java/commands/coc/links/verify.java
 /home/runner/work/lostmanager2/lostmanager2/src/main/java/commands/coc/memberlist/addmember.java
+/home/runner/work/lostmanager2/lostmanager2/src/main/java/commands/coc/memberlist/cwlmemberstatus.java
 /home/runner/work/lostmanager2/lostmanager2/src/main/java/commands/coc/memberlist/editmember.java
 /home/runner/work/lostmanager2/lostmanager2/src/main/java/commands/coc/memberlist/listmembers.java
 /home/runner/work/lostmanager2/lostmanager2/src/main/java/commands/coc/memberlist/memberstatus.java
