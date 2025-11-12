@@ -1,5 +1,8 @@
 package commands.util;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,9 +14,12 @@ import datawrapper.User;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import util.MessageUtil;
 
 public class teamcheck extends ListenerAdapter {
@@ -75,138 +81,175 @@ public class teamcheck extends ListenerAdapter {
 				teamRoles.add(teamRole3Option.getAsRole());
 			}
 
+			// Create button ID with role IDs
+			String buttonId = "teamcheck_" + memberRole.getId();
+			for (Role teamRole : teamRoles) {
+				buttonId += "_" + teamRole.getId();
+			}
+
+			performTeamCheck(event.getHook(), event.getGuild(), title, memberRole, teamRoles, buttonId);
+
+		}, "TeamCheckCommand-" + event.getUser().getId()).start();
+	}
+
+	@Override
+	public void onButtonInteraction(ButtonInteractionEvent event) {
+		String id = event.getComponentId();
+		if (!id.startsWith("teamcheck_"))
+			return;
+
+		event.deferEdit().queue();
+
+		String title = "Team-Check";
+		event.getInteraction().getHook()
+				.editOriginalEmbeds(MessageUtil.buildEmbed(title, "Wird geladen...", MessageUtil.EmbedType.LOADING))
+				.queue();
+
+		new Thread(() -> {
+			// Parse button ID to extract role IDs
+			String[] parts = id.substring("teamcheck_".length()).split("_");
+			
 			Guild guild = event.getGuild();
 			if (guild == null) {
+				return;
+			}
+
+			Role memberRole = guild.getRoleById(parts[0]);
+			List<Role> teamRoles = new ArrayList<>();
+			
+			for (int i = 1; i < parts.length; i++) {
+				Role teamRole = guild.getRoleById(parts[i]);
+				if (teamRole != null) {
+					teamRoles.add(teamRole);
+				}
+			}
+
+			if (memberRole == null || teamRoles.isEmpty()) {
 				event.getHook()
 						.editOriginalEmbeds(MessageUtil.buildEmbed(title,
-								"Dieser Befehl kann nur auf einem Server ausgeführt werden.",
+								"Fehler: Rollen konnten nicht gefunden werden.",
 								MessageUtil.EmbedType.ERROR))
 						.queue();
 				return;
 			}
 
-			// Load all members with the member role
-			guild.loadMembers().onSuccess(allMembers -> {
-				List<Member> membersWithRole = allMembers.stream()
-						.filter(member -> member.getRoles().contains(memberRole))
-						.toList();
+			performTeamCheck(event.getHook(), guild, title, memberRole, teamRoles, id);
 
-				// Track statistics
-				int totalMembers = membersWithRole.size();
-				int membersWithNoTeam = 0;
-				int membersWithMultipleTeams = 0;
-				Map<Role, Integer> teamDistribution = new HashMap<>();
+		}, "TeamCheckRefresh-" + event.getUser().getId()).start();
+	}
+
+	private void performTeamCheck(net.dv8tion.jda.api.interactions.InteractionHook hook, Guild guild, 
+			String title, Role memberRole, List<Role> teamRoles, String buttonId) {
+		
+		if (guild == null) {
+			hook.editOriginalEmbeds(MessageUtil.buildEmbed(title,
+					"Dieser Befehl kann nur auf einem Server ausgeführt werden.",
+					MessageUtil.EmbedType.ERROR))
+					.queue();
+			return;
+		}
+
+		// Load all members with the member role
+		guild.loadMembers().onSuccess(allMembers -> {
+			List<Member> membersWithRole = allMembers.stream()
+					.filter(member -> member.getRoles().contains(memberRole))
+					.toList();
+
+			// Track statistics
+			int totalMembers = membersWithRole.size();
+			Map<Role, List<String>> teamMembers = new HashMap<>();
+			
+			List<String> noTeamList = new ArrayList<>();
+			List<String> multipleTeamsList = new ArrayList<>();
+			
+			// Initialize team member lists
+			for (Role teamRole : teamRoles) {
+				teamMembers.put(teamRole, new ArrayList<>());
+			}
+
+			// Check each member
+			for (Member member : membersWithRole) {
+				int teamCount = 0;
+				List<Role> memberTeams = new ArrayList<>();
 				
-				List<String> noTeamList = new ArrayList<>();
-				List<String> multipleTeamsList = new ArrayList<>();
-				
-				// Initialize team distribution counters
 				for (Role teamRole : teamRoles) {
-					teamDistribution.put(teamRole, 0);
-				}
-
-				// Check each member
-				for (Member member : membersWithRole) {
-					int teamCount = 0;
-					List<Role> memberTeams = new ArrayList<>();
-					
-					for (Role teamRole : teamRoles) {
-						if (member.getRoles().contains(teamRole)) {
-							teamCount++;
-							memberTeams.add(teamRole);
-							teamDistribution.put(teamRole, teamDistribution.get(teamRole) + 1);
-						}
-					}
-
-					if (teamCount == 0) {
-						membersWithNoTeam++;
-						noTeamList.add(member.getAsMention());
-					} else if (teamCount > 1) {
-						membersWithMultipleTeams++;
-						StringBuilder teams = new StringBuilder();
-						for (int i = 0; i < memberTeams.size(); i++) {
-							if (i > 0) teams.append(", ");
-							teams.append(memberTeams.get(i).getName());
-						}
-						multipleTeamsList.add(member.getAsMention() + " (in " + teams + ")");
+					if (member.getRoles().contains(teamRole)) {
+						teamCount++;
+						memberTeams.add(teamRole);
+						teamMembers.get(teamRole).add(member.getAsMention());
 					}
 				}
 
-				// Build result description
-				StringBuilder description = new StringBuilder();
-				
-				// Summary statistics
-				description.append("**Gesamtzahl der Mitglieder:** ").append(totalMembers).append("\n\n");
-				
-				// Team distribution
-				description.append("**Teamverteilung:**\n");
-				for (Role teamRole : teamRoles) {
-					int count = teamDistribution.get(teamRole);
-					description.append("• ").append(teamRole.getName()).append(": ").append(count);
-					if (totalMembers > 0) {
-						double percentage = (count * 100.0) / totalMembers;
-						description.append(String.format(" (%.1f%%)", percentage));
+				if (teamCount == 0) {
+					noTeamList.add(member.getAsMention());
+				} else if (teamCount > 1) {
+					StringBuilder teams = new StringBuilder();
+					for (int i = 0; i < memberTeams.size(); i++) {
+						if (i > 0) teams.append(", ");
+						teams.append(memberTeams.get(i).getName());
 					}
-					description.append("\n");
+					multipleTeamsList.add(member.getAsMention() + " (in " + teams + ")");
 				}
-				description.append("\n");
+			}
 
-				// Members without team
-				description.append("**Mitglieder ohne Team:** ").append(membersWithNoTeam);
-				if (totalMembers > 0) {
-					double percentage = (membersWithNoTeam * 100.0) / totalMembers;
-					description.append(String.format(" (%.1f%%)", percentage));
-				}
-				description.append("\n");
-				
-				if (membersWithNoTeam > 0) {
-					description.append("*Liste:*\n");
-					for (int i = 0; i < Math.min(10, noTeamList.size()); i++) {
-						description.append(noTeamList.get(i));
-						if (i < Math.min(9, noTeamList.size() - 1)) {
+			// Build result description
+			StringBuilder description = new StringBuilder();
+			
+			// Summary statistics
+			description.append("**Gesamtzahl der Mitglieder:** ").append(totalMembers).append("\n\n");
+			
+			// Team distribution - list all members per team
+			description.append("**Teamverteilung:**\n");
+			for (Role teamRole : teamRoles) {
+				List<String> members = teamMembers.get(teamRole);
+				description.append("**").append(teamRole.getName()).append(":** ").append(members.size()).append("\n");
+				if (!members.isEmpty()) {
+					for (String member : members) {
+						description.append(member);
+						if (members.indexOf(member) < members.size() - 1) {
 							description.append(", ");
 						}
 					}
-					if (noTeamList.size() > 10) {
-						description.append(", ... und ").append(noTeamList.size() - 10).append(" weitere");
-					}
 					description.append("\n");
 				}
 				description.append("\n");
+			}
 
-				// Members with multiple teams
-				description.append("**Mitglieder in mehreren Teams:** ").append(membersWithMultipleTeams);
-				if (totalMembers > 0) {
-					double percentage = (membersWithMultipleTeams * 100.0) / totalMembers;
-					description.append(String.format(" (%.1f%%)", percentage));
+			// Members without team - list all
+			description.append("**Mitglieder ohne Team:** ").append(noTeamList.size()).append("\n");
+			if (!noTeamList.isEmpty()) {
+				for (String member : noTeamList) {
+					description.append(member);
+					if (noTeamList.indexOf(member) < noTeamList.size() - 1) {
+						description.append(", ");
+					}
 				}
 				description.append("\n");
-				
-				if (membersWithMultipleTeams > 0) {
-					description.append("*Liste:*\n");
-					for (int i = 0; i < Math.min(10, multipleTeamsList.size()); i++) {
-						description.append(multipleTeamsList.get(i)).append("\n");
-					}
-					if (multipleTeamsList.size() > 10) {
-						description.append("... und ").append(multipleTeamsList.size() - 10).append(" weitere\n");
-					}
+			}
+			description.append("\n");
+
+			// Members with multiple teams - list all
+			description.append("**Mitglieder in mehreren Teams:** ").append(multipleTeamsList.size()).append("\n");
+			if (!multipleTeamsList.isEmpty()) {
+				for (String member : multipleTeamsList) {
+					description.append(member).append("\n");
 				}
+			}
 
-				// Determine embed type based on results
-				MessageUtil.EmbedType embedType;
-				if (membersWithNoTeam == 0 && membersWithMultipleTeams == 0) {
-					embedType = MessageUtil.EmbedType.SUCCESS;
-				} else if (membersWithNoTeam > totalMembers * 0.1 || membersWithMultipleTeams > 0) {
-					embedType = MessageUtil.EmbedType.ERROR;
-				} else {
-					embedType = MessageUtil.EmbedType.INFO;
-				}
+			// Create refresh button
+			Button refreshButton = Button.secondary(buttonId, "\u200B")
+					.withEmoji(Emoji.fromUnicode("🔁"));
 
-				event.getHook()
-						.editOriginalEmbeds(MessageUtil.buildEmbed(title, description.toString(), embedType))
-						.queue();
-			});
+			// Add timestamp
+			ZonedDateTime jetzt = ZonedDateTime.now(ZoneId.of("Europe/Berlin"));
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy 'um' HH:mm 'Uhr'");
+			String formatiert = jetzt.format(formatter);
 
-		}, "TeamCheckCommand-" + event.getUser().getId()).start();
+			// Always use INFO color
+			hook.editOriginalEmbeds(MessageUtil.buildEmbed(title, description.toString(), 
+					MessageUtil.EmbedType.INFO, "Zuletzt aktualisiert am " + formatiert))
+					.setActionRow(refreshButton)
+					.queue();
+		});
 	}
 }
