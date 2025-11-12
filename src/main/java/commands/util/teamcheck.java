@@ -1,9 +1,11 @@
 package commands.util;
 
+import java.nio.ByteBuffer;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,14 +99,8 @@ public class teamcheck extends ListenerAdapter {
 				teamRoles.add(teamRole5Option.getAsRole());
 			}
 
-			// Create button ID with role IDs
-			String buttonId = "teamcheck";
-			for (Role memberRole : memberRoles) {
-				buttonId += "_m" + memberRole.getId();
-			}
-			for (Role teamRole : teamRoles) {
-				buttonId += "_t" + teamRole.getId();
-			}
+			// Create button ID with encoded role IDs (Base64 compressed)
+			String buttonId = encodeButtonId(memberRoles, teamRoles);
 
 			performTeamCheck(event.getHook(), event.getGuild(), title, memberRoles, teamRoles, buttonId);
 
@@ -114,7 +110,7 @@ public class teamcheck extends ListenerAdapter {
 	@Override
 	public void onButtonInteraction(ButtonInteractionEvent event) {
 		String id = event.getComponentId();
-		if (!id.startsWith("teamcheck_"))
+		if (!id.startsWith("tc_"))
 			return;
 
 		event.deferEdit().queue();
@@ -125,30 +121,24 @@ public class teamcheck extends ListenerAdapter {
 				.queue();
 
 		new Thread(() -> {
-			// Parse button ID to extract role IDs
-			String[] parts = id.substring("teamcheck_".length()).split("_");
-			
 			Guild guild = event.getGuild();
 			if (guild == null) {
 				return;
 			}
 
-			// Parse member roles (prefixed with 'm') and team roles (prefixed with 't')
+			// Decode button ID to extract role lists
 			List<Role> memberRoles = new ArrayList<>();
 			List<Role> teamRoles = new ArrayList<>();
 			
-			for (String part : parts) {
-				if (part.startsWith("m")) {
-					Role memberRole = guild.getRoleById(part.substring(1));
-					if (memberRole != null) {
-						memberRoles.add(memberRole);
-					}
-				} else if (part.startsWith("t")) {
-					Role teamRole = guild.getRoleById(part.substring(1));
-					if (teamRole != null) {
-						teamRoles.add(teamRole);
-					}
-				}
+			try {
+				decodeButtonId(id, guild, memberRoles, teamRoles);
+			} catch (Exception e) {
+				event.getHook()
+						.editOriginalEmbeds(MessageUtil.buildEmbed(title,
+								"Fehler: Button-Daten konnten nicht dekodiert werden.",
+								MessageUtil.EmbedType.ERROR))
+						.queue();
+				return;
 			}
 
 			if (memberRoles.isEmpty() || teamRoles.isEmpty()) {
@@ -287,5 +277,68 @@ public class teamcheck extends ListenerAdapter {
 					.setActionRow(refreshButton)
 					.queue();
 		});
+	}
+
+	/**
+	 * Encodes role IDs into a compact Base64 string for use in button IDs.
+	 * Format: First byte = count of member roles, second byte = count of team roles
+	 * Followed by role IDs as 8-byte longs.
+	 * This encoding reduces the button ID length significantly (e.g., 149 chars -> ~80 chars for max roles).
+	 */
+	private String encodeButtonId(List<Role> memberRoles, List<Role> teamRoles) {
+		// Calculate buffer size: 2 bytes for counts + 8 bytes per role ID
+		int bufferSize = 2 + (memberRoles.size() + teamRoles.size()) * 8;
+		ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
+		
+		// Write counts
+		buffer.put((byte) memberRoles.size());
+		buffer.put((byte) teamRoles.size());
+		
+		// Write member role IDs
+		for (Role role : memberRoles) {
+			buffer.putLong(Long.parseLong(role.getId()));
+		}
+		
+		// Write team role IDs
+		for (Role role : teamRoles) {
+			buffer.putLong(Long.parseLong(role.getId()));
+		}
+		
+		// Base64 encode (URL-safe variant to avoid issues with special chars)
+		return "tc_" + Base64.getUrlEncoder().withoutPadding().encodeToString(buffer.array());
+	}
+
+	/**
+	 * Decodes a Base64-encoded button ID back into role lists.
+	 */
+	private void decodeButtonId(String buttonId, Guild guild, List<Role> memberRoles, List<Role> teamRoles) {
+		// Remove "tc_" prefix
+		String encoded = buttonId.substring(3);
+		
+		// Decode Base64
+		byte[] data = Base64.getUrlDecoder().decode(encoded);
+		ByteBuffer buffer = ByteBuffer.wrap(data);
+		
+		// Read counts
+		int memberRoleCount = buffer.get() & 0xFF; // unsigned byte
+		int teamRoleCount = buffer.get() & 0xFF;
+		
+		// Read member role IDs
+		for (int i = 0; i < memberRoleCount; i++) {
+			long roleId = buffer.getLong();
+			Role role = guild.getRoleById(String.valueOf(roleId));
+			if (role != null) {
+				memberRoles.add(role);
+			}
+		}
+		
+		// Read team role IDs
+		for (int i = 0; i < teamRoleCount; i++) {
+			long roleId = buffer.getLong();
+			Role role = guild.getRoleById(String.valueOf(roleId));
+			if (role != null) {
+				teamRoles.add(role);
+			}
+		}
 	}
 }
