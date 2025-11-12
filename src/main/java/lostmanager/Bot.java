@@ -308,9 +308,12 @@ public class Bot extends ListenerAdapter {
 
 							Commands.slash("teamcheck", "Überprüfe die Teamverteilung der Mitglieder.")
 									.addOption(OptionType.ROLE, "memberrole", "Die Rolle der Mitglieder, die überprüft werden sollen", true)
+									.addOption(OptionType.ROLE, "memberrole_2", "Die zweite Rolle der Mitglieder (optional)", false)
 									.addOption(OptionType.ROLE, "team_role_1", "Die erste Teamrolle", true)
 									.addOption(OptionType.ROLE, "team_role_2", "Die zweite Teamrolle (optional)", false)
 									.addOption(OptionType.ROLE, "team_role_3", "Die dritte Teamrolle (optional)", false)
+									.addOption(OptionType.ROLE, "team_role_4", "Die vierte Teamrolle (optional)", false)
+									.addOption(OptionType.ROLE, "team_role_5", "Die fünfte Teamrolle (optional)", false)
 
 					).queue();
 		}

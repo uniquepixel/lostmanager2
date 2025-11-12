@@ -57,9 +57,12 @@ public class teamcheck extends ListenerAdapter {
 
 			// Get parameters
 			OptionMapping memberRoleOption = event.getOption("memberrole");
+			OptionMapping memberRole2Option = event.getOption("memberrole_2");
 			OptionMapping teamRole1Option = event.getOption("team_role_1");
 			OptionMapping teamRole2Option = event.getOption("team_role_2");
 			OptionMapping teamRole3Option = event.getOption("team_role_3");
+			OptionMapping teamRole4Option = event.getOption("team_role_4");
+			OptionMapping teamRole5Option = event.getOption("team_role_5");
 
 			if (memberRoleOption == null || teamRole1Option == null) {
 				event.getHook()
@@ -70,7 +73,14 @@ public class teamcheck extends ListenerAdapter {
 				return;
 			}
 
-			Role memberRole = memberRoleOption.getAsRole();
+			// Collect member roles
+			List<Role> memberRoles = new ArrayList<>();
+			memberRoles.add(memberRoleOption.getAsRole());
+			if (memberRole2Option != null) {
+				memberRoles.add(memberRole2Option.getAsRole());
+			}
+
+			// Collect team roles
 			List<Role> teamRoles = new ArrayList<>();
 			teamRoles.add(teamRole1Option.getAsRole());
 			
@@ -80,14 +90,23 @@ public class teamcheck extends ListenerAdapter {
 			if (teamRole3Option != null) {
 				teamRoles.add(teamRole3Option.getAsRole());
 			}
-
-			// Create button ID with role IDs
-			String buttonId = "teamcheck_" + memberRole.getId();
-			for (Role teamRole : teamRoles) {
-				buttonId += "_" + teamRole.getId();
+			if (teamRole4Option != null) {
+				teamRoles.add(teamRole4Option.getAsRole());
+			}
+			if (teamRole5Option != null) {
+				teamRoles.add(teamRole5Option.getAsRole());
 			}
 
-			performTeamCheck(event.getHook(), event.getGuild(), title, memberRole, teamRoles, buttonId);
+			// Create button ID with role IDs
+			String buttonId = "teamcheck";
+			for (Role memberRole : memberRoles) {
+				buttonId += "_m" + memberRole.getId();
+			}
+			for (Role teamRole : teamRoles) {
+				buttonId += "_t" + teamRole.getId();
+			}
+
+			performTeamCheck(event.getHook(), event.getGuild(), title, memberRoles, teamRoles, buttonId);
 
 		}, "TeamCheckCommand-" + event.getUser().getId()).start();
 	}
@@ -114,17 +133,25 @@ public class teamcheck extends ListenerAdapter {
 				return;
 			}
 
-			Role memberRole = guild.getRoleById(parts[0]);
+			// Parse member roles (prefixed with 'm') and team roles (prefixed with 't')
+			List<Role> memberRoles = new ArrayList<>();
 			List<Role> teamRoles = new ArrayList<>();
 			
-			for (int i = 1; i < parts.length; i++) {
-				Role teamRole = guild.getRoleById(parts[i]);
-				if (teamRole != null) {
-					teamRoles.add(teamRole);
+			for (String part : parts) {
+				if (part.startsWith("m")) {
+					Role memberRole = guild.getRoleById(part.substring(1));
+					if (memberRole != null) {
+						memberRoles.add(memberRole);
+					}
+				} else if (part.startsWith("t")) {
+					Role teamRole = guild.getRoleById(part.substring(1));
+					if (teamRole != null) {
+						teamRoles.add(teamRole);
+					}
 				}
 			}
 
-			if (memberRole == null || teamRoles.isEmpty()) {
+			if (memberRoles.isEmpty() || teamRoles.isEmpty()) {
 				event.getHook()
 						.editOriginalEmbeds(MessageUtil.buildEmbed(title,
 								"Fehler: Rollen konnten nicht gefunden werden.",
@@ -133,13 +160,13 @@ public class teamcheck extends ListenerAdapter {
 				return;
 			}
 
-			performTeamCheck(event.getHook(), guild, title, memberRole, teamRoles, id);
+			performTeamCheck(event.getHook(), guild, title, memberRoles, teamRoles, id);
 
 		}, "TeamCheckRefresh-" + event.getUser().getId()).start();
 	}
 
 	private void performTeamCheck(net.dv8tion.jda.api.interactions.InteractionHook hook, Guild guild, 
-			String title, Role memberRole, List<Role> teamRoles, String buttonId) {
+			String title, List<Role> memberRoles, List<Role> teamRoles, String buttonId) {
 		
 		if (guild == null) {
 			hook.editOriginalEmbeds(MessageUtil.buildEmbed(title,
@@ -149,10 +176,19 @@ public class teamcheck extends ListenerAdapter {
 			return;
 		}
 
-		// Load all members with the member role
+		// Load all members with any of the member roles
 		guild.loadMembers().onSuccess(allMembers -> {
+			// Combine members from all member roles (no duplicates)
 			List<Member> membersWithRole = allMembers.stream()
-					.filter(member -> member.getRoles().contains(memberRole))
+					.filter(member -> {
+						for (Role memberRole : memberRoles) {
+							if (member.getRoles().contains(memberRole)) {
+								return true;
+							}
+						}
+						return false;
+					})
+					.distinct()
 					.toList();
 
 			// Track statistics
