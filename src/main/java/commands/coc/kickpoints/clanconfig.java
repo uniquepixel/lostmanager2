@@ -60,6 +60,7 @@ public class clanconfig extends ListenerAdapter {
 
 		TextInput kpdays;
 		TextInput kpmax;
+		TextInput wins;
 		if (c.getDaysKickpointsExpireAfter() != null) {
 			kpdays = TextInput.create("days", "Gültigkeitsdauer von Kickpunkten", TextInputStyle.SHORT)
 					.setPlaceholder("z.B. 60").setMinLength(1).setValue(c.getDaysKickpointsExpireAfter() + "").build();
@@ -77,15 +78,15 @@ public class clanconfig extends ListenerAdapter {
 		}
 
 		if (c.getMinSeasonWins() != null) {
-			kpmax = TextInput.create("wins", "Minimum Season Wins", TextInputStyle.SHORT).setPlaceholder("z.B. 70")
+			wins = TextInput.create("wins", "Minimum Season Wins", TextInputStyle.SHORT).setPlaceholder("z.B. 70")
 					.setMinLength(1).setValue(c.getMinSeasonWins() + "").build();
 		} else {
-			kpmax = TextInput.create("wins", "Minimum Season Wins", TextInputStyle.SHORT).setPlaceholder("z.B. 70")
+			wins = TextInput.create("wins", "Minimum Season Wins", TextInputStyle.SHORT).setPlaceholder("z.B. 70")
 					.setMinLength(1).build();
 		}
 
 		Modal modal = Modal.create("clanconfig_" + c.getTag(), "Clanconfig bearbeiten")
-				.addActionRows(ActionRow.of(kpdays), ActionRow.of(kpmax)).build();
+				.addActionRows(ActionRow.of(kpdays), ActionRow.of(kpmax), ActionRow.of(wins)).build();
 
 		event.replyModal(modal).queue();
 
@@ -109,9 +110,8 @@ public class clanconfig extends ListenerAdapter {
 					days = Integer.valueOf(daysstr);
 					max = Integer.valueOf(maxstr);
 				} catch (Exception ex) {
-					event.getHook()
-							.editOriginalEmbeds(
-									MessageUtil.buildEmbed(title, "Es müssen Zahlen sein.", MessageUtil.EmbedType.ERROR))
+					event.getHook().editOriginalEmbeds(
+							MessageUtil.buildEmbed(title, "Es müssen Zahlen sein.", MessageUtil.EmbedType.ERROR))
 							.queue();
 					return;
 				}
@@ -153,7 +153,9 @@ public class clanconfig extends ListenerAdapter {
 			if (focused.equals("clan")) {
 				List<Command.Choice> choices = DBManager.getClansAutocomplete(input);
 
-				event.replyChoices(choices).queue(_ ->{}, _ -> {});
+				event.replyChoices(choices).queue(_ -> {
+				}, _ -> {
+				});
 			}
 		}, "ClanconfigAutocomplete-" + event.getUser().getId()).start();
 	}
