@@ -99,7 +99,13 @@ public class cwlmemberstatus extends ListenerAdapter {
 				}, _ -> {
 				});
 			} else if (focused.equals("cwl_clan_tag")) {
-				List<Command.Choice> choices = DBManager.getSideClansAutocomplete(input);
+				List<Command.Choice> choices = DBManager.getClansAutocomplete(input);
+				List<Command.Choice> choices2 = DBManager.getSideClansAutocomplete(input);
+				for (Command.Choice c : choices2) {
+					if (choices.size() < 25) {
+						choices.add(c);
+					}
+				}
 				event.replyChoices(choices).queue(_ -> {
 				}, _ -> {
 				});
