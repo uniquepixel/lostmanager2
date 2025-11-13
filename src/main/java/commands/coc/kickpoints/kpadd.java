@@ -127,9 +127,8 @@ public class kpadd extends ListenerAdapter {
 				try {
 					amount = Integer.valueOf(amountstr);
 				} catch (Exception ex) {
-					event.getHook().editOriginalEmbeds(
-							MessageUtil.buildEmbed(title, "Die Anzahl muss eine Zahl sein.", MessageUtil.EmbedType.ERROR))
-							.queue();
+					event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title, "Die Anzahl muss eine Zahl sein.",
+							MessageUtil.EmbedType.ERROR)).queue();
 					return;
 				}
 				String date = event.getValue("date").getAsString();
@@ -138,9 +137,8 @@ public class kpadd extends ListenerAdapter {
 				Player p = new Player(playertag);
 				Clan c = p.getClanDB();
 				if (c == null) {
-					event.getHook()
-							.editOriginalEmbeds(MessageUtil.buildEmbed(title,
-									"Dieser Spieler existiert nicht oder ist in keinem Clan.", MessageUtil.EmbedType.ERROR))
+					event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title,
+							"Dieser Spieler existiert nicht oder ist in keinem Clan.", MessageUtil.EmbedType.ERROR))
 							.queue();
 					return;
 				}
@@ -231,18 +229,20 @@ public class kpadd extends ListenerAdapter {
 				});
 			}
 			if (focused.equals("reason")) {
-				String playertag = event.getOption("player").getAsString();
-				Player p = new Player(playertag);
-				Clan c = p.getClanDB();
-				if (c == null) {
-					return;
-				}
-				String clantag = c.getTag();
-				List<Command.Choice> choices = DBManager.getKPReasonsAutocomplete(input, clantag);
+				if (event.getOption("player") != null) {
+					String playertag = event.getOption("player").getAsString();
+					Player p = new Player(playertag);
+					Clan c = p.getClanDB();
+					if (c == null) {
+						return;
+					}
+					String clantag = c.getTag();
+					List<Command.Choice> choices = DBManager.getKPReasonsAutocomplete(input, clantag);
 
-				event.replyChoices(choices).queue(_ -> {
-				}, _ -> {
-				});
+					event.replyChoices(choices).queue(_ -> {
+					}, _ -> {
+					});
+				}
 			}
 		}, "KpAddAutocomplete-" + event.getUser().getId()).start();
 	}
