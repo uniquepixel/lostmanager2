@@ -666,14 +666,11 @@ public class Bot extends ListenerAdapter {
 						String lastState = getCWLastState(clanTag);
 
 						// Get current state (only once per clan)
-						String currentState = "notInWar";
-						if (clan.isCWActive()) {
-							org.json.JSONObject cwJson = clan.getCWJson();
-							currentState = cwJson.getString("state");
-						}
+						org.json.JSONObject cwJson = clan.getCWJson();
+						String currentState = cwJson.getString("state");
 
 						// Check if war just started (only once per clan)
-						boolean warJustStarted = !lastState.isEmpty() && lastState.equals("notInWar")
+						boolean warJustStarted = !lastState.isEmpty() && (lastState.equals("notInWar") || lastState.equals("warEnded"))
 								&& (currentState.equals("preparation") || currentState.equals("inWar"));
 
 						// Fire all start events for this clan if war just started
@@ -714,13 +711,12 @@ public class Bot extends ListenerAdapter {
 											+ " already fired for current war in clan " + clanTag + ", skipping");
 								}
 							}
-						} else if (currentState.equals("notInWar")) {
+						} else if (currentState.equals("notInWar") || currentState.equals("warEnded")) {
 							// War ended, clear fired events for this clan to allow re-firing on next war
 							firedStartEvents.remove(clanTag);
-							// Update last state to notInWar so next war start will be detected
 							String previousState = getCWLastState(clanTag);
-							if (!previousState.equals("notInWar")) {
-								setCWLastState(clanTag, "notInWar");
+							if (!previousState.equals("notInWar") && !previousState.equals("warEnded")) {
+								setCWLastState(clanTag, currentState);
 								System.out.println("CW ended for clan " + clanTag + ", updated state from " + previousState + " to notInWar");
 							}
 						}
