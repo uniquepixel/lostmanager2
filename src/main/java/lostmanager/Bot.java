@@ -862,8 +862,8 @@ public class Bot extends ListenerAdapter {
 	}
 
 	public static void startNameUpdates() {
+		System.out.println("Alle 2h werden nun die Namen aktualisiert. " + System.currentTimeMillis());
 		Runnable task = () -> {
-			System.out.println("Alle 2h werden nun die Namen aktualisiert. " + System.currentTimeMillis());
 			String sql = "SELECT coc_tag FROM players";
 			for (String tag : DBUtil.getArrayListFromSQL(sql, String.class)) {
 				try {

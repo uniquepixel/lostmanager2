@@ -189,7 +189,7 @@ public class listeningevent extends ListenerAdapter {
 			TextInput otherDistrictsInput = TextInput.create("other_districts_max", "Maximale Angriffe auf restliche Distrikte", TextInputStyle.SHORT)
 					.setPlaceholder("z.B. 6").setRequired(true).setMinLength(1).setMaxLength(3).setValue("6").build();
 			
-			TextInput penalizeBothInput = TextInput.create("penalize_both", "Bei gleicher Anzahl an Angriffen beide bestrafen? 1->Ja; 2->Nein", TextInputStyle.SHORT)
+			TextInput penalizeBothInput = TextInput.create("penalize_both", "Beide Spieler bestrafen? 1->Ja; 2->Nein", TextInputStyle.SHORT)
 					.setPlaceholder("1 oder 2").setRequired(true).setMinLength(1).setMaxLength(1).setValue("1").build();
 
 			modal = Modal.create(modalId, "Raid Distrikt Einstellungen")
@@ -450,7 +450,7 @@ public class listeningevent extends ListenerAdapter {
 
 		// Check if event exists
 		String checkSql = "SELECT 1 FROM listening_events WHERE id = ?";
-		Long exists = DBUtil.getValueFromSQL(checkSql, Long.class, id);
+		Integer exists = DBUtil.getValueFromSQL(checkSql, Integer.class, id);
 
 		if (exists == null) {
 			event.getHook().editOriginalEmbeds(

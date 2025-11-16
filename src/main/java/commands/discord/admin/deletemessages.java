@@ -76,6 +76,13 @@ public class deletemessages extends ListenerAdapter {
 					msg.delete().queue();
 				}
 
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} // Kurze Pause, um sicherzustellen, dass alle Nachrichten gelöscht wurden
+
 				event.getHook()
 						.editOriginalEmbeds(MessageUtil.buildEmbed(title,
 								amount + " Nachrichten wurden gelöscht. Diese Nachricht wird auch wieder gelöscht.",
