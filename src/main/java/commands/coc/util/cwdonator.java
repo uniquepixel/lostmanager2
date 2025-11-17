@@ -391,37 +391,24 @@ public class cwdonator extends ListenerAdapter {
 			Player chosen = null;
 			if (!eligiblePlayers.isEmpty()) {
 				Collections.shuffle(eligiblePlayers);
-				
-				// Try to find non-leader if excludeLeaders is true
-				if (excludeLeaders) {
-					for (Player p : eligiblePlayers) {
-						if (!isLeaderOrCoLeader(p)) {
-							chosen = p;
-							break;
-						}
+
+				chosen = eligiblePlayers.get(0);
+
+				if (isLeaderOrCoLeader(chosen)) {
+					listA.remove(chosen.getTag());
+					listB.add(chosen.getTag());
+					
+					// Update database
+					String updateSql = "UPDATE cwdonator_lists SET list_a = ?::text[], list_b = ?::text[] WHERE clan_tag = ?";
+					try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+						updateStmt.setArray(1, conn.createArrayOf("text", listA.toArray()));
+						updateStmt.setArray(2, conn.createArrayOf("text", listB.toArray()));
+						updateStmt.setString(3, clanTag);
+						updateStmt.executeUpdate();
 					}
 					
-					// If all are leaders, pick first leader but still move them
-					if (chosen == null && !eligiblePlayers.isEmpty()) {
-						chosen = eligiblePlayers.get(0);
-						// Move to list B but reroll (skip this player)
-						listA.remove(chosen.getTag());
-						listB.add(chosen.getTag());
-						
-						// Update database
-						String updateSql = "UPDATE cwdonator_lists SET list_a = ?::text[], list_b = ?::text[] WHERE clan_tag = ?";
-						try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
-							updateStmt.setArray(1, conn.createArrayOf("text", listA.toArray()));
-							updateStmt.setArray(2, conn.createArrayOf("text", listB.toArray()));
-							updateStmt.setString(3, clanTag);
-							updateStmt.executeUpdate();
-						}
-						
-						// Recursive call to pick again
-						return pickPlayerFromListA(clanTag, warMemberList, map, excludeLeaders);
-					}
-				} else {
-					chosen = eligiblePlayers.get(0);
+					// Recursive call to pick again
+					return pickPlayerFromListA(clanTag, warMemberList, map, excludeLeaders);
 				}
 			}
 			
