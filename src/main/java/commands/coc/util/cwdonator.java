@@ -13,7 +13,6 @@ import datawrapper.Clan;
 import datawrapper.Player;
 import datawrapper.User;
 import dbutil.DBManager;
-import dbutil.DBUtil;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -178,16 +177,16 @@ public class cwdonator extends ListenerAdapter {
 		if (focused.equals("clan")) {
 			List<Command.Choice> choices = DBManager.getClansAutocomplete(input);
 
-			event.replyChoices(choices).queue(unused -> {
-			}, unused2 -> {
+			event.replyChoices(choices).queue(_ -> {
+			}, _ -> {
 			});
 		} else if (focused.equals("exclude_leaders") || focused.equals("use_lists")) {
 			List<Command.Choice> choices = new ArrayList<>();
 			if ("true".startsWith(input.toLowerCase())) {
 				choices.add(new Command.Choice("true", "true"));
 			}
-			event.replyChoices(choices).queue(unused -> {
-			}, unused2 -> {
+			event.replyChoices(choices).queue(_ -> {
+			}, _ -> {
 			});
 		}
 		}, "CwdonatorAutocomplete-" + event.getUser().getId()).start();
