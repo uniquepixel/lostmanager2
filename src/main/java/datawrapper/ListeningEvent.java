@@ -622,7 +622,30 @@ public class ListeningEvent {
 		ArrayList<String> fillerTags = DBUtil.getArrayListFromSQL(fillerSql, String.class, clan.getTag(), endTimeTs);
 
 		StringBuilder message = new StringBuilder();
-		message.append("## Clan War - Missed Attacks (Required: " + requiredAttacks + ")\n\n");
+		message.append("## " + clan.getNameAPI() + " Clankrieg - Fehlende Angriffe\n");
+		message.append("*abzüglich Filler* \n");
+		if (getDurationUntilEnd() > 0) {
+			message.append("Verbleibende Zeit im Krieg:");
+			int secondsLeft = (int) (getDurationUntilEnd() / 1000);
+			int minutesLeft = secondsLeft / 60;
+			int hoursLeft = minutesLeft / 60;
+
+			secondsLeft = secondsLeft % 60;
+			minutesLeft = minutesLeft % 60;
+
+			if (hoursLeft > 0) {
+				message.append(" " + hoursLeft).append("h");
+			}
+			if (minutesLeft > 0) {
+				message.append(" " + minutesLeft).append("m");
+			}
+			if (secondsLeft > 0) {
+				message.append(" " + secondsLeft).append("s");
+			}
+			message.append(secondsLeft).append(" verbleibend\n\n");
+		} else {
+			message.append("Krieg beendet.\n\n");
+		}
 
 		boolean hasMissedAttacks = false;
 		for (int i = 0; i < members.length(); i++) {
@@ -646,11 +669,12 @@ public class ListeningEvent {
 
 				hasMissedAttacks = true;
 				Player p = new Player(tag);
-				message.append("- ").append(name).append(": ").append(attacks).append("/").append(requiredAttacks)
-						.append(" attacks");
+				message.append("- ");
 				if (p.getUser() != null) {
-					message.append(" (<@").append(p.getUser().getUserID()).append(">)");
+					message.append("(<@").append(p.getUser().getUserID()).append(">) ");
 				}
+				message.append(name).append(" (").append(attacks).append("/").append(requiredAttacks)
+						.append(")");
 				message.append("\n");
 
 				// Handle kickpoint action

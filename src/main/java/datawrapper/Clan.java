@@ -291,7 +291,7 @@ public class Clan {
 		if (cwlactive == null) {
 			JSONObject jsonObject = getCWLJson();
 			String state = jsonObject.getString("state");
-			if (state.equals("notInWar") || state.equalsIgnoreCase("groupnotfound")) {
+			if (state.equals("notInWar") || state.equalsIgnoreCase("groupnotfound") || state.equalsIgnoreCase("ended")) {
 				cwlactive = false;
 			} else {
 				cwlactive = true;
