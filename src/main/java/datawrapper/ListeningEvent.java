@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dbutil.DBUtil;
 import lostmanager.Bot;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import util.MessageUtil;
 import util.Tuple;
 
@@ -511,8 +511,7 @@ public class ListeningEvent {
 		java.time.OffsetDateTime endTime = java.time.OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
 
 		StringBuilder message = new StringBuilder();
-		message.append("## CW War Preferences Check\n\n");
-		message.append("The following members are opted OUT but were still added to war:\n\n");
+		message.append("## Filler in " + clan.getInfoString() + "\n\n");
 
 		boolean hasOptedOut = false;
 		ArrayList<String> fillerTags = new ArrayList<>();
@@ -531,10 +530,7 @@ public class ListeningEvent {
 				if (isOptedOut) {
 					hasOptedOut = true;
 					fillerTags.add(tag);
-					message.append("- ").append(player.getNameAPI());
-					if (player.getUser() != null) {
-						message.append(" (<@").append(player.getUser().getUserID()).append(">)");
-					}
+					message.append("- ").append(player.getInfoStringAPI());
 					message.append("\n");
 				}
 			} catch (Exception e) {
@@ -1112,7 +1108,7 @@ public class ListeningEvent {
 		String channelId = getChannelID();
 		if (channelId != null && !channelId.isEmpty()) {
 			try {
-				TextChannel channel = lostmanager.Bot.getJda().getTextChannelById(channelId);
+				MessageChannelUnion channel = Bot.getJda().getChannelById(MessageChannelUnion.class, channelId);
 				if (channel != null) {
 					channel.sendMessage(message).queue();
 				}
@@ -1126,7 +1122,7 @@ public class ListeningEvent {
 		String channelId = getChannelID();
 		if (channelId != null && !channelId.isEmpty()) {
 			try {
-				TextChannel channel = lostmanager.Bot.getJda().getTextChannelById(channelId);
+				MessageChannelUnion channel = Bot.getJda().getChannelById(MessageChannelUnion.class, channelId);
 				if (channel != null) {
 					// Split message into chunks of max 3900 characters to be safe
 					int chunkSize = 3900;

@@ -102,6 +102,7 @@ public class Bot extends ListenerAdapter {
 				.setMemberCachePolicy(MemberCachePolicy.ALL).setChunkingFilter(ChunkingFilter.ALL)
 				.setActivity(Activity.playing("mit deinen Kickpunkten")).addEventListeners(getListenerClassObjects())
 				.build();
+
 	}
 
 	public static void registerCommands(JDA jda, String guildId) {
@@ -175,16 +176,12 @@ public class Bot extends ListenerAdapter {
 											.setAutoComplete(true)),
 							Commands.slash("memberstatus",
 									"Status über einen Clan, welche Spieler keine Mitglieder sind und welche Mitglieder fehlen.")
-									.addOptions(
-											new OptionData(
-													OptionType.STRING, "clan",
-													"Der Clan, welcher ausgegeben werden soll.", true)
-													.setAutoComplete(true))
-									.addOptions(
-											new OptionData(
-													OptionType.STRING, "disable_rolecheck",
-													"Überspringe die Rollenüberprüfung (nur 'true' als Wert)", false)
-													.setAutoComplete(true)),
+									.addOptions(new OptionData(OptionType.STRING, "clan",
+											"Der Clan, welcher ausgegeben werden soll.", true).setAutoComplete(true))
+									.addOptions(new OptionData(
+											OptionType.STRING, "disable_rolecheck",
+											"Überspringe die Rollenüberprüfung (nur 'true' als Wert)", false)
+											.setAutoComplete(true)),
 
 							Commands.slash("cwlmemberstatus",
 									"Überprüfe, welche Mitglieder einer Rolle in einem bestimmten Clan sind.")
@@ -675,7 +672,8 @@ public class Bot extends ListenerAdapter {
 						String currentState = cwJson.getString("state");
 
 						// Check if war just started (only once per clan)
-						boolean warJustStarted = !lastState.isEmpty() && (lastState.equals("notInWar") || lastState.equals("warEnded"))
+						boolean warJustStarted = !lastState.isEmpty()
+								&& (lastState.equals("notInWar") || lastState.equals("warEnded"))
 								&& (currentState.equals("preparation") || currentState.equals("inWar"));
 
 						// Fire all start events for this clan if war just started
@@ -722,7 +720,8 @@ public class Bot extends ListenerAdapter {
 							String previousState = getCWLastState(clanTag);
 							if (!previousState.equals("notInWar") && !previousState.equals("warEnded")) {
 								setCWLastState(clanTag, currentState);
-								System.out.println("CW ended for clan " + clanTag + ", updated state from " + previousState + " to notInWar");
+								System.out.println("CW ended for clan " + clanTag + ", updated state from "
+										+ previousState + " to notInWar");
 							}
 						}
 					} catch (Exception e) {
