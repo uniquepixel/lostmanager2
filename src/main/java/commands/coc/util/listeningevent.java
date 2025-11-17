@@ -212,7 +212,7 @@ public class listeningevent extends ListenerAdapter {
 		// cwdonator or filler => ask for use_lists and exclude_leaders
 		else if (actionTypeStr.equals("cwdonator") || actionTypeStr.equals("filler")) {
 			needsModal = true;
-			modalId = "listeningevent_cwdonator_params_" + clantag + "_" + duration + "_" + actionTypeStr + "_" + channelId;
+			modalId = "listeningevent_cwdonator_params_" + clantag + "_" + type + "_" + duration + "_" + actionTypeStr + "_" + channelId;
 
 			TextInput useListsInput = TextInput.create("use_lists", "Listen-basierte Verteilung (1 oder 0)", TextInputStyle.SHORT)
 					.setPlaceholder("1 = aktiviert, 0 = deaktiviert").setRequired(true).setMinLength(1).setMaxLength(1).setValue("0").build();
@@ -632,18 +632,19 @@ public class listeningevent extends ListenerAdapter {
 			event.deferReply().queue();
 			String title = "Listening Event";
 
-			// Parse: listeningevent_cwdonator_params_{clantag}_{duration}_{actiontype}_{channelid}
+			// Parse: listeningevent_cwdonator_params_{clantag}_{type}_{duration}_{actiontype}_{channelid}
 			String[] parts = modalId.split("_");
-			if (parts.length < 7) {
+			if (parts.length < 8) {
 				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title,
 						"Fehler beim Verarbeiten der Modal-Daten.", MessageUtil.EmbedType.ERROR)).queue();
 				return;
 			}
 
 			String clantag = parts[3];
-			long duration = Long.parseLong(parts[4]);
-			String actionTypeStr = parts[5];
-			String channelId = parts[6];
+			String type = parts[4];
+			long duration = Long.parseLong(parts[5]);
+			String actionTypeStr = parts[6];
+			String channelId = parts[7];
 
 			String useListsStr = event.getValue("use_lists").getAsString();
 			String excludeLeadersStr = event.getValue("exclude_leaders").getAsString();
@@ -669,9 +670,6 @@ public class listeningevent extends ListenerAdapter {
 			java.util.Map<String, Integer> cwdonatorParams = new java.util.HashMap<>();
 			cwdonatorParams.put("use_lists", useLists);
 			cwdonatorParams.put("exclude_leaders", excludeLeaders);
-
-			// Get type from the original command - for cwdonator it should be "cw"
-			String type = "cw"; // cwdonator is always for clan wars
 
 			processEventCreationWithCWDonatorParams(event.getHook(), title, clantag, type, duration, actionTypeStr, 
 					channelId, cwdonatorParams);
