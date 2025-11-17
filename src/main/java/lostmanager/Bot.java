@@ -249,6 +249,12 @@ public class Bot extends ListenerAdapter {
 							Commands.slash("cwdonator", "Zufällige Spendereinteilung für CWs.")
 									.addOptions(new OptionData(OptionType.STRING, "clan",
 											"Der Clan, für welchen eingeteilt werden soll.", true)
+											.setAutoComplete(true))
+									.addOptions(new OptionData(OptionType.STRING, "exclude_leaders",
+											"Leader und CoLeader ausschließen (nur 'true' als Wert)", false)
+											.setAutoComplete(true))
+									.addOptions(new OptionData(OptionType.STRING, "use_lists",
+											"Listen-basierte Verteilung nutzen (nur 'true' als Wert)", false)
 											.setAutoComplete(true)),
 
 							Commands.slash("checkreacts",

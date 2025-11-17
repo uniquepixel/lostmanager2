@@ -389,6 +389,20 @@ public class ListeningEvent {
 			return; // Can't execute if no war members
 		}
 
+		// Check action values for parameters (backwards compatible)
+		boolean useLists = false;
+		boolean excludeLeaders = false;
+		
+		for (ActionValue av : getActionValues()) {
+			if (av.getSaved() == ActionValue.kind.value && av.getValue() != null) {
+				if (av.getValue() == 1L) {
+					useLists = true;
+				} else if (av.getValue() == 2L) {
+					excludeLeaders = true;
+				}
+			}
+		}
+
 		int cwsize = warMemberList.size();
 
 		// Use the same mapping logic as cwdonator command
@@ -404,28 +418,55 @@ public class ListeningEvent {
 		message.append("## CW-Spender (automatisch)\n\n");
 		message.append("Folgende Mitglieder wurden zufällig als Spender ausgewählt:\n\n");
 
-		for (util.Tuple<Integer, Integer> map : currentmap) {
-			java.util.Collections.shuffle(warMemberList);
-			Player chosen = warMemberList.get(0);
-			int mapposition = chosen.getWarMapPosition();
-			int i = 0;
-			while (i < warMemberList.size()) {
-				chosen = warMemberList.get(i);
-				mapposition = chosen.getWarMapPosition();
+		// If using lists, initialize/sync them
+		if (useLists) {
+			initializeAndSyncListsForEvent(getClanTag(), clan);
+		}
 
-				// Skip if position is in the donation range
-				if (mapposition >= map.getFirst() && mapposition <= map.getSecond()) {
-					i++;
-					continue;
+		for (util.Tuple<Integer, Integer> map : currentmap) {
+			Player chosen = null;
+			
+			if (useLists) {
+				// Pick from list A
+				chosen = pickPlayerFromListAForEvent(getClanTag(), warMemberList, map, excludeLeaders);
+			} else {
+				// Original random logic
+				java.util.Collections.shuffle(warMemberList);
+				chosen = warMemberList.get(0);
+				int mapposition = chosen.getWarMapPosition();
+				int i = 0;
+				while (i < warMemberList.size()) {
+					chosen = warMemberList.get(i);
+					mapposition = chosen.getWarMapPosition();
+
+					// Skip if position is in the donation range
+					if (mapposition >= map.getFirst() && mapposition <= map.getSecond()) {
+						i++;
+						continue;
+					}
+					// Skip if opted out
+					if (!chosen.getWarPreference()) {
+						i++;
+						continue;
+					}
+					// Check exclude_leaders if enabled
+					if (excludeLeaders && isLeaderOrCoLeaderForEvent(chosen)) {
+						i++;
+						continue;
+					}
+					break;
 				}
-				// Skip if opted out
-				if (!chosen.getWarPreference()) {
-					i++;
-					continue;
-				}
-				break;
 			}
 
+			if (chosen == null && !warMemberList.isEmpty()) {
+				chosen = warMemberList.get(0);
+			}
+			
+			if (chosen == null) {
+				continue;
+			}
+			
+			int mapposition = chosen.getWarMapPosition();
 			warMemberList.remove(chosen);
 			message.append(map.getFirst()).append("-").append(map.getSecond()).append(": ").append(chosen.getNameAPI());
 			if (chosen.getUser() != null) {
@@ -1143,6 +1184,222 @@ public class ListeningEvent {
 				System.err.println("Failed to send chunked message to channel " + channelId + ": " + e.getMessage());
 			}
 		}
+	}
+	
+	/**
+	 * Initialize and synchronize cwdonator lists for a clan (for listening events)
+	 */
+	private void initializeAndSyncListsForEvent(String clanTag, Clan clan) {
+		try {
+			// Check if lists exist
+			String checkSql = "SELECT list_a, list_b FROM cwdonator_lists WHERE clan_tag = ?";
+			try (java.sql.Connection conn = dbutil.Connection.getConnection();
+				 java.sql.PreparedStatement stmt = conn.prepareStatement(checkSql)) {
+				stmt.setString(1, clanTag);
+				java.sql.ResultSet rs = stmt.executeQuery();
+				
+				ArrayList<String> listA = new ArrayList<>();
+				ArrayList<String> listB = new ArrayList<>();
+				boolean exists = false;
+				
+				if (rs.next()) {
+					exists = true;
+					java.sql.Array listAArray = rs.getArray("list_a");
+					java.sql.Array listBArray = rs.getArray("list_b");
+					if (listAArray != null) {
+						String[] listAData = (String[]) listAArray.getArray();
+						for (String tag : listAData) {
+							listA.add(tag);
+						}
+					}
+					if (listBArray != null) {
+						String[] listBData = (String[]) listBArray.getArray();
+						for (String tag : listBData) {
+							listB.add(tag);
+						}
+					}
+				}
+				
+				// Get current clan members
+				ArrayList<Player> clanMembers = clan.getPlayersDB();
+				ArrayList<String> currentTags = new ArrayList<>();
+				for (Player p : clanMembers) {
+					if (!p.isHiddenColeader()) {
+						currentTags.add(p.getTag());
+					}
+				}
+				
+				if (!exists) {
+					// Create new lists with all current members in List A
+					listA.addAll(currentTags);
+					String insertSql = "INSERT INTO cwdonator_lists (clan_tag, list_a, list_b) VALUES (?, ?::text[], ?::text[])";
+					try (java.sql.PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+						insertStmt.setString(1, clanTag);
+						insertStmt.setArray(2, conn.createArrayOf("text", listA.toArray()));
+						insertStmt.setArray(3, conn.createArrayOf("text", new String[0]));
+						insertStmt.executeUpdate();
+					}
+				} else {
+					// Sync lists with current members
+					// Add missing players to List A
+					for (String tag : currentTags) {
+						if (!listA.contains(tag) && !listB.contains(tag)) {
+							listA.add(tag);
+						}
+					}
+					
+					// Remove players not in clan from both lists
+					listA.removeIf(tag -> !currentTags.contains(tag));
+					listB.removeIf(tag -> !currentTags.contains(tag));
+					
+					// Update database
+					String updateSql = "UPDATE cwdonator_lists SET list_a = ?::text[], list_b = ?::text[] WHERE clan_tag = ?";
+					try (java.sql.PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+						updateStmt.setArray(1, conn.createArrayOf("text", listA.toArray()));
+						updateStmt.setArray(2, conn.createArrayOf("text", listB.toArray()));
+						updateStmt.setString(3, clanTag);
+						updateStmt.executeUpdate();
+					}
+				}
+			}
+		} catch (Exception e) {
+			System.err.println("Error initializing/syncing cwdonator lists for event: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Pick a player from List A for listening events
+	 */
+	private Player pickPlayerFromListAForEvent(String clanTag, ArrayList<Player> warMemberList, 
+											   util.Tuple<Integer, Integer> map, boolean excludeLeaders) {
+		try (java.sql.Connection conn = dbutil.Connection.getConnection()) {
+			// Get current lists
+			String selectSql = "SELECT list_a, list_b FROM cwdonator_lists WHERE clan_tag = ?";
+			ArrayList<String> listA = new ArrayList<>();
+			ArrayList<String> listB = new ArrayList<>();
+			
+			try (java.sql.PreparedStatement stmt = conn.prepareStatement(selectSql)) {
+				stmt.setString(1, clanTag);
+				java.sql.ResultSet rs = stmt.executeQuery();
+				if (rs.next()) {
+					java.sql.Array listAArray = rs.getArray("list_a");
+					java.sql.Array listBArray = rs.getArray("list_b");
+					if (listAArray != null) {
+						String[] listAData = (String[]) listAArray.getArray();
+						for (String tag : listAData) {
+							listA.add(tag);
+						}
+					}
+					if (listBArray != null) {
+						String[] listBData = (String[]) listBArray.getArray();
+						for (String tag : listBData) {
+							listB.add(tag);
+						}
+					}
+				}
+			}
+			
+			// If List A is empty, swap List B to List A
+			if (listA.isEmpty()) {
+				listA.addAll(listB);
+				listB.clear();
+			}
+			
+			// Build a list of eligible players
+			ArrayList<Player> eligiblePlayers = new ArrayList<>();
+			for (Player p : warMemberList) {
+				if (listA.contains(p.getTag())) {
+					int mapposition = p.getWarMapPosition();
+					if (mapposition >= map.getFirst() && mapposition <= map.getSecond()) {
+						continue;
+					}
+					if (!p.getWarPreference()) {
+						continue;
+					}
+					eligiblePlayers.add(p);
+				}
+			}
+			
+			// Pick a player
+			Player chosen = null;
+			if (!eligiblePlayers.isEmpty()) {
+				java.util.Collections.shuffle(eligiblePlayers);
+				
+				if (excludeLeaders) {
+					for (Player p : eligiblePlayers) {
+						if (!isLeaderOrCoLeaderForEvent(p)) {
+							chosen = p;
+							break;
+						}
+					}
+					
+					// If all are leaders, pick first leader but reroll
+					if (chosen == null && !eligiblePlayers.isEmpty()) {
+						chosen = eligiblePlayers.get(0);
+						listA.remove(chosen.getTag());
+						listB.add(chosen.getTag());
+						
+						String updateSql = "UPDATE cwdonator_lists SET list_a = ?::text[], list_b = ?::text[] WHERE clan_tag = ?";
+						try (java.sql.PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+							updateStmt.setArray(1, conn.createArrayOf("text", listA.toArray()));
+							updateStmt.setArray(2, conn.createArrayOf("text", listB.toArray()));
+							updateStmt.setString(3, clanTag);
+							updateStmt.executeUpdate();
+						}
+						
+						return pickPlayerFromListAForEvent(clanTag, warMemberList, map, excludeLeaders);
+					}
+				} else {
+					chosen = eligiblePlayers.get(0);
+				}
+			}
+			
+			// Fallback logic
+			if (chosen == null) {
+				for (Player p : warMemberList) {
+					if (listA.contains(p.getTag())) {
+						chosen = p;
+						break;
+					}
+				}
+			}
+			
+			if (chosen == null && !warMemberList.isEmpty()) {
+				chosen = warMemberList.get(0);
+			}
+			
+			if (chosen != null) {
+				listA.remove(chosen.getTag());
+				listB.add(chosen.getTag());
+				
+				String updateSql = "UPDATE cwdonator_lists SET list_a = ?::text[], list_b = ?::text[] WHERE clan_tag = ?";
+				try (java.sql.PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+					updateStmt.setArray(1, conn.createArrayOf("text", listA.toArray()));
+					updateStmt.setArray(2, conn.createArrayOf("text", listB.toArray()));
+					updateStmt.setString(3, clanTag);
+					updateStmt.executeUpdate();
+				}
+			}
+			
+			return chosen;
+		} catch (Exception e) {
+			System.err.println("Error picking player from List A for event: " + e.getMessage());
+			e.printStackTrace();
+			if (!warMemberList.isEmpty()) {
+				java.util.Collections.shuffle(warMemberList);
+				return warMemberList.get(0);
+			}
+			return null;
+		}
+	}
+	
+	/**
+	 * Check if a player is a leader or co-leader (for listening events)
+	 */
+	private boolean isLeaderOrCoLeaderForEvent(Player player) {
+		Player.RoleType roleDB = player.getRoleDB();
+		return roleDB == Player.RoleType.LEADER || roleDB == Player.RoleType.COLEADER;
 	}
 
 }

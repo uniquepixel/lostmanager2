@@ -209,6 +209,20 @@ public class listeningevent extends ListenerAdapter {
 			modal = Modal.create(modalId, "Benutzerdefinierte Nachricht eingeben")
 					.addActionRows(ActionRow.of(messageInput)).build();
 		}
+		// cwdonator or filler => ask for use_lists and exclude_leaders
+		else if (actionTypeStr.equals("cwdonator") || actionTypeStr.equals("filler")) {
+			needsModal = true;
+			modalId = "listeningevent_cwdonator_params_" + clantag + "_" + duration + "_" + actionTypeStr + "_" + channelId;
+
+			TextInput useListsInput = TextInput.create("use_lists", "Listen-basierte Verteilung (1 oder 0)", TextInputStyle.SHORT)
+					.setPlaceholder("1 = aktiviert, 0 = deaktiviert").setRequired(true).setMinLength(1).setMaxLength(1).setValue("0").build();
+
+			TextInput excludeLeadersInput = TextInput.create("exclude_leaders", "Leader ausschließen (1 oder 0)", TextInputStyle.SHORT)
+					.setPlaceholder("1 = aktiviert, 0 = deaktiviert").setRequired(true).setMinLength(1).setMaxLength(1).setValue("0").build();
+
+			modal = Modal.create(modalId, "CW Donator Einstellungen")
+					.addActionRows(ActionRow.of(useListsInput), ActionRow.of(excludeLeadersInput)).build();
+		}
 
 		if (needsModal) {
 			event.replyModal(modal).queue();
@@ -614,7 +628,125 @@ public class listeningevent extends ListenerAdapter {
 
 			processEventCreation(event.getHook(), title, clantag, "raid", duration, actionTypeStr, channelId,
 					kickpointReasonName, null, null, raidDistrictThresholds);
+		} else if (modalId.startsWith("listeningevent_cwdonator_params_")) {
+			event.deferReply().queue();
+			String title = "Listening Event";
+
+			// Parse: listeningevent_cwdonator_params_{clantag}_{duration}_{actiontype}_{channelid}
+			String[] parts = modalId.split("_");
+			if (parts.length < 6) {
+				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title,
+						"Fehler beim Verarbeiten der Modal-Daten.", MessageUtil.EmbedType.ERROR)).queue();
+				return;
+			}
+
+			String clantag = parts[3];
+			long duration = Long.parseLong(parts[4]);
+			String actionTypeStr = parts[5];
+			String channelId = parts[6];
+
+			String useListsStr = event.getValue("use_lists").getAsString();
+			String excludeLeadersStr = event.getValue("exclude_leaders").getAsString();
+
+			int useLists, excludeLeaders;
+			try {
+				useLists = Integer.parseInt(useListsStr);
+				excludeLeaders = Integer.parseInt(excludeLeadersStr);
+
+				if ((useLists != 0 && useLists != 1) || (excludeLeaders != 0 && excludeLeaders != 1)) {
+					throw new NumberFormatException("Values must be 0 or 1");
+				}
+			} catch (NumberFormatException e) {
+				event.getHook()
+						.editOriginalEmbeds(MessageUtil.buildEmbed(title,
+								"Ungültige Werte eingegeben. Beide Felder müssen entweder 0 oder 1 sein.",
+								MessageUtil.EmbedType.ERROR))
+						.queue();
+				return;
+			}
+
+			// Create map with parameters
+			java.util.Map<String, Integer> cwdonatorParams = new java.util.HashMap<>();
+			cwdonatorParams.put("use_lists", useLists);
+			cwdonatorParams.put("exclude_leaders", excludeLeaders);
+
+			// Get type from the original command - for cwdonator it should be "cw"
+			String type = "cw"; // cwdonator is always for clan wars
+
+			processEventCreationWithCWDonatorParams(event.getHook(), title, clantag, type, duration, actionTypeStr, 
+					channelId, cwdonatorParams);
 		}
+	}
+	
+	private void processEventCreationWithCWDonatorParams(net.dv8tion.jda.api.interactions.InteractionHook hook, 
+			String title, String clantag, String type, long duration, String actionTypeStr, String channelId,
+			java.util.Map<String, Integer> cwdonatorParams) {
+
+		// Build action values with cwdonator parameters
+		ArrayList<ActionValue> actionValues = new ArrayList<>();
+		actionValues.add(new ActionValue(ActionValue.ACTIONVALUETYPE.FILLER));
+
+		// Add use_lists parameter if enabled
+		if (cwdonatorParams.get("use_lists") == 1) {
+			ActionValue useListsAV = new ActionValue(ActionValue.ACTIONVALUETYPE.VALUE);
+			useListsAV.setValue(1L);
+			actionValues.add(useListsAV);
+		}
+
+		// Add exclude_leaders parameter if enabled
+		if (cwdonatorParams.get("exclude_leaders") == 1) {
+			ActionValue excludeLeadersAV = new ActionValue(ActionValue.ACTIONVALUETYPE.VALUE);
+			excludeLeadersAV.setValue(2L); // Use 2 to distinguish from use_lists
+			actionValues.add(excludeLeadersAV);
+		}
+
+		// Convert action values to JSON
+		String actionValuesJson = "[]";
+		if (!actionValues.isEmpty()) {
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				actionValuesJson = mapper.writeValueAsString(actionValues);
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
+		}
+
+		// Insert into database and get generated ID
+		Tuple<PreparedStatement, Integer> result = DBUtil.executeUpdate(
+				"INSERT INTO listening_events (clan_tag, listeningtype, listeningvalue, actiontype, channel_id, actionvalues) VALUES (?, ?, ?, ?, ?, ?::jsonb)",
+				clantag, type, duration, actionTypeStr, channelId, actionValuesJson);
+
+		PreparedStatement stmt = result.getFirst();
+		int rowsAffected = result.getSecond();
+
+		Long id = null;
+
+		if (rowsAffected > 0) {
+			try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+				if (generatedKeys.next()) {
+					id = generatedKeys.getLong(1);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		String desc = "### Listening Event wurde hinzugefügt.\n";
+		if (id != null) {
+			desc += "**ID:** " + id + "\n";
+		}
+		desc += "**Clan:** " + clantag + "\n";
+		desc += "**Typ:** " + type + "\n";
+		desc += "**Dauer:** " + duration + " ms\n";
+		desc += "**Aktionstyp:** " + actionTypeStr + "\n";
+		desc += "**Channel:** <#" + channelId + ">\n";
+		desc += "**Listen-basierte Verteilung:** " + (cwdonatorParams.get("use_lists") == 1 ? "Ja" : "Nein") + "\n";
+		desc += "**Leader ausschließen:** " + (cwdonatorParams.get("exclude_leaders") == 1 ? "Ja" : "Nein") + "\n";
+
+		hook.editOriginalEmbeds(MessageUtil.buildEmbed(title, desc, MessageUtil.EmbedType.SUCCESS)).queue();
+
+		// Restart all events to include the new one
+		Bot.restartAllEvents();
 	}
 
 	@Override
