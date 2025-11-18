@@ -395,8 +395,7 @@ public class cwdonator extends ListenerAdapter {
 				Collections.shuffle(eligiblePlayers);
 
 				chosen = eligiblePlayers.get(0);
-				System.out.println(chosen.getInfoStringAPI() + " with Role " + chosen.getRoleDB());
-
+				
 				if (isLeaderOrCoLeader(chosen) && excludeLeaders) {
 					listA.remove(chosen.getTag());
 					listB.add(chosen.getTag());
