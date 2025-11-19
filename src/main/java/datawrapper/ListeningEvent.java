@@ -624,7 +624,7 @@ public class ListeningEvent {
 
 		StringBuilder message = new StringBuilder();
 		message.append("## " + clan.getNameAPI() + " Clankrieg - Fehlende Angriffe\n");
-		message.append("*abzüglich Filler* \n");
+		message.append("*abzüglich Filler, wenn abgespeichert* \n");
 		if (getDurationUntilEnd() > 0) {
 			message.append("Verbleibende Zeit im Krieg:");
 			int secondsLeft = (int) (getDurationUntilEnd() / 1000);
@@ -635,17 +635,17 @@ public class ListeningEvent {
 			minutesLeft = minutesLeft % 60;
 
 			if (hoursLeft > 0) {
-				message.append(" " + hoursLeft).append("h");
+				message.append(" **" + hoursLeft).append("h**");
 			}
 			if (minutesLeft > 0) {
-				message.append(" " + minutesLeft).append("m");
+				message.append(" **" + minutesLeft).append("m**");
 			}
 			if (secondsLeft > 0) {
-				message.append(" " + secondsLeft).append("s");
+				message.append(" **" + secondsLeft).append("s**");
 			}
-			message.append(secondsLeft).append(" verbleibend\n\n");
+			message.append(" \n\n");
 		} else {
-			message.append("Krieg beendet.\n\n");
+			message.append("**Krieg beendet.**\n\n");
 		}
 
 		boolean hasMissedAttacks = false;
@@ -686,7 +686,7 @@ public class ListeningEvent {
 		}
 
 		if (hasMissedAttacks) {
-			sendMessageToChannel(message.toString());
+			sendMessageInChunks(message.toString());
 		}
 
 		// Clean up old fillers after war ends
@@ -1191,7 +1191,7 @@ public class ListeningEvent {
 				MessageChannelUnion channel = Bot.getJda().getChannelById(MessageChannelUnion.class, channelId);
 				if (channel != null) {
 					// Split message into chunks of max 3900 characters to be safe
-					int chunkSize = 3900;
+					int chunkSize = 1900;
 					for (int i = 0; i < message.length(); i += chunkSize) {
 						int end = Math.min(message.length(), i + chunkSize);
 						String chunk = message.substring(i, end);
