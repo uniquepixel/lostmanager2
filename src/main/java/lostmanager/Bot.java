@@ -38,6 +38,7 @@ import commands.coc.util.raidping;
 import commands.coc.util.setnick;
 import commands.coc.util.wins;
 import commands.discord.admin.deletemessages;
+import commands.discord.admin.reactionsrole;
 import commands.discord.admin.restart;
 import commands.discord.util.checkreacts;
 import commands.discord.util.teamcheck;
@@ -281,6 +282,15 @@ public class Bot extends ListenerAdapter {
 											OptionType.INTEGER, "amount",
 											"Anzahl an Nachrichten, die gelöscht werden sollen.", true)),
 
+							Commands.slash("reactionsrole",
+									"Gebe allen Benutzern, die mit einem bestimmten Emoji reagiert haben, eine Rolle")
+									.addOption(OptionType.STRING, "messagelink",
+											"Link zur Nachricht, deren Reaktionen überprüft werden sollen", true)
+									.addOption(OptionType.STRING, "emoji", "Der Emoji, nach dem überprüft werden soll",
+											true)
+									.addOption(OptionType.ROLE, "role",
+											"Die Rolle, die den Benutzern gegeben werden soll", true),
+
 							Commands.slash("raidping", "Pingt alle Mitglieder, die noch fehlende Raid Angriffe haben.")
 									.addOptions(new OptionData(OptionType.STRING, "clan",
 											"Clan, dessen Mitglieder einen Ping erhalten sollen", true)
@@ -393,6 +403,7 @@ public class Bot extends ListenerAdapter {
 		classes.add(new checkreacts());
 		classes.add(new setnick());
 		classes.add(new deletemessages());
+		classes.add(new reactionsrole());
 		classes.add(new raidping());
 		classes.add(new transfermember());
 		classes.add(new listeningevent());
