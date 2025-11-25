@@ -593,6 +593,8 @@ public class ListeningEvent {
 
 		if (hasOptedOut) {
 			sendMessageToChannel(message.toString());
+		} else {
+			sendMessageToChannel("## Filler in " + clan.getInfoString() + "\n\nKeine Filler gefunden.");
 		}
 	}
 
