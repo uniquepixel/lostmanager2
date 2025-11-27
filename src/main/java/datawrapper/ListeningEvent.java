@@ -1334,11 +1334,32 @@ public class ListeningEvent {
 			reason = kpReason.getName();
 		}
 
+		// Try to get the player's clan from DB first
 		Clan clan = player.getClanDB();
+		
+		// If player's clan is not in DB, fall back to the event's configured clan
+		// This supports external clans (e.g., CWL side clans) where players may not be in our main clan database
+		if (clan == null) {
+			String eventClanTag = getClanTag();
+			if (eventClanTag != null) {
+				Clan eventClan = new Clan(eventClanTag);
+				// Only use the event's clan if it exists in our database (has settings configured)
+				if (eventClan.ExistsDB()) {
+					clan = eventClan;
+				}
+			}
+		}
+		
 		if (clan != null) {
+			Integer daysExpire = clan.getDaysKickpointsExpireAfter();
+			// Default to 30 days if not configured
+			if (daysExpire == null) {
+				daysExpire = 30;
+			}
+			
 			java.sql.Timestamp now = java.sql.Timestamp.from(java.time.Instant.now());
 			java.sql.Timestamp expires = java.sql.Timestamp
-					.valueOf(now.toLocalDateTime().plusDays(clan.getDaysKickpointsExpireAfter()));
+					.valueOf(now.toLocalDateTime().plusDays(daysExpire));
 
 			Tuple<PreparedStatement, Integer> result = DBUtil.executeUpdate(
 					"INSERT INTO kickpoints (player_tag, date, amount, description, created_by_discord_id, created_at, expires_at, clan_tag, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -1361,15 +1382,22 @@ public class ListeningEvent {
 			}
 
 			String desc = "### Es wurde ein Kickpunkt automatisch hinzugefügt.\n";
-			desc += "Spieler: " + MessageUtil.unformat(player.getInfoStringDB()) + "\n";
-			if (player.getClanDB() != null) {
-				desc += "Clan: " + player.getClanDB().getInfoString() + "\n";
+			// Use API name for external clan players since they may not be in DB
+			String playerName = player.getNameDB();
+			if (playerName == null) {
+				playerName = player.getNameAPI();
 			}
+			desc += "Spieler: " + MessageUtil.unformat(playerName + " (" + player.getTag() + ")") + "\n";
+			desc += "Clan: " + clan.getInfoString() + "\n";
 			desc += "Anzahl: " + amount + "\n";
 			desc += "Grund: " + reason + "\n";
 			desc += "ID: " + id + "\n";
 
 			sendMessageToChannel(desc);
+		} else {
+			// Log warning when we can't add kickpoints because neither player's clan nor event's clan is in DB
+			System.out.println("Warning: Cannot add kickpoint for player " + player.getTag() + 
+					" - neither player's clan nor event's clan (" + getClanTag() + ") is configured in database");
 		}
 	}
 
