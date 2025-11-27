@@ -303,12 +303,20 @@ public class Clan {
 	public Long getCWLDayEndTimeMillis() {
 		if (CWLDayEndTimeMillis == null) {
 			if (isCWLActive()) {
+				// Check if clan_tag is null before proceeding
+				if (clan_tag == null) {
+					System.err.println("Warning: clan_tag is null, cannot retrieve CWL day end time");
+					CWLDayEndTimeMillis = null;
+					return CWLDayEndTimeMillis;
+				}
+				
 				JSONObject cwlJson = getCWLJson();
 				
 				// Check if rounds exist
 				if (!cwlJson.has("rounds") || cwlJson.isNull("rounds")) {
 					System.err.println("Warning: rounds field is missing or null in CWL API response");
-					return null;
+					CWLDayEndTimeMillis = null;
+					return CWLDayEndTimeMillis;
 				}
 				
 				JSONArray rounds = cwlJson.getJSONArray("rounds");
@@ -351,7 +359,8 @@ public class Clan {
 								}
 							}
 						} catch (Exception e) {
-							// If war data is not available, skip
+							// Log the error for debugging and continue to next war tag
+							System.err.println("Warning: Error retrieving CWL war data for tag " + warTag + ": " + e.getMessage());
 							continue;
 						}
 					}
