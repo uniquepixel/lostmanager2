@@ -136,8 +136,8 @@ public class editmember extends ListenerAdapter {
 					Role elderrole = guild.getRoleById(elderroleid);
 					
 					// wasElder tracks if old role was elder or higher (should have elder discord role)
-					boolean wasElderOrHigher = oldRole != null && (oldRole.equals("admin") || oldRole.equals("coLeader") || oldRole.equals("leader"));
-					boolean isNowElderOrHigher = role.equals("admin") || role.equals("coLeader") || role.equals("leader");
+					boolean wasElderOrHigher = Player.isElderOrHigherString(oldRole);
+					boolean isNowElderOrHigher = Player.isElderOrHigherString(role);
 					
 					if (elderrole != null) {
 						if (!wasElderOrHigher && isNowElderOrHigher) {
@@ -155,8 +155,7 @@ public class editmember extends ListenerAdapter {
 							for (Player acc : allaccs) {
 								if (!acc.getTag().equals(playertag) && acc.getClanDB() != null) {
 									if (acc.getClanDB().getTag().equals(clantag)) {
-										Player.RoleType accRole = acc.getRoleDB();
-										if (accRole == Player.RoleType.ELDER || accRole == Player.RoleType.COLEADER || accRole == Player.RoleType.LEADER) {
+										if (Player.isElderOrHigher(acc.getRoleDB())) {
 											otherElderOrHigherSameClan = true;
 										}
 									}

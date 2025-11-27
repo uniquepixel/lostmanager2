@@ -37,6 +37,25 @@ public class Player {
 		ADMIN, LEADER, COLEADER, ELDER, MEMBER, NOTINCLAN
 	};
 
+	/**
+	 * Checks if a role is elder or higher (ELDER, COLEADER, or LEADER).
+	 * ADMIN role type represents ELDER in the database.
+	 * @param role The role type to check
+	 * @return true if the role is elder or higher, false otherwise
+	 */
+	public static boolean isElderOrHigher(RoleType role) {
+		return role == RoleType.ELDER || role == RoleType.COLEADER || role == RoleType.LEADER;
+	}
+
+	/**
+	 * Checks if a role string represents elder or higher (admin, coLeader, or leader).
+	 * @param role The role string to check
+	 * @return true if the role is elder or higher, false otherwise
+	 */
+	public static boolean isElderOrHigherString(String role) {
+		return role != null && (role.equals("admin") || role.equals("coLeader") || role.equals("leader"));
+	}
+
 	private String tag;
 	private Integer currentRaidAttacks;
 	private Integer currentRaidGoldLooted;

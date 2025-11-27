@@ -122,8 +122,7 @@ public class removemember extends ListenerAdapter {
 				if (acc.getClanDB() != null) {
 					if (acc.getClanDB().getTag().equals(clantag)) {
 						b = true;
-						Player.RoleType accRole = acc.getRoleDB();
-						if (accRole == Player.RoleType.ELDER || accRole == Player.RoleType.COLEADER || accRole == Player.RoleType.LEADER) {
+						if (Player.isElderOrHigher(acc.getRoleDB())) {
 							otherElderOrHigherSameClan = true;
 						}
 					}

@@ -162,8 +162,7 @@ public class transfermember extends ListenerAdapter {
 				if (acc.getClanDB() != null) {
 					if (acc.getClanDB().getTag().equals(clantag)) {
 						hasOtherAccountInOldClan = true;
-						Player.RoleType accRole = acc.getRoleDB();
-						if (accRole == Player.RoleType.ELDER || accRole == Player.RoleType.COLEADER || accRole == Player.RoleType.LEADER) {
+						if (Player.isElderOrHigher(acc.getRoleDB())) {
 							hasOtherElderOrHigherInOldClan = true;
 						}
 					}
@@ -200,7 +199,7 @@ public class transfermember extends ListenerAdapter {
 			String elderroleid = playerclan.getRoleID(Clan.Role.ELDER);
 			Role elderrole = guild.getRoleById(elderroleid);
 			// Only handle elder role if the player was elder or higher in the old clan
-			if (role == Player.RoleType.ELDER || role == Player.RoleType.COLEADER || role == Player.RoleType.LEADER) {
+			if (Player.isElderOrHigher(role)) {
 				if (elderrole != null) {
 					if (member.getRoles().contains(elderrole)) {
 						if (!hasOtherElderOrHigherInOldClan) {
