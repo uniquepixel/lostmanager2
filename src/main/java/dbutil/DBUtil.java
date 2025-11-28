@@ -76,11 +76,13 @@ public class DBUtil {
 		return null;
 	}
 
+	private static final String INSERT_INTO_PREFIX = "INSERT INTO ";
+
 	private static String extractTableName(String sql) {
 		// Extract table name from "INSERT INTO table_name (...)" pattern
 		String upperSql = sql.trim().toUpperCase();
-		if (upperSql.startsWith("INSERT INTO ")) {
-			String afterInsertInto = sql.trim().substring(12).trim();
+		if (upperSql.startsWith(INSERT_INTO_PREFIX)) {
+			String afterInsertInto = sql.trim().substring(INSERT_INTO_PREFIX.length()).trim();
 			int spaceIndex = afterInsertInto.indexOf(' ');
 			int parenIndex = afterInsertInto.indexOf('(');
 			int endIndex = -1;
@@ -92,14 +94,18 @@ public class DBUtil {
 				endIndex = parenIndex;
 			}
 			if (endIndex > 0) {
-				return afterInsertInto.substring(0, endIndex).trim();
+				String tableName = afterInsertInto.substring(0, endIndex).trim();
+				// Validate table name to prevent SQL injection - only allow alphanumeric and underscore
+				if (tableName.matches("^[a-zA-Z_][a-zA-Z0-9_]*$")) {
+					return tableName;
+				}
 			}
 		}
 		return null;
 	}
 
 	private static boolean resetSequence(String tableName) {
-		// Reset the sequence to max(id) + 1 for the given table
+		// tableName is already validated by extractTableName() to contain only safe characters
 		String sequenceName = tableName + "_id_seq";
 		String resetSql = "SELECT setval('" + sequenceName + "', COALESCE((SELECT MAX(id) FROM " + tableName + "), 0) + 1, false)";
 		try (PreparedStatement pstmt = Connection.getConnection().prepareStatement(resetSql);
