@@ -121,10 +121,8 @@ public class DBUtil {
 		String resetSql = "SELECT setval('" + sequenceName + "', COALESCE((SELECT MAX(id) FROM " + tableName + "), 0) + 1, false)";
 		try (PreparedStatement pstmt = Connection.getConnection().prepareStatement(resetSql);
 			 ResultSet rs = pstmt.executeQuery()) {
-			// Consume the result set
-			if (rs.next()) {
-				System.out.println("Reset sequence " + sequenceName + " for table " + tableName);
-			}
+			rs.next(); // Consume the result set - setval always returns a value
+			System.out.println("Reset sequence " + sequenceName + " for table " + tableName);
 			return true;
 		} catch (SQLException e) {
 			System.err.println("Failed to reset sequence " + sequenceName + ": " + e.getMessage());
@@ -135,6 +133,10 @@ public class DBUtil {
 	/**
 	 * Modifies an INSERT statement to use an explicit ID value calculated from MAX(id) + 1.
 	 * This is used as a fallback when sequence reset fails (e.g., due to permission issues).
+	 * 
+	 * Note: This approach has a potential race condition with concurrent inserts. However,
+	 * since this is a last-resort fallback after sequence reset fails, concurrent issues
+	 * are acceptable. The proper fix is to grant sequence permissions at the database level.
 	 * 
 	 * @param sql The original INSERT statement
 	 * @param tableName The validated table name (already sanitized by extractTableName)
@@ -159,10 +161,13 @@ public class DBUtil {
 		String columnsPart = trimmedSql.substring(openParen + 1, closeParen);
 		// Check if id column is already specified as a standalone column name
 		// Split by comma and check each column name individually
+		// Handle both unquoted (id) and quoted ("id") identifiers
 		String[] columns = columnsPart.split(",");
 		for (String col : columns) {
-			String trimmedCol = col.trim().toUpperCase();
-			if (trimmedCol.equals("ID")) {
+			String trimmedCol = col.trim();
+			// Remove quotes if present and compare case-insensitively
+			String normalizedCol = trimmedCol.replaceAll("^\"|\"$", "").toUpperCase();
+			if (normalizedCol.equals("ID")) {
 				// id column already exists, can't easily modify
 				return null;
 			}
@@ -175,6 +180,7 @@ public class DBUtil {
 		}
 		
 		// Build modified SQL: INSERT INTO table (id, col1, col2, ...) VALUES ((SELECT COALESCE(MAX(id), 0) + 1 FROM table), ?, ?, ...)
+		// Note: The ID value is computed via subquery, not a parameter, so the parameter count stays the same
 		String beforeColumns = trimmedSql.substring(0, openParen + 1);
 		String afterColumns = trimmedSql.substring(closeParen);
 		
