@@ -50,6 +50,7 @@ public class Player {
 
 	/**
 	 * Checks if a role string represents elder or higher (admin, coLeader, or leader).
+	 * Note: hiddencoleader is NOT included as hidden coleaders should not have roles edited.
 	 * @param role The role string to check
 	 * @return true if the role is elder or higher, false otherwise
 	 */

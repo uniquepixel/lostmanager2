@@ -106,12 +106,20 @@ public class editmember extends ListenerAdapter {
 				return;
 			}
 
-			// Get old role before update
-			Player.RoleType oldRoleType = p.getRoleDB();
-			String oldRole = oldRoleType == Player.RoleType.ELDER ? "admin" 
-					: oldRoleType == Player.RoleType.LEADER ? "leader"
-					: oldRoleType == Player.RoleType.COLEADER ? "coLeader"
-					: oldRoleType == Player.RoleType.MEMBER ? "member" : null;
+			// Get old role before update - need the actual string value, not just RoleType
+			// because hiddencoleader and coLeader both map to RoleType.COLEADER
+			String oldRole = null;
+			String sql = "SELECT clan_role FROM clan_members WHERE player_tag = ?";
+			try (java.sql.PreparedStatement pstmt = dbutil.Connection.getConnection().prepareStatement(sql)) {
+				pstmt.setString(1, playertag);
+				try (java.sql.ResultSet rs = pstmt.executeQuery()) {
+					if (rs.next()) {
+						oldRole = rs.getString("clan_role");
+					}
+				}
+			} catch (java.sql.SQLException e) {
+				e.printStackTrace();
+			}
 
 			DBUtil.executeUpdate("UPDATE clan_members SET clan_role = ? WHERE player_tag = ?", role, playertag);
 			String rolestring = role.equals("leader") ? "Anführer"
@@ -150,12 +158,13 @@ public class editmember extends ListenerAdapter {
 							}
 						} else if (wasElderOrHigher && !isNowElderOrHigher) {
 							// Removing elder role only when demoting to member - check if user has other elder+ accounts in same clan
+							// Note: hiddencoleaders should not count as elder or higher
 							ArrayList<Player> allaccs = p.getUser().getAllLinkedAccounts();
 							boolean otherElderOrHigherSameClan = false;
 							for (Player acc : allaccs) {
 								if (!acc.getTag().equals(playertag) && acc.getClanDB() != null) {
 									if (acc.getClanDB().getTag().equals(clantag)) {
-										if (Player.isElderOrHigher(acc.getRoleDB())) {
+										if (Player.isElderOrHigher(acc.getRoleDB()) && !acc.isHiddenColeader()) {
 											otherElderOrHigherSameClan = true;
 										}
 									}

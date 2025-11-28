@@ -117,12 +117,13 @@ public class removemember extends ListenerAdapter {
 			if (member != null) {
 				ArrayList<Player> allaccs = player.getUser().getAllLinkedAccounts();
 			boolean b = false;
+			// Note: hiddencoleaders should not count as elder or higher
 			boolean otherElderOrHigherSameClan = false;
 			for (Player acc : allaccs) {
 				if (acc.getClanDB() != null) {
 					if (acc.getClanDB().getTag().equals(clantag)) {
 						b = true;
-						if (Player.isElderOrHigher(acc.getRoleDB())) {
+						if (Player.isElderOrHigher(acc.getRoleDB()) && !acc.isHiddenColeader()) {
 							otherElderOrHigherSameClan = true;
 						}
 					}

@@ -157,12 +157,13 @@ public class transfermember extends ListenerAdapter {
 		if (member != null) {
 			ArrayList<Player> allaccs = player.getUser().getAllLinkedAccounts();
 			boolean hasOtherAccountInOldClan = false;
+			// Note: hiddencoleaders should not count as elder or higher
 			boolean hasOtherElderOrHigherInOldClan = false;
 			for (Player acc : allaccs) {
 				if (acc.getClanDB() != null) {
 					if (acc.getClanDB().getTag().equals(clantag)) {
 						hasOtherAccountInOldClan = true;
-						if (Player.isElderOrHigher(acc.getRoleDB())) {
+						if (Player.isElderOrHigher(acc.getRoleDB()) && !acc.isHiddenColeader()) {
 							hasOtherElderOrHigherInOldClan = true;
 						}
 					}
