@@ -306,7 +306,8 @@ public class ListeningEvent {
 							int currentPoints = achievement.getInt("value");
 
 							// Get start value from database
-							String sql = "SELECT data FROM achievement_data WHERE player_tag = ? AND type = 'CLANGAMES_POINTS' AND time = ? ORDER BY time LIMIT 1";
+							// Cast JSONB data to integer using ::text::integer
+							String sql = "SELECT data::text::integer FROM achievement_data WHERE player_tag = ? AND type = 'CLANGAMES_POINTS' AND time = ? ORDER BY time LIMIT 1";
 							Integer pointsStart = DBUtil.getValueFromSQL(sql, Integer.class, p.getTag(), startTime);
 
 							if (pointsStart != null) {
@@ -322,7 +323,8 @@ public class ListeningEvent {
 				}
 			} else {
 				// Use stored data from database
-				String sql = "SELECT data FROM achievement_data WHERE player_tag = ? AND type = 'CLANGAMES_POINTS' AND time = ? ORDER BY time LIMIT 1";
+				// Cast JSONB data to integer using ::text::integer
+				String sql = "SELECT data::text::integer FROM achievement_data WHERE player_tag = ? AND type = 'CLANGAMES_POINTS' AND time = ? ORDER BY time LIMIT 1";
 				Integer pointsStart = DBUtil.getValueFromSQL(sql, Integer.class, p.getTag(), startTime);
 				Integer pointsEnd = DBUtil.getValueFromSQL(sql, Integer.class, p.getTag(), endTime);
 

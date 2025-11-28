@@ -568,6 +568,17 @@ public class Player {
 		} else {
 			DBUtil.executeUpdate("INSERT achievements (tag, data) VALUES ", tag, jsonlist);
 		}
+		
+		// Also insert into the new achievement_data table for ListeningEvent queries
+		// This uses the normalized schema that ListeningEvent.handleClanGamesEvent() expects
+		if (data != null && data.getData() != null) {
+			String typeStr = type.name();
+			Integer dataValue = (Integer) data.getData();
+			DBUtil.executeUpdate(
+				"INSERT INTO achievement_data (player_tag, type, time, data) VALUES (?, ?, ?, ?::jsonb) " +
+				"ON CONFLICT (player_tag, type, time) DO UPDATE SET data = ?::jsonb",
+				tag, typeStr, timestamp, String.valueOf(dataValue), String.valueOf(dataValue));
+		}
 	}
 
 	public AchievementData getAchievementDataAPI(AchievementData.Type type, Timestamp timestamp) {
