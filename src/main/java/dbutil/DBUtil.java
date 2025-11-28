@@ -109,7 +109,7 @@ public class DBUtil {
 		String sequenceName = tableName + "_id_seq";
 		String resetSql = "SELECT setval('" + sequenceName + "', COALESCE((SELECT MAX(id) FROM " + tableName + "), 0) + 1, false)";
 		try (PreparedStatement pstmt = Connection.getConnection().prepareStatement(resetSql);
-			 ResultSet rs = pstmt.executeQuery()) {
+			 ResultSet _ = pstmt.executeQuery()) {
 			System.out.println("Reset sequence " + sequenceName + " for table " + tableName);
 			return true;
 		} catch (SQLException e) {
