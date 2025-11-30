@@ -81,6 +81,11 @@ public class User {
 					}
 				}
 			}
+			for (String clantag : allclans) {
+				if (!clanroles.containsKey(clantag)) {
+					clanroles.put(clantag, Player.RoleType.NOTINCLAN);
+				}
+			}
 		}
 		return clanroles;
 	}
