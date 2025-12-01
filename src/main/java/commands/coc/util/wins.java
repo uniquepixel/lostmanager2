@@ -159,7 +159,8 @@ public class wins extends ListenerAdapter {
 		// Get all unique timestamps from the achievements table for WINS type
 		// Note: In JDBC PreparedStatement, ? is a parameter placeholder. To use PostgreSQL's JSONB ? operator,
 		// we need to escape it as ?? (which becomes a literal ? after JDBC processing)
-		String sql = "SELECT DISTINCT data->>'WINS' as wins_data FROM achievements WHERE data ?? 'WINS' AND data->'WINS' != 'null'::jsonb";
+		// The data column is explicitly cast to jsonb to handle cases where it might be stored as text
+		String sql = "SELECT DISTINCT data::jsonb->>'WINS' as wins_data FROM achievements WHERE data::jsonb ?? 'WINS' AND data::jsonb->'WINS' != 'null'::jsonb";
 
 		try {
 			ArrayList<String> results = DBUtil.getArrayListFromSQL(sql, String.class);
