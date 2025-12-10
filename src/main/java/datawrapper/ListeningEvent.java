@@ -1289,7 +1289,7 @@ public class ListeningEvent {
 					ArrayList<Player> raidMemberList = c.getRaidMemberList();
 					for (Player t : raidMemberList) {
 						if (t.getTag().equals(p.getTag())) {
-							if (!message.toString().contains("In einem anderen Lost-Clan")) {
+							if (!message.toString().contains("In einem anderen Lost-Clan angegriffen:")) {
 								message.append("### In einem anderen Lost-Clan angegriffen:\n");
 							}
 							message.append(t.getNameAPI()).append(" in ").append(c.getNameDB()).append(": ")
@@ -1336,8 +1336,11 @@ public class ListeningEvent {
 				hasMissedAttacks = true;
 				int attacks = p.getCurrentRaidAttacks();
 				int maxAttacks = p.getCurrentRaidAttackLimit() + p.getCurrentRaidbonusAttackLimit();
-				message.append(p.getNameAPI()).append(" (<@").append(p.getUser().getUserID()).append(">): ")
-						.append(attacks).append("/").append(maxAttacks).append("\n");
+				message.append(p.getNameAPI());
+				if (p.getUser() != null) {
+					message.append(" (<@").append(p.getUser().getUserID()).append(">)");
+				}
+				message.append(": ").append(attacks).append("/").append(maxAttacks).append("\n");
 
 				if (getActionType() == ACTIONTYPE.KICKPOINT) {
 					addKickpointForPlayer(p, "Raid Angriffe verpasst (" + attacks + "/" + maxAttacks + ")");
