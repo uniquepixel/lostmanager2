@@ -4,6 +4,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import datawrapper.Clan;
@@ -45,33 +46,70 @@ public class listmembers extends ListenerAdapter {
 
 			ArrayList<Player> playerlist = c.getPlayersDB();
 
-			String leaderlist = "";
-			String coleaderlist = "";
-			String elderlist = "";
-			String memberlist = "";
+			ArrayList<Player> leaders = new ArrayList<>();
+			ArrayList<Player> coleaders = new ArrayList<>();
+			ArrayList<Player> elders = new ArrayList<>();
+			ArrayList<Player> members = new ArrayList<>();
 			int totalMembersCount = 0;
 
+			// Separate players by role
 			for (Player p : playerlist) {
 				if (p.getRoleDB() == Player.RoleType.LEADER) {
-					leaderlist += p.getInfoStringDB() + "\n";
+					leaders.add(p);
 					totalMembersCount++;
 				}
 				if (p.getRoleDB() == Player.RoleType.COLEADER) {
-					if (p.isHiddenColeader()) {
-						coleaderlist += p.getInfoStringDB() + " (versteckt)\n";
-					} else {
-						coleaderlist += p.getInfoStringDB() + "\n";
+					coleaders.add(p);
+					if (!p.isHiddenColeader()) {
 						totalMembersCount++;
 					}
 				}
 				if (p.getRoleDB() == Player.RoleType.ELDER) {
-					elderlist += p.getInfoStringDB() + "\n";
+					elders.add(p);
 					totalMembersCount++;
 				}
 				if (p.getRoleDB() == Player.RoleType.MEMBER) {
-					memberlist += p.getInfoStringDB() + "\n";
+					members.add(p);
 					totalMembersCount++;
 				}
+			}
+
+			// Sort each role list alphabetically by name
+			Comparator<Player> nameComparator = (p1, p2) -> {
+				String name1 = p1.getNameDB();
+				String name2 = p2.getNameDB();
+				if (name1 == null && name2 == null) return 0;
+				if (name1 == null) return 1;
+				if (name2 == null) return -1;
+				return name1.compareToIgnoreCase(name2);
+			};
+			
+			leaders.sort(nameComparator);
+			coleaders.sort(nameComparator);
+			elders.sort(nameComparator);
+			members.sort(nameComparator);
+
+			// Build display strings
+			String leaderlist = "";
+			String coleaderlist = "";
+			String elderlist = "";
+			String memberlist = "";
+
+			for (Player p : leaders) {
+				leaderlist += p.getInfoStringDB() + "\n";
+			}
+			for (Player p : coleaders) {
+				if (p.isHiddenColeader()) {
+					coleaderlist += p.getInfoStringDB() + " (versteckt)\n";
+				} else {
+					coleaderlist += p.getInfoStringDB() + "\n";
+				}
+			}
+			for (Player p : elders) {
+				elderlist += p.getInfoStringDB() + "\n";
+			}
+			for (Player p : members) {
+				memberlist += p.getInfoStringDB() + "\n";
 			}
 			String desc = "## " + c.getInfoString() + "\n";
 			desc += "**Anführer:**\n";
@@ -140,33 +178,70 @@ public class listmembers extends ListenerAdapter {
 
 				ArrayList<Player> playerlist = c.getPlayersDB();
 
-				String leaderlist = "";
-				String coleaderlist = "";
-				String elderlist = "";
-				String memberlist = "";
+				ArrayList<Player> leaders = new ArrayList<>();
+				ArrayList<Player> coleaders = new ArrayList<>();
+				ArrayList<Player> elders = new ArrayList<>();
+				ArrayList<Player> members = new ArrayList<>();
 				int totalMembersCount = 0;
 
+				// Separate players by role
 				for (Player p : playerlist) {
 					if (p.getRoleDB() == Player.RoleType.LEADER) {
-						leaderlist += p.getInfoStringDB() + "\n";
+						leaders.add(p);
 						totalMembersCount++;
 					}
 					if (p.getRoleDB() == Player.RoleType.COLEADER) {
-						if (p.isHiddenColeader()) {
-							coleaderlist += p.getInfoStringDB() + " (versteckt)\n";
-						} else {
-							coleaderlist += p.getInfoStringDB() + "\n";
+						coleaders.add(p);
+						if (!p.isHiddenColeader()) {
 							totalMembersCount++;
 						}
 					}
 					if (p.getRoleDB() == Player.RoleType.ELDER) {
-						elderlist += p.getInfoStringDB() + "\n";
+						elders.add(p);
 						totalMembersCount++;
 					}
 					if (p.getRoleDB() == Player.RoleType.MEMBER) {
-						memberlist += p.getInfoStringDB() + "\n";
+						members.add(p);
 						totalMembersCount++;
 					}
+				}
+
+				// Sort each role list alphabetically by name
+				Comparator<Player> nameComparator = (p1, p2) -> {
+					String name1 = p1.getNameDB();
+					String name2 = p2.getNameDB();
+					if (name1 == null && name2 == null) return 0;
+					if (name1 == null) return 1;
+					if (name2 == null) return -1;
+					return name1.compareToIgnoreCase(name2);
+				};
+				
+				leaders.sort(nameComparator);
+				coleaders.sort(nameComparator);
+				elders.sort(nameComparator);
+				members.sort(nameComparator);
+
+				// Build display strings
+				String leaderlist = "";
+				String coleaderlist = "";
+				String elderlist = "";
+				String memberlist = "";
+
+				for (Player p : leaders) {
+					leaderlist += p.getInfoStringDB() + "\n";
+				}
+				for (Player p : coleaders) {
+					if (p.isHiddenColeader()) {
+						coleaderlist += p.getInfoStringDB() + " (versteckt)\n";
+					} else {
+						coleaderlist += p.getInfoStringDB() + "\n";
+					}
+				}
+				for (Player p : elders) {
+					elderlist += p.getInfoStringDB() + "\n";
+				}
+				for (Player p : members) {
+					memberlist += p.getInfoStringDB() + "\n";
 				}
 				String desc = "## " + c.getInfoString() + "\n";
 				desc += "**Anführer:**\n";
