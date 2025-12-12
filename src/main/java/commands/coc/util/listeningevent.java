@@ -879,24 +879,28 @@ public class listeningevent extends ListenerAdapter {
 				String[] commonActionTypes = { "infomessage", "kickpoint", "custommessage" };
 				String[] commonDisplayNames = { "Info-Nachricht", "Kickpoint", "Benutzerdefinierte Nachricht" };
 				
+				// Raid-specific display names (different from common)
+				String[] raidCommonDisplayNames = { "Fehlende Angriffe", "Kickpunkte (Hits)", "Benutzerdefinierte Nachricht" };
+				
 				// CW-specific action types
 				String[] cwActionTypes = { "cwdonator", "filler" };
 				String[] cwDisplayNames = { "CW Donator", "Filler" };
 				
 				// Raid-specific action types  
 				String[] raidActionTypes = { "raidfails" };
-				String[] raidDisplayNames = { "Raidfails (Distrikt-Analyse)" };
+				String[] raidDisplayNames = { "Kickpunkte (Fails)" };
 
-				// Add common action types
+				// Add common action types (use raid-specific names for raid type)
+				String[] displayNames = "raid".equals(eventType) ? raidCommonDisplayNames : commonDisplayNames;
 				for (int i = 0; i < commonActionTypes.length; i++) {
 					if (commonActionTypes[i].toLowerCase().contains(input.toLowerCase())
-							|| commonDisplayNames[i].toLowerCase().contains(input.toLowerCase())) {
-						choices.add(new Command.Choice(commonDisplayNames[i], commonActionTypes[i]));
+							|| displayNames[i].toLowerCase().contains(input.toLowerCase())) {
+						choices.add(new Command.Choice(displayNames[i], commonActionTypes[i]));
 					}
 				}
 				
 				// Add CW-specific action types only if type is "cw"
-				if (eventType.equals("cw")) {
+				if ("cw".equals(eventType)) {
 					for (int i = 0; i < cwActionTypes.length; i++) {
 						if (cwActionTypes[i].toLowerCase().contains(input.toLowerCase())
 								|| cwDisplayNames[i].toLowerCase().contains(input.toLowerCase())) {
@@ -906,7 +910,7 @@ public class listeningevent extends ListenerAdapter {
 				}
 				
 				// Add raid-specific action types only if type is "raid"
-				if (eventType.equals("raid")) {
+				if ("raid".equals(eventType)) {
 					for (int i = 0; i < raidActionTypes.length; i++) {
 						if (raidActionTypes[i].toLowerCase().contains(input.toLowerCase())
 								|| raidDisplayNames[i].toLowerCase().contains(input.toLowerCase())) {
