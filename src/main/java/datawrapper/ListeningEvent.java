@@ -741,13 +741,23 @@ public class ListeningEvent {
 			// Check if war data is still available (state is notInWar or warEnded)
 			boolean dataIsReliable = currentState.equals("notInWar") || currentState.equals("warEnded");
 
+			// Re-fetch required attacks from event's action values to ensure the configured setting is preserved
+			// This prevents the setting from being lost and defaulting to 2
+			int actualRequiredAttacks = cwJson.getInt("attacksPerMember"); // Default from API
+			for (ActionValue av : event.getActionValues()) {
+				if (av.getSaved() == ActionValue.kind.value && av.getValue() != null) {
+					actualRequiredAttacks = av.getValue().intValue();
+					break;
+				}
+			}
+
 			String updatedMessage;
 			boolean shouldProcessKickpoints = false;
 			CWMissedAttacksResult result = null;
 
 			if (dataIsReliable) {
 				// Data is reliable - build updated message with fresh data
-				result = buildCWMissedAttacksMessage(clan, cwJson, requiredAttacks, fillerTags, true);
+				result = buildCWMissedAttacksMessage(clan, cwJson, actualRequiredAttacks, fillerTags, true);
 				updatedMessage = result.message + "\n\n*Daten nach 5min überprüft*";
 				shouldProcessKickpoints = result.hasMissedAttacks && event.getActionType() == ACTIONTYPE.KICKPOINT;
 			} else {
@@ -766,7 +776,7 @@ public class ListeningEvent {
 			if (shouldProcessKickpoints && result != null) {
 				for (PlayerMissedAttacks pma : result.playersWithMissedAttacks) {
 					addKickpointForPlayer(pma.player,
-							"CW Angriffe verpasst (" + pma.attacks + "/" + requiredAttacks + ")");
+							"CW Angriffe verpasst (" + pma.attacks + "/" + actualRequiredAttacks + ")");
 				}
 			}
 
