@@ -880,7 +880,6 @@ public class listeningevent extends ListenerAdapter {
 				String[] commonDisplayNames = { "Info-Nachricht", "Kickpoint", "Benutzerdefinierte Nachricht" };
 				
 				// Raid-specific display names (different from common)
-				String[] raidCommonActionTypes = { "infomessage", "kickpoint", "custommessage" };
 				String[] raidCommonDisplayNames = { "Fehlende Angriffe", "Kickpunkte (Hits)", "Benutzerdefinierte Nachricht" };
 				
 				// CW-specific action types
@@ -892,19 +891,11 @@ public class listeningevent extends ListenerAdapter {
 				String[] raidDisplayNames = { "Kickpunkte (Fails)" };
 
 				// Add common action types (use raid-specific names for raid type)
-				if (eventType.equals("raid")) {
-					for (int i = 0; i < raidCommonActionTypes.length; i++) {
-						if (raidCommonActionTypes[i].toLowerCase().contains(input.toLowerCase())
-								|| raidCommonDisplayNames[i].toLowerCase().contains(input.toLowerCase())) {
-							choices.add(new Command.Choice(raidCommonDisplayNames[i], raidCommonActionTypes[i]));
-						}
-					}
-				} else {
-					for (int i = 0; i < commonActionTypes.length; i++) {
-						if (commonActionTypes[i].toLowerCase().contains(input.toLowerCase())
-								|| commonDisplayNames[i].toLowerCase().contains(input.toLowerCase())) {
-							choices.add(new Command.Choice(commonDisplayNames[i], commonActionTypes[i]));
-						}
+				String[] displayNames = eventType.equals("raid") ? raidCommonDisplayNames : commonDisplayNames;
+				for (int i = 0; i < commonActionTypes.length; i++) {
+					if (commonActionTypes[i].toLowerCase().contains(input.toLowerCase())
+							|| displayNames[i].toLowerCase().contains(input.toLowerCase())) {
+						choices.add(new Command.Choice(displayNames[i], commonActionTypes[i]));
 					}
 				}
 				
