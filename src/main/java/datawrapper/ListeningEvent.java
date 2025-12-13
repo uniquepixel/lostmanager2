@@ -1659,10 +1659,6 @@ public class ListeningEvent {
 			desc += "ID: " + id + "\n";
 
 			sendMessageToChannel(desc);
-		} else {
-			// Log warning when we can't add kickpoints because neither player's clan nor event's clan is in DB
-			System.out.println("Warning: Cannot add kickpoint for player " + player.getTag() + 
-					" - neither player's clan nor event's clan (" + getClanTag() + ") is configured in database");
 		}
 	}
 
