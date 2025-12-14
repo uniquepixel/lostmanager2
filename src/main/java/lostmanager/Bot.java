@@ -915,6 +915,32 @@ public class Bot extends ListenerAdapter {
 		}, delay, TimeUnit.MILLISECONDS);
 	}
 
+	/**
+	 * Check if season start data already exists for the given timestamp
+	 * by querying any player's achievement data
+	 * 
+	 * @param seasonStartTime The timestamp to check
+	 * @return true if data exists for this timestamp, false otherwise
+	 */
+	private static boolean hasSeasonStartData(Timestamp seasonStartTime) {
+		try {
+			// Check if any player has WINS data recorded for this exact timestamp
+			// We only need to check one entry since season start saves are done for all players at once
+			String checkSql = "SELECT COUNT(*) FROM achievement_data WHERE type = 'WINS' AND time = ?";
+			Long count = DBUtil.getValueFromSQL(checkSql, Long.class, seasonStartTime);
+			
+			if (count != null && count > 0) {
+				System.out.println("Found " + count + " existing season start records for " + seasonStartTime);
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			System.err.println("Error checking for existing season start data: " + e.getMessage());
+			// If we can't determine, return false to allow save (safer default)
+			return false;
+		}
+	}
+
 	public static void scheduleSeasonStartWinsSaving() {
 		// Fetch the actual season start time from the API
 		Timestamp seasonStartTime = util.SeasonUtil.fetchSeasonStartTime();
@@ -931,11 +957,20 @@ public class Bot extends ListenerAdapter {
 
 		String sql = "SELECT coc_tag FROM players";
 
-		// If the season start time has already passed, save wins data immediately
+		// If the season start time has already passed, check if data already exists
 		// This handles the case where the bot starts after season has begun
 		if (seasonStartMillis <= nowMillis) {
 			// Check if we already have data for this season start
-			// If not, save it immediately
+			// If we do, skip saving and just schedule the next check
+			if (hasSeasonStartData(seasonStartTime)) {
+				System.out.println("Season start data for " + seasonStartTime + " already exists, skipping save.");
+				// Schedule check for next season start in 24 hours
+				long delayUntilNextCheck = 24 * 60 * 60 * 1000L;
+				System.out.println("Will check again in 24 hours for next season start");
+				schedulertasks.schedule(() -> scheduleSeasonStartWinsSaving(), delayUntilNextCheck, TimeUnit.MILLISECONDS);
+				return;
+			}
+
 			System.out.println("Season already started at " + seasonStartTime + ", saving wins data immediately...");
 
 			// Execute immediately in a separate thread to not block startup
