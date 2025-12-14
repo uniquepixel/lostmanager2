@@ -242,10 +242,8 @@ public class ListeningEvent {
 			}
 
 			// If timestamptofire is still null, return a far future time to prevent
-			// scheduling errors
+			// scheduling errors (this is expected when no war/raid is active)
 			if (timestamptofire == null) {
-				System.err.println(
-						"Warning: Unable to calculate timestamp for listening event. endTime may be missing from API response.");
 				return Long.MAX_VALUE;
 			}
 		}
