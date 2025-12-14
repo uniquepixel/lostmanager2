@@ -124,6 +124,7 @@ public class Bot extends ListenerAdapter {
 		}
 
 		dbutil.Connection.tablesExists();
+		cleanupDuplicateWinsData();
 		startNameUpdates();
 		restartAllEvents();
 
@@ -913,6 +914,73 @@ public class Bot extends ListenerAdapter {
 			// Schedule the next season end
 			scheduleSeasonEndWinsSaving();
 		}, delay, TimeUnit.MILLISECONDS);
+	}
+
+	/**
+	 * Clean up duplicate WINS data entries, keeping only the first (earliest) entry 
+	 * per player per month. This removes duplicates that may have accumulated from 
+	 * bot restarts before the deduplication check was implemented.
+	 * 
+	 * SAFETY: Only deletes duplicates within the same player-month combination.
+	 * Always keeps at least one record (the earliest) per player per month.
+	 */
+	private static void cleanupDuplicateWinsData() {
+		try {
+			System.out.println("Checking for duplicate WINS data to clean up...");
+			
+			// SQL to delete duplicate WINS entries, keeping only the earliest timestamp per player per month
+			// This uses a CTE (Common Table Expression) to:
+			// 1. Rank all WINS records per player per month by timestamp (earliest = 1)
+			// 2. Delete all records where rank > 1 (i.e., not the earliest)
+			String cleanupSql = 
+				"WITH ranked_data AS (" +
+				"  SELECT id, " +
+				"         ROW_NUMBER() OVER (" +
+				"           PARTITION BY player_tag, DATE_TRUNC('month', time) " +
+				"           ORDER BY time ASC" +
+				"         ) as rn " +
+				"  FROM achievement_data " +
+				"  WHERE type = 'WINS'" +
+				") " +
+				"DELETE FROM achievement_data " +
+				"WHERE id IN (" +
+				"  SELECT id FROM ranked_data WHERE rn > 1" +
+				")";
+			
+			// First, check how many duplicates exist
+			String countSql = 
+				"WITH ranked_data AS (" +
+				"  SELECT id, " +
+				"         ROW_NUMBER() OVER (" +
+				"           PARTITION BY player_tag, DATE_TRUNC('month', time) " +
+				"           ORDER BY time ASC" +
+				"         ) as rn " +
+				"  FROM achievement_data " +
+				"  WHERE type = 'WINS'" +
+				") " +
+				"SELECT COUNT(*) FROM ranked_data WHERE rn > 1";
+			
+			Long duplicateCount = DBUtil.getValueFromSQL(countSql, Long.class);
+			
+			if (duplicateCount != null && duplicateCount > 0) {
+				System.out.println("Found " + duplicateCount + " duplicate WINS records to delete...");
+				
+				// Execute the cleanup
+				var result = DBUtil.executeUpdate(cleanupSql);
+				
+				if (result != null && result.getSecond() != null) {
+					System.out.println("Successfully deleted " + result.getSecond() + " duplicate WINS records");
+				} else {
+					System.out.println("Cleanup completed");
+				}
+			} else {
+				System.out.println("No duplicate WINS records found - database is clean");
+			}
+		} catch (Exception e) {
+			System.err.println("Error during duplicate WINS data cleanup: " + e.getMessage());
+			e.printStackTrace();
+			// Don't throw - allow bot to continue starting even if cleanup fails
+		}
 	}
 
 	/**
