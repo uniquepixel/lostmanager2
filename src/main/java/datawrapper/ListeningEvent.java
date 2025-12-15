@@ -1298,13 +1298,13 @@ public class ListeningEvent {
 			minutesLeft = minutesLeft % 60;
 
 			if (hoursLeft > 0) {
-				message.append(" **" + hoursLeft).append("h**");
+				message.append(" **").append(hoursLeft).append("h**");
 			}
 			if (minutesLeft > 0) {
-				message.append(" **" + minutesLeft).append("m**");
+				message.append(" **").append(minutesLeft).append("m**");
 			}
 			if (secondsLeft > 0) {
-				message.append(" **" + secondsLeft).append("s**");
+				message.append(" **").append(secondsLeft).append("s**");
 			}
 			message.append(" verbleibend\n");
 		} else {
@@ -1451,13 +1451,13 @@ public class ListeningEvent {
 			minutesLeft = minutesLeft % 60;
 
 			if (hoursLeft > 0) {
-				message.append(hoursLeft).append("h ");
+				message.append("**").append(hoursLeft).append("h** ");
 			}
 			if (minutesLeft > 0) {
-				message.append(minutesLeft).append("m ");
+				message.append("**").append(minutesLeft).append("m** ");
 			}
 			if (secondsLeft > 0) {
-				message.append(secondsLeft).append("s ");
+				message.append("**").append(secondsLeft).append("s** ");
 			}
 			message.append("verbleibend\n\n");
 		} else {
