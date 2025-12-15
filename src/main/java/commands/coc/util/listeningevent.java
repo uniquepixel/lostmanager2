@@ -300,23 +300,19 @@ public class listeningevent extends ListenerAdapter {
 
 		// Add threshold or required attacks if provided
 		if (thresholdOrAttacks != null) {
-			ActionValue valueAV = new ActionValue(ActionValue.ACTIONVALUETYPE.VALUE);
-			valueAV.setValue((long) thresholdOrAttacks.intValue());
+			ActionValue valueAV = new ActionValue((long) thresholdOrAttacks.intValue());
 			actionValues.add(valueAV);
 		}
 		
 		// Add raid district thresholds if provided
 		if (raidDistrictThresholds != null && !raidDistrictThresholds.isEmpty()) {
-			ActionValue capitalPeakAV = new ActionValue(ActionValue.ACTIONVALUETYPE.VALUE);
-			capitalPeakAV.setValue((long) raidDistrictThresholds.get("capital_peak_max").intValue());
+			ActionValue capitalPeakAV = new ActionValue((long) raidDistrictThresholds.get("capital_peak_max").intValue());
 			actionValues.add(capitalPeakAV);
 			
-			ActionValue otherDistrictsAV = new ActionValue(ActionValue.ACTIONVALUETYPE.VALUE);
-			otherDistrictsAV.setValue((long) raidDistrictThresholds.get("other_districts_max").intValue());
+			ActionValue otherDistrictsAV = new ActionValue((long) raidDistrictThresholds.get("other_districts_max").intValue());
 			actionValues.add(otherDistrictsAV);
 			
-			ActionValue penalizeBothAV = new ActionValue(ActionValue.ACTIONVALUETYPE.VALUE);
-			penalizeBothAV.setValue((long) raidDistrictThresholds.get("penalize_both").intValue());
+			ActionValue penalizeBothAV = new ActionValue((long) raidDistrictThresholds.get("penalize_both").intValue());
 			actionValues.add(penalizeBothAV);
 		}
 
@@ -812,15 +808,13 @@ public class listeningevent extends ListenerAdapter {
 
 		// Add use_lists parameter if enabled
 		if (cwdonatorParams.get("use_lists") == 1) {
-			ActionValue useListsAV = new ActionValue(ActionValue.ACTIONVALUETYPE.VALUE);
-			useListsAV.setValue(1L);
+			ActionValue useListsAV = new ActionValue(1L);
 			actionValues.add(useListsAV);
 		}
 
 		// Add exclude_leaders parameter if enabled
 		if (cwdonatorParams.get("exclude_leaders") == 1) {
-			ActionValue excludeLeadersAV = new ActionValue(ActionValue.ACTIONVALUETYPE.VALUE);
-			excludeLeadersAV.setValue(2L); // Use 2 to distinguish from use_lists
+			ActionValue excludeLeadersAV = new ActionValue(2L);
 			actionValues.add(excludeLeadersAV);
 		}
 
