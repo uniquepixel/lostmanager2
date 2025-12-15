@@ -127,25 +127,25 @@ Tracks raid participation, attacks, and district performance.
 
 **Three Action Type Categories:**
 
-1. **Verpasste Hits (Fehlende Hits / Kickpoints)**
-   - **Fehlende Hits**: Reports members who didn't complete all raid attacks (info only)
-   - **Kickpoints (Fehlende Hits)**: Same as above but also adds kickpoints to violators
+1. **Hits Analysis**
+   - **Hits (Info)**: Reports members who didn't complete all raid attacks (info only)
+   - **Hits (Kickpoints)**: Same as above but also adds kickpoints to violators
    - Reports members who didn't participate at all
    - Reports members with incomplete attacks
 
    **Example Setup (info only):**
    ```
-   /listeningevent add clan:LOST_F2P type:Raid duration:0 actiontype:Info-Nachricht channel:#raid-logs
+   /listeningevent add clan:LOST_F2P type:Raid duration:0 actiontype:Hits_(Info) channel:#raid-logs
    ```
 
    **Example Setup (with kickpoints):**
    ```
-   /listeningevent add clan:LOST_F2P type:Raid duration:0 actiontype:Kickpoint channel:#raid-logs kickpoint_reason:Raid_nicht_gemacht
+   /listeningevent add clan:LOST_F2P type:Raid duration:0 actiontype:Hits_(Kickpoints) channel:#raid-logs kickpoint_reason:Raid_nicht_gemacht
    ```
 
-2. **District-Analyse (District Analysis)**
-   - **District-Analyse (Info)**: Analyzes district attacks and reports problematic districts (info only)
-   - **District-Analyse (Kickpoints)**: Same as above but also adds kickpoints to top attackers
+2. **Districts Analysis**
+   - **Districts (Info)**: Analyzes district attacks and reports problematic districts (info only)
+   - **Districts (Kickpoints)**: Same as above but also adds kickpoints to top attackers
    - Prompts for thresholds: max attacks on Capital Peak, max attacks on other districts
    - Identifies districts where total attacks exceeded threshold
    - Info mode: lists all attackers on over-attacked districts
@@ -154,12 +154,12 @@ Tracks raid participation, attacks, and district performance.
 
    **Example Setup (info only):**
    ```
-   /listeningevent add clan:LOST_F2P type:Raid duration:0 actiontype:District-Analyse_(Info) channel:#raid-logs
+   /listeningevent add clan:LOST_F2P type:Raid duration:0 actiontype:Districts_(Info) channel:#raid-logs
    ```
    
    **Example Setup (with kickpoints):**
    ```
-   /listeningevent add clan:LOST_F2P type:Raid duration:0 actiontype:District-Analyse_(Kickpoints) channel:#raid-logs kickpoint_reason:Raidfail_zuviele_Angriffe
+   /listeningevent add clan:LOST_F2P type:Raid duration:0 actiontype:Districts_(Kickpoints) channel:#raid-logs kickpoint_reason:Raidfail_zuviele_Angriffe
    ```
 
 3. **Benutzerdefinierte Nachricht (Custom Message)**
@@ -234,14 +234,14 @@ Special action type for checking war fillers (opted-out members).
 /listeningevent add clan:LOST_F2P type:Clan_War duration:start actiontype:Filler channel:#war-prep
 ```
 
-### District-Analyse (District Analysis)
+### Districts (District Analysis)
 Special action type for analyzing district attacks during Raid Weekend.
 
 **Availability:** Raid events only
 
 **Two Variants:**
-- **District-Analyse (Info)**: Information only, lists all attackers on over-attacked districts
-- **District-Analyse (Kickpoints)**: Penalizes player(s) with most attacks on over-attacked districts
+- **Districts (Info)**: Information only, lists all attackers on over-attacked districts
+- **Districts (Kickpoints)**: Penalizes player(s) with most attacks on over-attacked districts
 
 **Behavior:**
 - Analyzes attack distribution across districts
@@ -257,12 +257,12 @@ Special action type for analyzing district attacks during Raid Weekend.
 
 **Usage (info only):**
 ```
-/listeningevent add clan:LOST_F2P type:Raid duration:0 actiontype:District-Analyse_(Info) channel:#raid-logs
+/listeningevent add clan:LOST_F2P type:Raid duration:0 actiontype:Districts_(Info) channel:#raid-logs
 ```
 
 **Usage (with kickpoints):**
 ```
-/listeningevent add clan:LOST_F2P type:Raid duration:0 actiontype:District-Analyse_(Kickpoints) channel:#raid-logs kickpoint_reason:Raidfail_zuviele_Angriffe
+/listeningevent add clan:LOST_F2P type:Raid duration:0 actiontype:Districts_(Kickpoints) channel:#raid-logs kickpoint_reason:Raidfail_zuviele_Angriffe
 ```
 
 ## Action Values JSON Format
