@@ -1,6 +1,5 @@
 package commands.coc.memberlist;
 
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -355,7 +354,8 @@ public class transfermember extends ListenerAdapter {
 		}
 		
 		// Simple underscore-separated format
-		return encoded.split("_");
+		// Limit to 3 parts in case tags somehow contain underscores
+		return encoded.split("_", 3);
 	}
 	
 	/**
