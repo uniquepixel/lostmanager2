@@ -1910,6 +1910,10 @@ public class ListeningEvent {
 					if (!p.getWarPreference()) {
 						continue;
 					}
+					// Skip leaders if excludeLeaders is enabled
+					if (excludeLeaders && isLeaderOrCoLeaderForEvent(p)) {
+						continue;
+					}
 					eligiblePlayers.add(p);
 				}
 			}
@@ -1968,8 +1972,33 @@ public class ListeningEvent {
 		} catch (Exception e) {
 			System.err.println("Error picking player from List A for event: " + e.getMessage());
 			e.printStackTrace();
+			// Fallback: find a non-leader if excludeLeaders is true
 			if (!warMemberList.isEmpty()) {
 				java.util.Collections.shuffle(warMemberList);
+				for (Player p : warMemberList) {
+					// Skip leaders if excludeLeaders is enabled
+					if (excludeLeaders && isLeaderOrCoLeaderForEvent(p)) {
+						continue;
+					}
+					// Skip players in donation range or opted out
+					int mapposition = p.getWarMapPosition();
+					if (mapposition >= map.getFirst() && mapposition <= map.getSecond()) {
+						continue;
+					}
+					if (!p.getWarPreference()) {
+						continue;
+					}
+					return p;
+				}
+				// If no eligible player found, return any non-leader
+				if (excludeLeaders) {
+					for (Player p : warMemberList) {
+						if (!isLeaderOrCoLeaderForEvent(p)) {
+							return p;
+						}
+					}
+				}
+				// Last resort: return first player
 				return warMemberList.get(0);
 			}
 			return null;
