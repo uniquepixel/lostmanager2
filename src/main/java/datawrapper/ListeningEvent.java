@@ -2029,14 +2029,14 @@ public class ListeningEvent {
 				// Check saved field first (correct way), but also handle legacy/malformed data
 				// by checking if we have a non-null value that isn't a reason or type
 				boolean isValueField = av.getSaved() == ActionValue.kind.value;
-				boolean looksLikeValue = av.getValue() != null && av.getReason() == null;
+				boolean looksLikeValue = av.getValue() != null && av.getReason() == null && av.getType() == null;
 				
 				if (isValueField && av.getValue() != null) {
 					int configuredValue = av.getValue().intValue();
 					System.out.println("CW Event " + getId() + ": Using configured required attacks = " + configuredValue);
 					return configuredValue;
 				} else if (!isValueField && looksLikeValue) {
-					// Handle legacy/malformed data where saved field is wrong
+					// Handle legacy/malformed data where saved field is wrong but value is clearly a numeric value
 					int configuredValue = av.getValue().intValue();
 					System.out.println("CW Event " + getId() + ": WARNING - Using configured required attacks from malformed ActionValue = " + configuredValue);
 					return configuredValue;
