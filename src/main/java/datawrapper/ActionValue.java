@@ -19,18 +19,15 @@ public class ActionValue {
 	private Long value;
 
 	@JsonCreator
-	public ActionValue(@JsonProperty("type") ACTIONVALUETYPE type, @JsonProperty("reason") KickpointReason reason,
+	public ActionValue(
+			@JsonProperty("saved") kind saved,
+			@JsonProperty("type") ACTIONVALUETYPE type, 
+			@JsonProperty("reason") KickpointReason reason,
 			@JsonProperty("value") Long value) {
-		if (type != null) {
-			this.saved = kind.type;
-			this.type = type;
-		} else if (reason != null) {
-			this.saved = kind.reason;
-			this.reason = reason;
-		} else if (value != null) {
-			this.saved = kind.value;
-			this.value = value;
-		}
+		this.saved = saved;
+		this.type = type;
+		this.reason = reason;
+		this.value = value;
 	}
 
 	public ActionValue(ACTIONVALUETYPE type) {
