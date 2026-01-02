@@ -161,7 +161,9 @@ public class playerinfo extends ListenerAdapter {
 		
 		// Handle trash button - delete the ping message
 		if (id.equals("playerinfo_trash")) {
-			event.getMessage().delete().queue();
+			event.getMessage().delete().queue(null, error -> {
+				// Silently ignore errors (e.g., message already deleted or insufficient permissions)
+			});
 			return;
 		}
 	}
