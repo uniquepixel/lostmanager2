@@ -121,6 +121,31 @@ public class editmember extends ListenerAdapter {
 				e.printStackTrace();
 			}
 
+			// Check if the executor has permission to modify the player's current role
+			// This prevents co-leaders from modifying other co-leaders or leaders
+			Player.RoleType oldRoleType = oldRole != null && oldRole.equals("leader") ? Player.RoleType.LEADER
+					: oldRole != null && (oldRole.equals("coLeader") || oldRole.equals("hiddencoleader"))
+							? Player.RoleType.COLEADER
+							: oldRole != null && oldRole.equals("admin") ? Player.RoleType.ELDER
+									: oldRole != null && oldRole.equals("member") ? Player.RoleType.MEMBER : null;
+
+			if (oldRoleType == Player.RoleType.LEADER && userexecuted.getClanRoles().get(clantag) != Player.RoleType.ADMIN) {
+				event.getHook()
+						.editOriginalEmbeds(MessageUtil.buildEmbed(title,
+								"Um jemanden als Leader zu bearbeiten, musst du Admin sein.", MessageUtil.EmbedType.ERROR))
+						.queue();
+				return;
+			}
+			if (oldRoleType == Player.RoleType.COLEADER && !(userexecuted.getClanRoles().get(clantag) == Player.RoleType.ADMIN
+					|| userexecuted.getClanRoles().get(clantag) == Player.RoleType.LEADER)) {
+				event.getHook()
+						.editOriginalEmbeds(MessageUtil.buildEmbed(title,
+								"Um jemanden als Vize-Anführer zu bearbeiten, musst du Admin oder Anführer sein.",
+								MessageUtil.EmbedType.ERROR))
+						.queue();
+				return;
+			}
+
 			DBUtil.executeUpdate("UPDATE clan_members SET clan_role = ? WHERE player_tag = ?", role, playertag);
 			String rolestring = role.equals("leader") ? "Anführer"
 					: role.equals("coLeader") ? "Vize-Anführer"
