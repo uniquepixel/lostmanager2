@@ -182,6 +182,17 @@ public class transfermember extends ListenerAdapter {
 			String[] data;
 			try {
 				data = decodeButtonData(encodedData);
+				// Backward compatibility: old buttons may only have 3 fields
+				if (data.length < 4) {
+					event.getHook().editOriginalEmbeds(
+							MessageUtil.buildEmbed(title, 
+									"Diese Anfrage wurde mit einer älteren Version erstellt und ist abgelaufen. Bitte erstelle eine neue Transfer-Anfrage.",
+									MessageUtil.EmbedType.ERROR))
+							.queue();
+					// Disable buttons
+					event.getMessage().editMessageComponents().queue();
+					return;
+				}
 			} catch (Exception e) {
 				event.getHook().editOriginalEmbeds(
 						MessageUtil.buildEmbed(title, "Fehler: Button-Daten konnten nicht dekodiert werden.", 
@@ -320,6 +331,7 @@ public class transfermember extends ListenerAdapter {
 	/**
 	 * Decodes button data string.
 	 * Returns array: [playertag, oldclantag, newclantag, initiatorId]
+	 * For backward compatibility, may return only 3 elements if decoding old button data.
 	 */
 	private String[] decodeButtonData(String encoded) {
 		// Check if it's Base64 encoded
@@ -330,8 +342,8 @@ public class transfermember extends ListenerAdapter {
 		}
 		
 		// Simple underscore-separated format
-		// Limit to 4 parts in case tags somehow contain underscores
-		return encoded.split("_", 4);
+		// Split without limit to handle both old (3 parts) and new (4 parts) formats
+		return encoded.split("_");
 	}
 	
 	/**
