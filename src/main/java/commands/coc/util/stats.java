@@ -572,13 +572,15 @@ public class stats extends ListenerAdapter {
 			// Display grouped configurations
 			for (ConfigGroup group : configGroups.values()) {
 				// Determine indentation based on whether we're showing counts
+				// For consistency, always use fixed indent strings that don't accumulate
+				String countIndent = "  - ";  // Fixed indent for Anzahl
 				String baseIndent = showCounts ? "    - " : "  - ";
 				int objIndent = showCounts ? 3 : 2;
 				String arrItemIndent = showCounts ? "      - " : "    - ";
 				
 				// Only show count if there's actual grouping or multiple items
 				if (showCounts) {
-					sb.append("\n  - ").append("Anzahl: ").append(group.totalCount);
+					sb.append("\n").append(countIndent).append("Anzahl: ").append(group.totalCount);
 				}
 				
 				// Get and sort keys for consistent display order
