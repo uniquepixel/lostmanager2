@@ -565,9 +565,27 @@ public class stats extends ListenerAdapter {
 				}
 			}
 
+			// Determine if we need to show counts (only if multiple groups OR count > 1)
+			boolean showCounts = configGroups.size() > 1;
+			if (!showCounts) {
+				// Check if the single group has count > 1
+				for (ConfigGroup group : configGroups.values()) {
+					if (group.totalCount > 1) {
+						showCounts = true;
+					}
+				}
+			}
+			
 			// Display grouped configurations
 			for (ConfigGroup group : configGroups.values()) {
-				sb.append("\n").append("Anzahl: ").append(group.totalCount);
+				// Determine indentation based on whether we're showing counts
+				String attrIndent = showCounts ? "    - " : "  - ";
+				String gearUpIndent = showCounts ? "    - " : "  - ";
+				
+				// Only show count if there's actual grouping or multiple items
+				if (showCounts) {
+					sb.append("\n  - ").append("Anzahl: ").append(group.totalCount);
+				}
 				
 				// Get and sort keys for consistent display order
 				// Note: timer and helper_cooldown are included here for display, even though they don't affect grouping
@@ -599,7 +617,7 @@ public class stats extends ListenerAdapter {
 						long remainingSeconds = timerSeconds - elapsedSeconds;
 
 						if (remainingSeconds > 0) {
-							sb.append("\n  - ");
+							sb.append("\n").append(attrIndent);
 							String translatedKey = ATTR_TRANSLATIONS.getOrDefault(key, key);
 							sb.append(translatedKey).append(": ");
 							String timerStr = formatTimerRemaining(remainingSeconds);
@@ -607,22 +625,25 @@ public class stats extends ListenerAdapter {
 						}
 						// Skip timer if expired - don't add any output
 					} else {
-						sb.append("\n  - ");
+						sb.append("\n").append(attrIndent);
 						String translatedKey = ATTR_TRANSLATIONS.getOrDefault(key, key);
 						sb.append(translatedKey).append(": ");
 
 						if (value instanceof JSONObject) {
-							sb.append("\n").append(formatObject((JSONObject) value, 2, jsonTimestamp));
+							int objIndent = showCounts ? 3 : 2;
+							sb.append("\n").append(formatObject((JSONObject) value, objIndent, jsonTimestamp));
 						} else if (value instanceof JSONArray) {
 							JSONArray valueArr = (JSONArray) value;
 							if (valueArr.length() > 0) {
 								for (int i = 0; i < valueArr.length(); i++) {
 									Object arrItem = valueArr.get(i);
 									if (arrItem instanceof JSONObject) {
-										sb.append("\n").append(formatObject((JSONObject) arrItem, 2, jsonTimestamp));
+										int objIndent = showCounts ? 3 : 2;
+										sb.append("\n").append(formatObject((JSONObject) arrItem, objIndent, jsonTimestamp));
 									} else {
 										String mappedArrValue = getMappedValue(arrItem.toString());
-										sb.append("\n    - ").append(mappedArrValue);
+										String arrItemIndent = showCounts ? "      - " : "    - ";
+										sb.append("\n").append(arrItemIndent).append(mappedArrValue);
 									}
 								}
 							}
@@ -638,7 +659,7 @@ public class stats extends ListenerAdapter {
 				
 				// Show geared up count if applicable
 				if (group.gearedUpCount > 0) {
-					sb.append("\n  - Entwickelt: ").append(group.gearedUpCount);
+					sb.append("\n").append(gearUpIndent).append("Entwickelt: ").append(group.gearedUpCount);
 				}
 			}
 		}
