@@ -556,6 +556,7 @@ public class stats extends ListenerAdapter {
 				sb.append("\n").append("Anzahl: ").append(group.totalCount);
 				
 				// Get and sort keys for consistent display order
+				// Note: timer and helper_cooldown are included here for display, even though they don't affect grouping
 				List<String> sortedKeys = new ArrayList<>();
 				for (String key : group.representative.keySet()) {
 					if (!key.equals("data") && !key.equals("cnt") && !key.equals("gear_up")) {
@@ -839,7 +840,8 @@ public class stats extends ListenerAdapter {
 
 	/**
 	 * Get mapped value from datamappings table or return raw value
-	 * Format: Name + " " + Emoji (if both available), or Name (if no emoji), or dataValue (if no name)
+	 * Format: Name (space) Emoji (if both available), or Name (if no emoji), or dataValue (if no name)
+	 * Example: "Walls <:walls:123456789>"
 	 */
 	private String getMappedValue(String dataValue) {
 		// Query datamappings table
