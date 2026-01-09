@@ -764,32 +764,29 @@ public class stats extends ListenerAdapter {
 	/**
 	 * Format a JSON object with indentation
 	 * Uses fixed indentation levels to avoid Discord's special formatting for deep indents
+	 * Discord treats indentation deeper than 1 level differently, so we flatten all attributes
+	 * to use the same 2-space indentation level
 	 */
 	private String formatObject(JSONObject obj, int indent, java.sql.Timestamp jsonTimestamp) {
 		StringBuilder sb = new StringBuilder();
-		// Use fixed indentation strings based on depth to avoid cumulative indentation issues
-		// Discord handles indentation > 1 level differently, so we use specific indent patterns
-		// indent 0: no indent
-		// indent 1: 2 spaces (for direct attributes)
-		// indent 2: 4 spaces for data, 4 spaces + dash for attributes
-		// indent 3+: 6 spaces for data, 4 spaces + dash for attributes
+		// To avoid Discord's special handling of deep indentation, we use a flat system:
+		// - Data fields: 4 spaces (visual sub-item, no dash)
+		// - Attributes: 2 spaces + dash (all at same level regardless of nesting)
+		// This keeps indentation at maximum 1 level (2 spaces) for attributes
 		
 		String dataIndentStr;
 		String attrIndentStr;
 		
 		if (indent == 0) {
+			// Top-level objects have no indentation
 			dataIndentStr = "";
 			attrIndentStr = "";
-		} else if (indent == 1) {
-			dataIndentStr = "  ";
-			attrIndentStr = "  ";
-		} else if (indent == 2) {
-			dataIndentStr = "    ";
-			attrIndentStr = "    ";
 		} else {
-			// For indent 3+, data gets 6 spaces but attributes stay at 4 spaces + dash
-			dataIndentStr = "      ";
-			attrIndentStr = "    ";
+			// All nested objects use flat indentation:
+			// - Data fields always use 4 spaces (no dash)
+			// - Attributes always use 2 spaces + dash (added separately)
+			dataIndentStr = "    ";
+			attrIndentStr = "  ";
 		}
 
 		// First, display the "data" field if it exists (as the identifier)
@@ -830,8 +827,8 @@ public class stats extends ListenerAdapter {
 			} else if (value instanceof JSONObject) {
 				String translatedKey = ATTR_TRANSLATIONS.getOrDefault(key, key);
 				sb.append("\n").append(attrIndentStr).append("- ").append(translatedKey).append(":");
-				// For nested objects, increment indent level
-				sb.append("\n").append(formatObject((JSONObject) value, indent + 1, jsonTimestamp));
+				// For nested objects, pass non-zero indent to indicate nesting (but flattened)
+				sb.append("\n").append(formatObject((JSONObject) value, 1, jsonTimestamp));
 			} else if (value instanceof JSONArray) {
 				String translatedKey = ATTR_TRANSLATIONS.getOrDefault(key, key);
 				JSONArray arr = (JSONArray) value;
@@ -840,16 +837,12 @@ public class stats extends ListenerAdapter {
 					for (int i = 0; i < arr.length(); i++) {
 						Object item = arr.get(i);
 						if (item instanceof JSONObject) {
-							// For objects in arrays, increment indent level
-							sb.append("\n").append(formatObject((JSONObject) item, indent + 1, jsonTimestamp));
+							// For objects in arrays, pass non-zero indent to indicate nesting (but flattened)
+							sb.append("\n").append(formatObject((JSONObject) item, 1, jsonTimestamp));
 						} else {
 							String mappedValue = getMappedValue(item.toString());
-							// Simple array items use same indentation as data field of next level objects
-							if (indent < 2) {
-								sb.append("\n    ").append(mappedValue);
-							} else {
-								sb.append("\n      ").append(mappedValue);
-							}
+							// Simple array items always use 4 spaces (no dash)
+							sb.append("\n    ").append(mappedValue);
 						}
 					}
 				}
