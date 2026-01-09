@@ -529,11 +529,11 @@ public class stats extends ListenerAdapter {
 			String mappedValue = getMappedValue(dataId);
 			sb.append(mappedValue);
 
-			// Group by attributes (excluding "data", "cnt", and "gear_up")
+			// Group by attributes (excluding "data", "cnt", "gear_up", "timer", and "helper_cooldown")
 			Map<String, ConfigGroup> configGroups = new TreeMap<>(new AttributeComparator());
 
 			for (JSONObject obj : objects) {
-				// Create a key from all attributes except "data", "cnt", and "gear_up"
+				// Create a key from all attributes except "data", "cnt", "gear_up", "timer", and "helper_cooldown"
 				String configKey = createConfigKey(obj);
 				
 				ConfigGroup group = configGroups.computeIfAbsent(configKey, k -> new ConfigGroup(obj));
@@ -632,15 +632,15 @@ public class stats extends ListenerAdapter {
 	}
 
 	/**
-	 * Create a configuration key from a JSON object (excluding data, cnt, and gear_up)
+	 * Create a configuration key from a JSON object (excluding data, cnt, gear_up, timer, and helper_cooldown)
 	 */
 	private String createConfigKey(JSONObject obj) {
 		StringBuilder key = new StringBuilder();
 		
-		// Get all keys except "data", "cnt", and "gear_up", sort them for consistent ordering
+		// Get all keys except "data", "cnt", "gear_up", "timer", and "helper_cooldown", sort them for consistent ordering
 		List<String> keys = new ArrayList<>();
 		for (String k : obj.keySet()) {
-			if (!k.equals("data") && !k.equals("cnt") && !k.equals("gear_up")) {
+			if (!k.equals("data") && !k.equals("cnt") && !k.equals("gear_up") && !k.equals("timer") && !k.equals("helper_cooldown")) {
 				keys.add(k);
 			}
 		}
@@ -839,6 +839,7 @@ public class stats extends ListenerAdapter {
 
 	/**
 	 * Get mapped value from datamappings table or return raw value
+	 * Format: Name + " " + Emoji (if both available), or Name (if no emoji), or dataValue (if no name)
 	 */
 	private String getMappedValue(String dataValue) {
 		// Query datamappings table
@@ -853,16 +854,21 @@ public class stats extends ListenerAdapter {
 					String name = rs.getString("name");
 					String emojiName = rs.getString("emojiname");
 
-					// If emoji exists, validate and use it
-					if (emojiId != null && !emojiId.isEmpty() && emojiName != null && !emojiName.isEmpty()) {
-						// Validate emojiId is numeric
-						if (emojiId.matches("\\d+")) {
-							return "<:" + emojiName + ":" + emojiId + ">";
-						}
+					boolean hasName = name != null && !name.isEmpty();
+					boolean hasEmoji = emojiId != null && !emojiId.isEmpty() && emojiName != null && !emojiName.isEmpty() && emojiId.matches("\\d+");
+
+					// If both name and emoji exist, return "Name Emoji"
+					if (hasName && hasEmoji) {
+						return name + " <:" + emojiName + ":" + emojiId + ">";
+					}
+					
+					// If only emoji exists, return emoji
+					if (hasEmoji) {
+						return "<:" + emojiName + ":" + emojiId + ">";
 					}
 
-					// Otherwise use name if available
-					if (name != null && !name.isEmpty()) {
+					// If only name exists, return name
+					if (hasName) {
 						return name;
 					}
 				}
