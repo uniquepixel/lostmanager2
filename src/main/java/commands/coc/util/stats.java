@@ -7,9 +7,11 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.json.JSONArray;
@@ -79,6 +81,18 @@ public class stats extends ListenerAdapter {
 		ATTR_TRANSLATIONS.put("helper_cooldown", "Helfer-Abklingzeit");
 		ATTR_TRANSLATIONS.put("types", "Typen");
 		ATTR_TRANSLATIONS.put("modules", "Module");
+	}
+
+	// Attributes to exclude from configuration key for grouping
+	// These attributes don't affect item identity for grouping purposes
+	private static final Set<String> GROUPING_EXCLUDED_ATTRS = new HashSet<>();
+
+	static {
+		GROUPING_EXCLUDED_ATTRS.add("data");
+		GROUPING_EXCLUDED_ATTRS.add("cnt");
+		GROUPING_EXCLUDED_ATTRS.add("gear_up");
+		GROUPING_EXCLUDED_ATTRS.add("timer");
+		GROUPING_EXCLUDED_ATTRS.add("helper_cooldown");
 	}
 
 	@Override
@@ -529,11 +543,11 @@ public class stats extends ListenerAdapter {
 			String mappedValue = getMappedValue(dataId);
 			sb.append(mappedValue);
 
-			// Group by attributes (excluding "data", "cnt", and "gear_up")
+			// Group by attributes (excluding "data", "cnt", "gear_up", "timer", and "helper_cooldown")
 			Map<String, ConfigGroup> configGroups = new TreeMap<>(new AttributeComparator());
 
 			for (JSONObject obj : objects) {
-				// Create a key from all attributes except "data", "cnt", and "gear_up"
+				// Create a key from all attributes except "data", "cnt", "gear_up", "timer", and "helper_cooldown"
 				String configKey = createConfigKey(obj);
 				
 				ConfigGroup group = configGroups.computeIfAbsent(configKey, k -> new ConfigGroup(obj));
@@ -556,6 +570,7 @@ public class stats extends ListenerAdapter {
 				sb.append("\n").append("Anzahl: ").append(group.totalCount);
 				
 				// Get and sort keys for consistent display order
+				// Note: timer and helper_cooldown are included here for display, even though they don't affect grouping
 				List<String> sortedKeys = new ArrayList<>();
 				for (String key : group.representative.keySet()) {
 					if (!key.equals("data") && !key.equals("cnt") && !key.equals("gear_up")) {
@@ -632,15 +647,16 @@ public class stats extends ListenerAdapter {
 	}
 
 	/**
-	 * Create a configuration key from a JSON object (excluding data, cnt, and gear_up)
+	 * Create a configuration key from a JSON object
+	 * Excludes attributes defined in GROUPING_EXCLUDED_ATTRS
 	 */
 	private String createConfigKey(JSONObject obj) {
 		StringBuilder key = new StringBuilder();
 		
-		// Get all keys except "data", "cnt", and "gear_up", sort them for consistent ordering
+		// Get all keys except those in GROUPING_EXCLUDED_ATTRS, sort them for consistent ordering
 		List<String> keys = new ArrayList<>();
 		for (String k : obj.keySet()) {
-			if (!k.equals("data") && !k.equals("cnt") && !k.equals("gear_up")) {
+			if (!GROUPING_EXCLUDED_ATTRS.contains(k)) {
 				keys.add(k);
 			}
 		}
@@ -839,6 +855,8 @@ public class stats extends ListenerAdapter {
 
 	/**
 	 * Get mapped value from datamappings table or return raw value
+	 * Format: Name (space) Emoji (if both available), or Name (if no emoji), or dataValue (if no name)
+	 * Example: "Walls <:walls:123456789>"
 	 */
 	private String getMappedValue(String dataValue) {
 		// Query datamappings table
@@ -853,16 +871,21 @@ public class stats extends ListenerAdapter {
 					String name = rs.getString("name");
 					String emojiName = rs.getString("emojiname");
 
-					// If emoji exists, validate and use it
-					if (emojiId != null && !emojiId.isEmpty() && emojiName != null && !emojiName.isEmpty()) {
-						// Validate emojiId is numeric
-						if (emojiId.matches("\\d+")) {
-							return "<:" + emojiName + ":" + emojiId + ">";
-						}
+					boolean hasName = name != null && !name.isEmpty();
+					boolean hasEmoji = isValidEmoji(emojiId, emojiName);
+
+					// If both name and emoji exist, return "Name <:emojiName:emojiId>" format
+					if (hasName && hasEmoji) {
+						return name + " <:" + emojiName + ":" + emojiId + ">";
+					}
+					
+					// If only emoji exists, return emoji
+					if (hasEmoji) {
+						return "<:" + emojiName + ":" + emojiId + ">";
 					}
 
-					// Otherwise use name if available
-					if (name != null && !name.isEmpty()) {
+					// If only name exists, return name
+					if (hasName) {
 						return name;
 					}
 				}
@@ -874,6 +897,17 @@ public class stats extends ListenerAdapter {
 
 		// Return raw data value if no mapping found
 		return dataValue;
+	}
+
+	/**
+	 * Check if emoji data is valid for Discord custom emoji format
+	 */
+	private boolean isValidEmoji(String emojiId, String emojiName) {
+		boolean hasEmojiId = emojiId != null && !emojiId.isEmpty();
+		boolean hasEmojiName = emojiName != null && !emojiName.isEmpty();
+		boolean isNumericId = hasEmojiId && emojiId.matches("\\d+");
+		
+		return hasEmojiId && hasEmojiName && isNumericId;
 	}
 
 	/**
