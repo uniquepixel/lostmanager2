@@ -763,15 +763,39 @@ public class stats extends ListenerAdapter {
 
 	/**
 	 * Format a JSON object with indentation
+	 * Uses fixed indentation levels to avoid Discord's special formatting for deep indents
 	 */
 	private String formatObject(JSONObject obj, int indent, java.sql.Timestamp jsonTimestamp) {
 		StringBuilder sb = new StringBuilder();
-		String indentStr = "  ".repeat(indent);
+		// Use fixed indentation strings based on depth to avoid cumulative indentation issues
+		// Discord handles indentation > 1 level differently, so we use specific indent patterns
+		// indent 0: no indent
+		// indent 1: 2 spaces (for direct attributes)
+		// indent 2: 4 spaces for data, 4 spaces + dash for attributes
+		// indent 3+: 6 spaces for data, 4 spaces + dash for attributes
+		
+		String dataIndentStr;
+		String attrIndentStr;
+		
+		if (indent == 0) {
+			dataIndentStr = "";
+			attrIndentStr = "";
+		} else if (indent == 1) {
+			dataIndentStr = "  ";
+			attrIndentStr = "  ";
+		} else if (indent == 2) {
+			dataIndentStr = "    ";
+			attrIndentStr = "    ";
+		} else {
+			// For indent 3+, data gets 6 spaces but attributes stay at 4 spaces + dash
+			dataIndentStr = "      ";
+			attrIndentStr = "    ";
+		}
 
 		// First, display the "data" field if it exists (as the identifier)
 		if (obj.has("data") && obj.get("data") != null && obj.get("data") != JSONObject.NULL) {
 			String mappedValue = getMappedValue(obj.get("data").toString());
-			sb.append(indentStr).append(mappedValue);
+			sb.append(dataIndentStr).append(mappedValue);
 		}
 
 		// Then display all other fields
@@ -800,25 +824,32 @@ public class stats extends ListenerAdapter {
 				if (remainingSeconds > 0) {
 					String timerStr = formatTimerRemaining(remainingSeconds);
 					String translatedKey = ATTR_TRANSLATIONS.getOrDefault(key, key);
-					sb.append("\n").append(indentStr).append(translatedKey).append(": ").append(timerStr);
+					sb.append("\n").append(attrIndentStr).append("- ").append(translatedKey).append(": ").append(timerStr);
 				}
 				// Don't show timer if it has already expired
 			} else if (value instanceof JSONObject) {
 				String translatedKey = ATTR_TRANSLATIONS.getOrDefault(key, key);
-				sb.append("\n").append(indentStr).append(translatedKey).append(":");
+				sb.append("\n").append(attrIndentStr).append("- ").append(translatedKey).append(":");
+				// For nested objects, increment indent level
 				sb.append("\n").append(formatObject((JSONObject) value, indent + 1, jsonTimestamp));
 			} else if (value instanceof JSONArray) {
 				String translatedKey = ATTR_TRANSLATIONS.getOrDefault(key, key);
 				JSONArray arr = (JSONArray) value;
 				if (arr.length() > 0) {
-					sb.append("\n").append(indentStr).append("- ").append(translatedKey).append(":");
+					sb.append("\n").append(attrIndentStr).append("- ").append(translatedKey).append(":");
 					for (int i = 0; i < arr.length(); i++) {
 						Object item = arr.get(i);
 						if (item instanceof JSONObject) {
+							// For objects in arrays, increment indent level
 							sb.append("\n").append(formatObject((JSONObject) item, indent + 1, jsonTimestamp));
 						} else {
 							String mappedValue = getMappedValue(item.toString());
-							sb.append("\n").append("  ".repeat(indent + 1)).append("- ").append(mappedValue);
+							// Simple array items use same indentation as data field of next level objects
+							if (indent < 2) {
+								sb.append("\n    ").append(mappedValue);
+							} else {
+								sb.append("\n      ").append(mappedValue);
+							}
 						}
 					}
 				}
@@ -831,7 +862,7 @@ public class stats extends ListenerAdapter {
 					valueStr = (Boolean) value ? "Ja" : "Nein";
 				}
 
-				sb.append("\n").append(indentStr).append("- ").append(translatedKey).append(": ").append(valueStr);
+				sb.append("\n").append(attrIndentStr).append("- ").append(translatedKey).append(": ").append(valueStr);
 			}
 		}
 
