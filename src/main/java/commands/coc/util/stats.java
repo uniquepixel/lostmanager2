@@ -95,10 +95,6 @@ public class stats extends ListenerAdapter {
 		GROUPING_EXCLUDED_ATTRS.add("helper_cooldown");
 	}
 
-	// Indentation level for flattened hierarchy to avoid Discord's deep indent handling
-	// All nested levels use this same indent value to keep indentation at maximum 1 level
-	private static final int FLATTENED_INDENT_LEVEL = 1;
-
 	@Override
 	public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
 		if (!event.getName().equals("stats"))
@@ -547,19 +543,21 @@ public class stats extends ListenerAdapter {
 			String mappedValue = getMappedValue(dataId);
 			sb.append(mappedValue);
 
-			// Group by attributes (excluding "data", "cnt", "gear_up", "timer", and "helper_cooldown")
+			// Group by attributes (excluding "data", "cnt", "gear_up", "timer", and
+			// "helper_cooldown")
 			Map<String, ConfigGroup> configGroups = new TreeMap<>(new AttributeComparator());
 
 			for (JSONObject obj : objects) {
-				// Create a key from all attributes except "data", "cnt", "gear_up", "timer", and "helper_cooldown"
+				// Create a key from all attributes except "data", "cnt", "gear_up", "timer",
+				// and "helper_cooldown"
 				String configKey = createConfigKey(obj);
-				
+
 				ConfigGroup group = configGroups.computeIfAbsent(configKey, _ -> new ConfigGroup(obj));
-				
+
 				// Add count
 				int cnt = obj.has("cnt") ? obj.optInt("cnt", 1) : 1;
 				group.totalCount += cnt;
-				
+
 				// Track gear_up
 				if (obj.has("gear_up")) {
 					int gearUp = obj.optInt("gear_up", 0);
@@ -570,25 +568,26 @@ public class stats extends ListenerAdapter {
 			}
 
 			// Determine if we need to show counts (only if multiple groups OR count > 1)
-			boolean showCounts = configGroups.size() > 1 || 
-				configGroups.values().stream().anyMatch(g -> g.totalCount > 1);
-			
+			boolean showCounts = configGroups.size() > 1
+					|| configGroups.values().stream().anyMatch(g -> g.totalCount > 1);
+
 			// Display grouped configurations
 			for (ConfigGroup group : configGroups.values()) {
 				// Determine indentation based on whether we're showing counts
 				// For consistency, always use fixed indent strings that don't accumulate
-				String countIndent = "  - ";  // Fixed indent for Anzahl
+				String countIndent = "  - "; // Fixed indent for Anzahl
 				String baseIndent = showCounts ? "    - " : "  - ";
 				int objIndent = showCounts ? 3 : 2;
 				String arrItemIndent = showCounts ? "      - " : "    - ";
-				
+
 				// Only show count if there's actual grouping or multiple items
 				if (showCounts) {
 					sb.append("\n").append(countIndent).append("Anzahl: ").append(group.totalCount);
 				}
-				
+
 				// Get and sort keys for consistent display order
-				// Note: timer and helper_cooldown are included here for display, even though they don't affect grouping
+				// Note: timer and helper_cooldown are included here for display, even though
+				// they don't affect grouping
 				List<String> sortedKeys = new ArrayList<>();
 				for (String key : group.representative.keySet()) {
 					if (!key.equals("data") && !key.equals("cnt") && !key.equals("gear_up")) {
@@ -597,7 +596,7 @@ public class stats extends ListenerAdapter {
 				}
 				// Sort keys: lvl first, then supercharge, then alphabetically
 				sortedKeys.sort(new AttributeDisplayComparator());
-				
+
 				// Display attributes
 				for (String key : sortedKeys) {
 					Object value = group.representative.get(key);
@@ -637,7 +636,8 @@ public class stats extends ListenerAdapter {
 								for (int i = 0; i < valueArr.length(); i++) {
 									Object arrItem = valueArr.get(i);
 									if (arrItem instanceof JSONObject) {
-										sb.append("\n").append(formatObject((JSONObject) arrItem, objIndent, jsonTimestamp));
+										sb.append("\n")
+												.append(formatObject((JSONObject) arrItem, objIndent, jsonTimestamp));
 									} else {
 										String mappedArrValue = getMappedValue(arrItem.toString());
 										sb.append("\n").append(arrItemIndent).append(mappedArrValue);
@@ -653,7 +653,7 @@ public class stats extends ListenerAdapter {
 						}
 					}
 				}
-				
+
 				// Show geared up count if applicable
 				if (group.gearedUpCount > 0) {
 					sb.append("\n").append(baseIndent).append("Entwickelt: ").append(group.gearedUpCount);
@@ -665,13 +665,14 @@ public class stats extends ListenerAdapter {
 	}
 
 	/**
-	 * Create a configuration key from a JSON object
-	 * Excludes attributes defined in GROUPING_EXCLUDED_ATTRS
+	 * Create a configuration key from a JSON object Excludes attributes defined in
+	 * GROUPING_EXCLUDED_ATTRS
 	 */
 	private String createConfigKey(JSONObject obj) {
 		StringBuilder key = new StringBuilder();
-		
-		// Get all keys except those in GROUPING_EXCLUDED_ATTRS, sort them for consistent ordering
+
+		// Get all keys except those in GROUPING_EXCLUDED_ATTRS, sort them for
+		// consistent ordering
 		List<String> keys = new ArrayList<>();
 		for (String k : obj.keySet()) {
 			if (!GROUPING_EXCLUDED_ATTRS.contains(k)) {
@@ -679,7 +680,7 @@ public class stats extends ListenerAdapter {
 			}
 		}
 		keys.sort(String::compareTo);
-		
+
 		// Build key from sorted attributes
 		for (String k : keys) {
 			Object value = obj.get(k);
@@ -690,7 +691,7 @@ public class stats extends ListenerAdapter {
 				key.append(k).append("=").append(value.toString());
 			}
 		}
-		
+
 		return key.toString();
 	}
 
@@ -701,7 +702,7 @@ public class stats extends ListenerAdapter {
 		JSONObject representative;
 		int totalCount = 0;
 		int gearedUpCount = 0;
-		
+
 		ConfigGroup(JSONObject obj) {
 			this.representative = obj;
 		}
@@ -715,10 +716,10 @@ public class stats extends ListenerAdapter {
 		public int compare(String key1, String key2) {
 			// Parse and compare configuration keys
 			// Priority: lvl (descending), then other attributes
-			
+
 			Map<String, String> attrs1 = parseConfigKey(key1);
 			Map<String, String> attrs2 = parseConfigKey(key2);
-			
+
 			// Compare by level first (descending)
 			String lvl1 = attrs1.get("lvl");
 			String lvl2 = attrs2.get("lvl");
@@ -732,11 +733,11 @@ public class stats extends ListenerAdapter {
 					// If not numeric, compare as strings
 				}
 			}
-			
+
 			// Fall back to string comparison
 			return key1.compareTo(key2);
 		}
-		
+
 		private Map<String, String> parseConfigKey(String key) {
 			Map<String, String> attrs = new HashMap<>();
 			String[] parts = key.split("\\|");
@@ -751,52 +752,35 @@ public class stats extends ListenerAdapter {
 	}
 
 	/**
-	 * Comparator to sort attribute keys for display
-	 * Priority: lvl, supercharge, then alphabetically
+	 * Comparator to sort attribute keys for display Priority: lvl, supercharge,
+	 * then alphabetically
 	 */
 	private static class AttributeDisplayComparator implements Comparator<String> {
 		@Override
 		public int compare(String k1, String k2) {
-			if (k1.equals("lvl")) return -1;
-			if (k2.equals("lvl")) return 1;
-			if (k1.equals("supercharge")) return -1;
-			if (k2.equals("supercharge")) return 1;
+			if (k1.equals("lvl"))
+				return -1;
+			if (k2.equals("lvl"))
+				return 1;
+			if (k1.equals("supercharge"))
+				return -1;
+			if (k2.equals("supercharge"))
+				return 1;
 			return k1.compareTo(k2);
 		}
 	}
 
 	/**
 	 * Format a JSON object with indentation
-	 * Uses fixed indentation levels to avoid Discord's special formatting for deep indents
-	 * Discord treats indentation deeper than 1 level differently, so we flatten all attributes
-	 * to use the same 2-space indentation level
 	 */
 	private String formatObject(JSONObject obj, int indent, java.sql.Timestamp jsonTimestamp) {
 		StringBuilder sb = new StringBuilder();
-		// To avoid Discord's special handling of deep indentation, we use a flat system:
-		// - Data fields: 4 spaces (visual sub-item, no dash)
-		// - Attributes: 2 spaces + dash (all at same level regardless of nesting)
-		// This keeps indentation at maximum 1 level (2 spaces) for attributes
-		
-		String dataIndentStr;
-		String attrIndentStr;
-		
-		if (indent == 0) {
-			// Top-level objects have no indentation
-			dataIndentStr = "";
-			attrIndentStr = "";
-		} else {
-			// All nested objects use flat indentation:
-			// - Data fields always use 4 spaces (no dash)
-			// - Attributes always use 2 spaces + dash (added separately)
-			dataIndentStr = "    ";
-			attrIndentStr = "  ";
-		}
+		String indentStr = "  ".repeat(indent);
 
 		// First, display the "data" field if it exists (as the identifier)
 		if (obj.has("data") && obj.get("data") != null && obj.get("data") != JSONObject.NULL) {
 			String mappedValue = getMappedValue(obj.get("data").toString());
-			sb.append(dataIndentStr).append(mappedValue);
+			sb.append(indentStr).append(mappedValue);
 		}
 
 		// Then display all other fields
@@ -825,28 +809,25 @@ public class stats extends ListenerAdapter {
 				if (remainingSeconds > 0) {
 					String timerStr = formatTimerRemaining(remainingSeconds);
 					String translatedKey = ATTR_TRANSLATIONS.getOrDefault(key, key);
-					sb.append("\n").append(attrIndentStr).append("- ").append(translatedKey).append(": ").append(timerStr);
+					sb.append("\n").append(indentStr).append(translatedKey).append(": ").append(timerStr);
 				}
 				// Don't show timer if it has already expired
 			} else if (value instanceof JSONObject) {
 				String translatedKey = ATTR_TRANSLATIONS.getOrDefault(key, key);
-				sb.append("\n").append(attrIndentStr).append("- ").append(translatedKey).append(":");
-				// Nested objects use flattened indent to avoid Discord's deep indent handling
-				sb.append("\n").append(formatObject((JSONObject) value, FLATTENED_INDENT_LEVEL, jsonTimestamp));
+				sb.append("\n").append(indentStr).append(translatedKey).append(":");
+				sb.append("\n").append(formatObject((JSONObject) value, indent + 1, jsonTimestamp));
 			} else if (value instanceof JSONArray) {
 				String translatedKey = ATTR_TRANSLATIONS.getOrDefault(key, key);
 				JSONArray arr = (JSONArray) value;
 				if (arr.length() > 0) {
-					sb.append("\n").append(attrIndentStr).append("- ").append(translatedKey).append(":");
+					sb.append("\n").append(indentStr).append("- ").append(translatedKey).append(":");
 					for (int i = 0; i < arr.length(); i++) {
 						Object item = arr.get(i);
 						if (item instanceof JSONObject) {
-							// Array item objects use flattened indent
-							sb.append("\n").append(formatObject((JSONObject) item, FLATTENED_INDENT_LEVEL, jsonTimestamp));
+							sb.append("\n").append(formatObject((JSONObject) item, indent + 1, jsonTimestamp));
 						} else {
 							String mappedValue = getMappedValue(item.toString());
-							// Simple values use data indentation (4 spaces, no dash) for visual nesting
-							sb.append("\n").append(dataIndentStr).append(mappedValue);
+							sb.append("\n").append("  ".repeat(indent + 1)).append("- ").append(mappedValue);
 						}
 					}
 				}
@@ -859,7 +840,7 @@ public class stats extends ListenerAdapter {
 					valueStr = (Boolean) value ? "Ja" : "Nein";
 				}
 
-				sb.append("\n").append(attrIndentStr).append("- ").append(translatedKey).append(": ").append(valueStr);
+				sb.append("\n").append(indentStr).append("- ").append(translatedKey).append(": ").append(valueStr);
 			}
 		}
 
@@ -896,9 +877,9 @@ public class stats extends ListenerAdapter {
 	}
 
 	/**
-	 * Get mapped value from datamappings table or return raw value
-	 * Format: Name (space) Emoji (if both available), or Name (if no emoji), or dataValue (if no name)
-	 * Example: "Walls <:walls:123456789>"
+	 * Get mapped value from datamappings table or return raw value Format: Name
+	 * (space) Emoji (if both available), or Name (if no emoji), or dataValue (if no
+	 * name) Example: "Walls <:walls:123456789>"
 	 */
 	private String getMappedValue(String dataValue) {
 		// Query datamappings table
@@ -920,7 +901,7 @@ public class stats extends ListenerAdapter {
 					if (hasName && hasEmoji) {
 						return name + " <:" + emojiName + ":" + emojiId + ">";
 					}
-					
+
 					// If only emoji exists, return emoji
 					if (hasEmoji) {
 						return "<:" + emojiName + ":" + emojiId + ">";
@@ -948,7 +929,7 @@ public class stats extends ListenerAdapter {
 		boolean hasEmojiId = emojiId != null && !emojiId.isEmpty();
 		boolean hasEmojiName = emojiName != null && !emojiName.isEmpty();
 		boolean isNumericId = hasEmojiId && emojiId.matches("\\d+");
-		
+
 		return hasEmojiId && hasEmojiName && isNumericId;
 	}
 
