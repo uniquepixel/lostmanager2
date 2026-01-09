@@ -831,7 +831,7 @@ public class stats extends ListenerAdapter {
 			} else if (value instanceof JSONObject) {
 				String translatedKey = ATTR_TRANSLATIONS.getOrDefault(key, key);
 				sb.append("\n").append(attrIndentStr).append("- ").append(translatedKey).append(":");
-				// For nested objects, use flattened indent level to avoid Discord's deep indent handling
+				// Nested objects use flattened indent to avoid Discord's deep indent handling
 				sb.append("\n").append(formatObject((JSONObject) value, FLATTENED_INDENT_LEVEL, jsonTimestamp));
 			} else if (value instanceof JSONArray) {
 				String translatedKey = ATTR_TRANSLATIONS.getOrDefault(key, key);
@@ -841,11 +841,11 @@ public class stats extends ListenerAdapter {
 					for (int i = 0; i < arr.length(); i++) {
 						Object item = arr.get(i);
 						if (item instanceof JSONObject) {
-							// For objects in arrays, use flattened indent level to avoid Discord's deep indent handling
+							// Array item objects use flattened indent
 							sb.append("\n").append(formatObject((JSONObject) item, FLATTENED_INDENT_LEVEL, jsonTimestamp));
 						} else {
 							String mappedValue = getMappedValue(item.toString());
-							// Simple array items use data indentation (no dash)
+							// Simple values use data indentation (4 spaces, no dash) for visual nesting
 							sb.append("\n").append(dataIndentStr).append(mappedValue);
 						}
 					}
