@@ -95,6 +95,10 @@ public class stats extends ListenerAdapter {
 		GROUPING_EXCLUDED_ATTRS.add("helper_cooldown");
 	}
 
+	// Indentation level for flattened hierarchy to avoid Discord's deep indent handling
+	// All nested levels use this same indent value to keep indentation at maximum 1 level
+	private static final int FLATTENED_INDENT_LEVEL = 1;
+
 	@Override
 	public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
 		if (!event.getName().equals("stats"))
@@ -827,8 +831,8 @@ public class stats extends ListenerAdapter {
 			} else if (value instanceof JSONObject) {
 				String translatedKey = ATTR_TRANSLATIONS.getOrDefault(key, key);
 				sb.append("\n").append(attrIndentStr).append("- ").append(translatedKey).append(":");
-				// For nested objects, pass non-zero indent to indicate nesting (but flattened)
-				sb.append("\n").append(formatObject((JSONObject) value, 1, jsonTimestamp));
+				// For nested objects, use flattened indent level to avoid Discord's deep indent handling
+				sb.append("\n").append(formatObject((JSONObject) value, FLATTENED_INDENT_LEVEL, jsonTimestamp));
 			} else if (value instanceof JSONArray) {
 				String translatedKey = ATTR_TRANSLATIONS.getOrDefault(key, key);
 				JSONArray arr = (JSONArray) value;
@@ -837,8 +841,8 @@ public class stats extends ListenerAdapter {
 					for (int i = 0; i < arr.length(); i++) {
 						Object item = arr.get(i);
 						if (item instanceof JSONObject) {
-							// For objects in arrays, pass non-zero indent to indicate nesting (but flattened)
-							sb.append("\n").append(formatObject((JSONObject) item, 1, jsonTimestamp));
+							// For objects in arrays, use flattened indent level to avoid Discord's deep indent handling
+							sb.append("\n").append(formatObject((JSONObject) item, FLATTENED_INDENT_LEVEL, jsonTimestamp));
 						} else {
 							String mappedValue = getMappedValue(item.toString());
 							// Simple array items use data indentation (no dash)
