@@ -841,8 +841,8 @@ public class stats extends ListenerAdapter {
 							sb.append("\n").append(formatObject((JSONObject) item, 1, jsonTimestamp));
 						} else {
 							String mappedValue = getMappedValue(item.toString());
-							// Simple array items always use 4 spaces (no dash)
-							sb.append("\n    ").append(mappedValue);
+							// Simple array items use data indentation (no dash)
+							sb.append("\n").append(dataIndentStr).append(mappedValue);
 						}
 					}
 				}
