@@ -311,11 +311,17 @@ public class stats extends ListenerAdapter {
 			String sql = "SELECT DISTINCT tag FROM userjsons WHERE tag ILIKE ? ORDER BY tag LIMIT 25";
 			List<String> tags = DBUtil.getArrayListFromSQL(sql, String.class, "%" + input + "%");
 
+			String inputLower = input.toLowerCase();
 			for (String tag : tags) {
 				// Try to get player name for better display
-				String playerName = getPlayerName(tag);
+				Player player = new Player(tag);
+				String playerName = player.getNameDB() != null ? player.getNameDB() : player.getNameAPI();
 				String displayName = playerName != null ? playerName + " (" + tag + ")" : tag;
-				choices.add(new Command.Choice(displayName, tag));
+				if (tag.toLowerCase().contains(inputLower) || playerName.toLowerCase().contains(inputLower)) {
+					choices.add(new Command.Choice(displayName, tag));
+					if (choices.size() >= 25)
+						break;
+				}
 			}
 		} else {
 			// Get only linked accounts with uploaded JSONs
@@ -327,36 +333,22 @@ public class stats extends ListenerAdapter {
 				// Check if this player has any JSON uploaded
 				String sql = "SELECT COUNT(*) FROM userjsons WHERE tag = ?";
 				Integer count = DBUtil.getValueFromSQL(sql, Integer.class, tag);
+				String playerName = player.getNameDB() != null ? player.getNameDB() : player.getNameAPI();
 
 				if (count != null && count > 0) {
 					// Filter by input
-					if (tag.toLowerCase().contains(inputLower)
-							|| player.getNameAPI().toLowerCase().contains(inputLower)) {
-						String displayName = player.getNameAPI() + " (" + tag + ")";
+					if (tag.toLowerCase().contains(inputLower) || playerName.toLowerCase().contains(inputLower)) {
+						String displayName = player.getInfoStringDB() != null ? player.getInfoStringDB()
+								: player.getInfoStringAPI();
 						choices.add(new Command.Choice(displayName, tag));
+						if (choices.size() >= 25)
+							break;
 					}
 				}
 			}
 		}
 
 		return choices;
-	}
-
-	/**
-	 * Get player name from database or JSON
-	 */
-	private String getPlayerName(String tag) {
-		// Try players table first
-		String sql = "SELECT name FROM players WHERE coc_tag = ?";
-		String name = DBUtil.getValueFromSQL(sql, String.class, tag);
-
-		if (name == null) {
-			// Try to get from JSON
-			sql = "SELECT json->>'name' FROM userjsons WHERE tag = ? LIMIT 1";
-			name = DBUtil.getValueFromSQL(sql, String.class, tag);
-		}
-
-		return name;
 	}
 
 	/**
@@ -405,7 +397,8 @@ public class stats extends ListenerAdapter {
 
 				// Build description
 				StringBuilder description = new StringBuilder();
-				String playerName = getPlayerName(playerTag);
+				Player p = new Player(playerTag);
+				String playerName = p.getNameDB() != null ? p.getNameDB() : p.getNameAPI();
 				description.append("**Spieler:** ").append(playerName != null ? playerName : playerTag).append("\n");
 				description.append("**Stat:** ").append(statType).append("\n\n");
 				description.append(formattedData);
