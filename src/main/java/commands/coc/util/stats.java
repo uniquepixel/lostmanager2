@@ -857,7 +857,7 @@ public class stats extends ListenerAdapter {
 					boolean hasName = name != null && !name.isEmpty();
 					boolean hasEmoji = emojiId != null && !emojiId.isEmpty() && emojiName != null && !emojiName.isEmpty() && emojiId.matches("\\d+");
 
-					// If both name and emoji exist, return "Name Emoji"
+					// If both name and emoji exist, return "Name <:emojiName:emojiId>" format
 					if (hasName && hasEmoji) {
 						return name + " <:" + emojiName + ":" + emojiId + ">";
 					}
