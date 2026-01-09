@@ -563,13 +563,7 @@ public class stats extends ListenerAdapter {
 					}
 				}
 				// Sort keys: lvl first, then supercharge, then alphabetically
-				sortedKeys.sort((k1, k2) -> {
-					if (k1.equals("lvl")) return -1;
-					if (k2.equals("lvl")) return 1;
-					if (k1.equals("supercharge")) return -1;
-					if (k2.equals("supercharge")) return 1;
-					return k1.compareTo(k2);
-				});
+				sortedKeys.sort(new AttributeDisplayComparator());
 				
 				// Display attributes
 				for (String key : sortedKeys) {
@@ -577,10 +571,6 @@ public class stats extends ListenerAdapter {
 					if (value == null || value == JSONObject.NULL) {
 						continue;
 					}
-
-					sb.append("\n  - ");
-					String translatedKey = ATTR_TRANSLATIONS.getOrDefault(key, key);
-					sb.append(translatedKey).append(": ");
 
 					if (key.equals("timer") || key.equals("helper_cooldown")) {
 						// Special handling for timer
@@ -594,33 +584,40 @@ public class stats extends ListenerAdapter {
 						long remainingSeconds = timerSeconds - elapsedSeconds;
 
 						if (remainingSeconds > 0) {
+							sb.append("\n  - ");
+							String translatedKey = ATTR_TRANSLATIONS.getOrDefault(key, key);
+							sb.append(translatedKey).append(": ");
 							String timerStr = formatTimerRemaining(remainingSeconds);
 							sb.append(timerStr);
-						} else {
-							// Timer expired, skip this attribute
-							sb.setLength(sb.length() - translatedKey.length() - 6); // Remove the line we just added
 						}
-					} else if (value instanceof JSONObject) {
-						sb.append("\n").append(formatObject((JSONObject) value, 2, jsonTimestamp));
-					} else if (value instanceof JSONArray) {
-						JSONArray valueArr = (JSONArray) value;
-						if (valueArr.length() > 0) {
-							for (int i = 0; i < valueArr.length(); i++) {
-								Object arrItem = valueArr.get(i);
-								if (arrItem instanceof JSONObject) {
-									sb.append("\n").append(formatObject((JSONObject) arrItem, 2, jsonTimestamp));
-								} else {
-									String mappedArrValue = getMappedValue(arrItem.toString());
-									sb.append("\n    - ").append(mappedArrValue);
+						// Skip timer if expired - don't add any output
+					} else {
+						sb.append("\n  - ");
+						String translatedKey = ATTR_TRANSLATIONS.getOrDefault(key, key);
+						sb.append(translatedKey).append(": ");
+
+						if (value instanceof JSONObject) {
+							sb.append("\n").append(formatObject((JSONObject) value, 2, jsonTimestamp));
+						} else if (value instanceof JSONArray) {
+							JSONArray valueArr = (JSONArray) value;
+							if (valueArr.length() > 0) {
+								for (int i = 0; i < valueArr.length(); i++) {
+									Object arrItem = valueArr.get(i);
+									if (arrItem instanceof JSONObject) {
+										sb.append("\n").append(formatObject((JSONObject) arrItem, 2, jsonTimestamp));
+									} else {
+										String mappedArrValue = getMappedValue(arrItem.toString());
+										sb.append("\n    - ").append(mappedArrValue);
+									}
 								}
 							}
+						} else {
+							String valueStr = value.toString();
+							if (value instanceof Boolean) {
+								valueStr = (Boolean) value ? "Ja" : "Nein";
+							}
+							sb.append(valueStr);
 						}
-					} else {
-						String valueStr = value.toString();
-						if (value instanceof Boolean) {
-							valueStr = (Boolean) value ? "Ja" : "Nein";
-						}
-						sb.append(valueStr);
 					}
 				}
 				
@@ -716,6 +713,21 @@ public class stats extends ListenerAdapter {
 				}
 			}
 			return attrs;
+		}
+	}
+
+	/**
+	 * Comparator to sort attribute keys for display
+	 * Priority: lvl, supercharge, then alphabetically
+	 */
+	private static class AttributeDisplayComparator implements Comparator<String> {
+		@Override
+		public int compare(String k1, String k2) {
+			if (k1.equals("lvl")) return -1;
+			if (k2.equals("lvl")) return 1;
+			if (k1.equals("supercharge")) return -1;
+			if (k2.equals("supercharge")) return 1;
+			return k1.compareTo(k2);
 		}
 	}
 
