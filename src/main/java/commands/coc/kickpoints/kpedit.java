@@ -18,7 +18,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.Modal;
+import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import util.MessageUtil;
@@ -67,7 +67,7 @@ public class kpedit extends ListenerAdapter {
 					.setValue(kp.getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))).setMinLength(1).build();
 
 			Modal modal = Modal.create("kpedit_" + id, "Kickpunkt bearbeiten")
-					.addActionRows(ActionRow.of(reasonti), ActionRow.of(dateti), ActionRow.of(kpamountti)).build();
+					.addComponents(ActionRow.of(reasonti), ActionRow.of(dateti), ActionRow.of(kpamountti)).build();
 
 			event.replyModal(modal).queue();
 		} else {

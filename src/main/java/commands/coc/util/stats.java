@@ -33,10 +33,10 @@ public class stats extends ListenerAdapter {
 	// Constants for button and select menu ID prefixes
 	private static final String BUTTON_PREFIX = "stats_refresh_";
 	private static final String SELECT_PREFIX = "stats_select_";
-	
+
 	// Mapping of stat options to JSON field names
 	private static final Map<String, String> STAT_TO_FIELD = new HashMap<>();
-	
+
 	static {
 		STAT_TO_FIELD.put("Helpers", "helpers");
 		STAT_TO_FIELD.put("Guardians", "guardians");
@@ -62,15 +62,15 @@ public class stats extends ListenerAdapter {
 		STAT_TO_FIELD.put("Sceneries", "sceneries");
 		STAT_TO_FIELD.put("Sceneries (BB)", "sceneries2");
 	}
-	
+
 	// German translations for attributes
 	private static final Map<String, String> ATTR_TRANSLATIONS = new HashMap<>();
-	
+
 	static {
 		ATTR_TRANSLATIONS.put("cnt", "Anzahl");
 		ATTR_TRANSLATIONS.put("lvl", "Level");
 		ATTR_TRANSLATIONS.put("supercharge", "Supercharge-Level");
-		ATTR_TRANSLATIONS.put("timer", "Abklingzeit");
+		ATTR_TRANSLATIONS.put("timer", "Dauer");
 		ATTR_TRANSLATIONS.put("helper_recurrent", "Wiederholender Helfer");
 		ATTR_TRANSLATIONS.put("gear_up", "Entwicklung");
 		ATTR_TRANSLATIONS.put("helper_cooldown", "Helfer-Abklingzeit");
@@ -94,8 +94,7 @@ public class stats extends ListenerAdapter {
 			if (playerOption == null || statOption == null) {
 				event.getHook()
 						.editOriginalEmbeds(MessageUtil.buildEmbed(title,
-								"Die Parameter 'player' und 'stat' sind erforderlich.",
-								MessageUtil.EmbedType.ERROR))
+								"Die Parameter 'player' und 'stat' sind erforderlich.", MessageUtil.EmbedType.ERROR))
 						.queue();
 				return;
 			}
@@ -106,9 +105,11 @@ public class stats extends ListenerAdapter {
 			// Check permissions and access
 			User userExecuted = new User(event.getUser().getId());
 			if (!canAccessPlayer(userExecuted, playerTag)) {
-				event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title,
-						"Du hast keine Berechtigung, die Daten dieses Spielers anzusehen.",
-						MessageUtil.EmbedType.ERROR)).queue();
+				event.getHook()
+						.editOriginalEmbeds(MessageUtil.buildEmbed(title,
+								"Du hast keine Berechtigung, die Daten dieses Spielers anzusehen.",
+								MessageUtil.EmbedType.ERROR))
+						.queue();
 				return;
 			}
 
@@ -131,14 +132,12 @@ public class stats extends ListenerAdapter {
 			if (focused.equals("player")) {
 				String input = event.getFocusedOption().getValue();
 				User userExecuted = new User(event.getUser().getId());
-				
+
 				// Get available players based on permissions
 				List<Command.Choice> choices = getAvailablePlayers(userExecuted, input);
-				
-				event.replyChoices(choices).queue(
-					success -> {},
-					error -> System.err.println("Error replying to autocomplete: " + error.getMessage())
-				);
+
+				event.replyChoices(choices).queue(_ -> {
+				}, error -> System.err.println("Error replying to autocomplete: " + error.getMessage()));
 			}
 		}, "StatsAutocomplete-" + event.getUser().getId()).start();
 	}
@@ -172,9 +171,11 @@ public class stats extends ListenerAdapter {
 
 				// Verify access
 				if (!canAccessPlayer(userExecuted, playerTag)) {
-					event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title,
-							"Du hast keine Berechtigung, die Daten dieses Spielers anzusehen.",
-							MessageUtil.EmbedType.ERROR)).queue();
+					event.getHook()
+							.editOriginalEmbeds(MessageUtil.buildEmbed(title,
+									"Du hast keine Berechtigung, die Daten dieses Spielers anzusehen.",
+									MessageUtil.EmbedType.ERROR))
+							.queue();
 					return;
 				}
 
@@ -219,9 +220,11 @@ public class stats extends ListenerAdapter {
 
 				// Verify access
 				if (!canAccessPlayer(userExecuted, playerTag)) {
-					event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title,
-							"Du hast keine Berechtigung, die Daten dieses Spielers anzusehen.",
-							MessageUtil.EmbedType.ERROR)).queue();
+					event.getHook()
+							.editOriginalEmbeds(MessageUtil.buildEmbed(title,
+									"Du hast keine Berechtigung, die Daten dieses Spielers anzusehen.",
+									MessageUtil.EmbedType.ERROR))
+							.queue();
 					return;
 				}
 
@@ -248,8 +251,7 @@ public class stats extends ListenerAdapter {
 		boolean hasPermission = false;
 		for (String clantag : DBManager.getAllClans()) {
 			Player.RoleType role = user.getClanRoles().get(clantag);
-			if (role == Player.RoleType.ADMIN || role == Player.RoleType.LEADER
-					|| role == Player.RoleType.COLEADER) {
+			if (role == Player.RoleType.ADMIN || role == Player.RoleType.LEADER || role == Player.RoleType.COLEADER) {
 				hasPermission = true;
 				break;
 			}
@@ -276,13 +278,12 @@ public class stats extends ListenerAdapter {
 	 */
 	private List<Command.Choice> getAvailablePlayers(User user, String input) {
 		List<Command.Choice> choices = new ArrayList<>();
-		
+
 		// Check if user is at least coleader in any clan
 		boolean hasPermission = false;
 		for (String clantag : DBManager.getAllClans()) {
 			Player.RoleType role = user.getClanRoles().get(clantag);
-			if (role == Player.RoleType.ADMIN || role == Player.RoleType.LEADER
-					|| role == Player.RoleType.COLEADER) {
+			if (role == Player.RoleType.ADMIN || role == Player.RoleType.LEADER || role == Player.RoleType.COLEADER) {
 				hasPermission = true;
 				break;
 			}
@@ -292,7 +293,7 @@ public class stats extends ListenerAdapter {
 			// Get all players with uploaded JSONs
 			String sql = "SELECT DISTINCT tag FROM userjsons WHERE tag ILIKE ? ORDER BY tag LIMIT 25";
 			List<String> tags = DBUtil.getArrayListFromSQL(sql, String.class, "%" + input + "%");
-			
+
 			for (String tag : tags) {
 				// Try to get player name for better display
 				String playerName = getPlayerName(tag);
@@ -303,18 +304,18 @@ public class stats extends ListenerAdapter {
 			// Get only linked accounts with uploaded JSONs
 			ArrayList<Player> linkedAccounts = user.getAllLinkedAccounts();
 			String inputLower = input.toLowerCase();
-			
+
 			for (Player player : linkedAccounts) {
 				String tag = player.getTag();
 				// Check if this player has any JSON uploaded
 				String sql = "SELECT COUNT(*) FROM userjsons WHERE tag = ?";
 				Integer count = DBUtil.getValueFromSQL(sql, Integer.class, tag);
-				
+
 				if (count != null && count > 0) {
 					// Filter by input
-					if (tag.toLowerCase().contains(inputLower) || 
-						player.getName().toLowerCase().contains(inputLower)) {
-						String displayName = player.getName() + " (" + tag + ")";
+					if (tag.toLowerCase().contains(inputLower)
+							|| player.getNameAPI().toLowerCase().contains(inputLower)) {
+						String displayName = player.getNameAPI() + " (" + tag + ")";
 						choices.add(new Command.Choice(displayName, tag));
 					}
 				}
@@ -331,13 +332,13 @@ public class stats extends ListenerAdapter {
 		// Try players table first
 		String sql = "SELECT name FROM players WHERE coc_tag = ?";
 		String name = DBUtil.getValueFromSQL(sql, String.class, tag);
-		
+
 		if (name == null) {
 			// Try to get from JSON
 			sql = "SELECT json->>'name' FROM userjsons WHERE tag = ? LIMIT 1";
 			name = DBUtil.getValueFromSQL(sql, String.class, tag);
 		}
-		
+
 		return name;
 	}
 
@@ -349,98 +350,88 @@ public class stats extends ListenerAdapter {
 
 		// Get JSON data from database
 		String sql = "SELECT json, timestamp FROM userjsons WHERE tag = ? LIMIT 1";
-		
+
 		try (java.sql.PreparedStatement pstmt = dbutil.Connection.getConnection().prepareStatement(sql)) {
 			pstmt.setString(1, playerTag);
-			
+
 			try (java.sql.ResultSet rs = pstmt.executeQuery()) {
 				if (!rs.next()) {
 					hook.editOriginalEmbeds(MessageUtil.buildEmbed(title,
-							"Keine JSON-Daten für diesen Spieler gefunden.",
-							MessageUtil.EmbedType.ERROR)).queue();
+							"Keine JSON-Daten für diesen Spieler gefunden.", MessageUtil.EmbedType.ERROR)).queue();
 					return;
 				}
 
 				String jsonStr = rs.getString("json");
 				java.sql.Timestamp timestamp = rs.getTimestamp("timestamp");
-				
+
 				JSONObject json = new JSONObject(jsonStr);
-				
+
 				// Get the field name for this stat
 				String fieldName = STAT_TO_FIELD.get(statType);
 				if (fieldName == null) {
-					hook.editOriginalEmbeds(MessageUtil.buildEmbed(title,
-							"Ungültiger Stat-Typ.",
-							MessageUtil.EmbedType.ERROR)).queue();
+					hook.editOriginalEmbeds(
+							MessageUtil.buildEmbed(title, "Ungültiger Stat-Typ.", MessageUtil.EmbedType.ERROR)).queue();
 					return;
 				}
 
 				// Check if field exists in JSON
 				if (!json.has(fieldName)) {
 					hook.editOriginalEmbeds(MessageUtil.buildEmbed(title,
-							"Keine Daten für **" + statType + "** gefunden.",
-							MessageUtil.EmbedType.INFO)).queue();
+							"Keine Daten für **" + statType + "** gefunden.", MessageUtil.EmbedType.INFO)).queue();
 					return;
 				}
 
 				Object fieldData = json.get(fieldName);
-				
+
 				// Format the data
 				String formattedData = formatData(fieldData, timestamp);
-				
+
 				// Build description
 				StringBuilder description = new StringBuilder();
 				String playerName = getPlayerName(playerTag);
 				description.append("**Spieler:** ").append(playerName != null ? playerName : playerTag).append("\n");
 				description.append("**Stat:** ").append(statType).append("\n\n");
-				description.append("```\n");
 				description.append(formattedData);
-				description.append("\n```");
+				description.append("\n");
 
 				// Create buttons
 				Button refreshButton = Button.secondary(buttonId, "\u200B").withEmoji(Emoji.fromUnicode("🔁"));
-				
+
 				String selectMenuId = encodeSelectMenuId(playerTag);
-				StringSelectMenu selectMenu = StringSelectMenu.create(selectMenuId)
-						.setPlaceholder("Anderes Feld")
-						.addOptions(createStatOptions(statType))
-						.build();
+				StringSelectMenu selectMenu = StringSelectMenu.create(selectMenuId).setPlaceholder("Anderes Feld")
+						.addOptions(createStatOptions(statType)).build();
 
 				// Add timestamp
 				ZonedDateTime jetzt = ZonedDateTime.now(ZoneId.of("Europe/Berlin"));
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy 'um' HH:mm 'Uhr'");
 				String formatiert = jetzt.format(formatter);
 
-				hook.editOriginal("")
-						.setEmbeds(MessageUtil.buildEmbed(title, description.toString(),
-								MessageUtil.EmbedType.INFO, "Zuletzt aktualisiert am " + formatiert))
-						.setActionRow(refreshButton)
-						.queue(message -> {
+				hook.editOriginal("").setEmbeds(MessageUtil.buildEmbed(title, description.toString(),
+						MessageUtil.EmbedType.INFO, "Zuletzt aktualisiert am " + formatiert))
+						.setActionRow(refreshButton).queue(message -> {
 							// Add select menu in second row
 							message.editMessageComponents(
-								net.dv8tion.jda.api.interactions.components.ActionRow.of(refreshButton),
-								net.dv8tion.jda.api.interactions.components.ActionRow.of(selectMenu)
-							).queue();
+									net.dv8tion.jda.api.interactions.components.ActionRow.of(refreshButton),
+									net.dv8tion.jda.api.interactions.components.ActionRow.of(selectMenu)).queue();
 						});
 			}
 		} catch (java.sql.SQLException e) {
 			System.err.println("Database error loading stats data: " + e.getMessage());
 			e.printStackTrace();
 			hook.editOriginalEmbeds(MessageUtil.buildEmbed(title,
-					"Fehler beim Laden der Daten aus der Datenbank: " + e.getMessage(),
-					MessageUtil.EmbedType.ERROR)).queue();
+					"Fehler beim Laden der Daten aus der Datenbank: " + e.getMessage(), MessageUtil.EmbedType.ERROR))
+					.queue();
 		} catch (org.json.JSONException e) {
 			System.err.println("JSON parsing error: " + e.getMessage());
 			e.printStackTrace();
 			hook.editOriginalEmbeds(MessageUtil.buildEmbed(title,
-					"Fehler beim Verarbeiten der JSON-Daten: " + e.getMessage(),
-					MessageUtil.EmbedType.ERROR)).queue();
+					"Fehler beim Verarbeiten der JSON-Daten: " + e.getMessage(), MessageUtil.EmbedType.ERROR)).queue();
 		} catch (Exception e) {
 			System.err.println("Unexpected error loading stats data: " + e.getMessage());
 			e.printStackTrace();
 			hook.editOriginalEmbeds(MessageUtil.buildEmbed(title,
-					"Unerwarteter Fehler beim Laden der Daten: " + e.getMessage(),
-					MessageUtil.EmbedType.ERROR)).queue();
+					"Unerwarteter Fehler beim Laden der Daten: " + e.getMessage(), MessageUtil.EmbedType.ERROR))
+					.queue();
 		}
 	}
 
@@ -453,23 +444,24 @@ public class stats extends ListenerAdapter {
 		}
 
 		StringBuilder sb = new StringBuilder();
-		
+
 		if (data instanceof JSONArray) {
 			JSONArray arr = (JSONArray) data;
 			if (arr.length() == 0) {
 				return "Keine Daten vorhanden";
 			}
-			
+
 			for (int i = 0; i < arr.length(); i++) {
 				Object item = arr.get(i);
 				if (item instanceof JSONObject) {
 					sb.append(formatObject((JSONObject) item, 0, jsonTimestamp));
+					sb.append("\n");
 				} else {
 					// Simple values (e.g., house_parts, skins, sceneries)
 					String value = getMappedValue(item.toString());
 					sb.append("- ").append(value).append("\n");
 				}
-				
+
 				if (i < arr.length() - 1) {
 					sb.append("\n");
 				}
@@ -489,36 +481,36 @@ public class stats extends ListenerAdapter {
 	private String formatObject(JSONObject obj, int indent, java.sql.Timestamp jsonTimestamp) {
 		StringBuilder sb = new StringBuilder();
 		String indentStr = "  ".repeat(indent);
-		
+
 		// First, display the "data" field if it exists (as the identifier)
 		if (obj.has("data") && obj.get("data") != null && obj.get("data") != JSONObject.NULL) {
 			String mappedValue = getMappedValue(obj.get("data").toString());
 			sb.append(indentStr).append(mappedValue);
 		}
-		
+
 		// Then display all other fields
 		for (String key : obj.keySet()) {
 			if (key.equals("data")) {
 				continue; // Already displayed above
 			}
-			
+
 			Object value = obj.get(key);
-			
+
 			if (value == null || value == JSONObject.NULL) {
 				continue; // Skip null values
 			}
-			
-			if (key.equals("timer")) {
+
+			if (key.equals("timer") || key.equals("helper_cooldown")) {
 				// Special handling for timer
 				int timerSeconds = 0;
 				if (value instanceof Number) {
 					timerSeconds = ((Number) value).intValue();
 				}
-				
+
 				// Calculate remaining time
 				long elapsedSeconds = (System.currentTimeMillis() - jsonTimestamp.getTime()) / 1000;
 				long remainingSeconds = timerSeconds - elapsedSeconds;
-				
+
 				if (remainingSeconds > 0) {
 					String timerStr = formatTimerRemaining(remainingSeconds);
 					String translatedKey = ATTR_TRANSLATIONS.getOrDefault(key, key);
@@ -533,7 +525,7 @@ public class stats extends ListenerAdapter {
 				String translatedKey = ATTR_TRANSLATIONS.getOrDefault(key, key);
 				JSONArray arr = (JSONArray) value;
 				if (arr.length() > 0) {
-					sb.append("\n").append(indentStr).append(translatedKey).append(":");
+					sb.append("\n").append(indentStr).append("- ").append(translatedKey).append(":");
 					for (int i = 0; i < arr.length(); i++) {
 						Object item = arr.get(i);
 						if (item instanceof JSONObject) {
@@ -547,16 +539,16 @@ public class stats extends ListenerAdapter {
 			} else {
 				String translatedKey = ATTR_TRANSLATIONS.getOrDefault(key, key);
 				String valueStr = value.toString();
-				
+
 				// Handle boolean values
 				if (value instanceof Boolean) {
 					valueStr = (Boolean) value ? "Ja" : "Nein";
 				}
-				
-				sb.append("\n").append(indentStr).append(translatedKey).append(": ").append(valueStr);
+
+				sb.append("\n").append(indentStr).append("- ").append(translatedKey).append(": ").append(valueStr);
 			}
 		}
-		
+
 		return sb.toString();
 	}
 
@@ -595,16 +587,16 @@ public class stats extends ListenerAdapter {
 	private String getMappedValue(String dataValue) {
 		// Query datamappings table
 		String sql = "SELECT emojiid, name, emojiname FROM datamappings WHERE datavalue = ?";
-		
+
 		try (java.sql.PreparedStatement pstmt = dbutil.Connection.getConnection().prepareStatement(sql)) {
 			pstmt.setString(1, dataValue);
-			
+
 			try (java.sql.ResultSet rs = pstmt.executeQuery()) {
 				if (rs.next()) {
 					String emojiId = rs.getString("emojiid");
 					String name = rs.getString("name");
 					String emojiName = rs.getString("emojiname");
-					
+
 					// If emoji exists, validate and use it
 					if (emojiId != null && !emojiId.isEmpty() && emojiName != null && !emojiName.isEmpty()) {
 						// Validate emojiId is numeric
@@ -612,7 +604,7 @@ public class stats extends ListenerAdapter {
 							return "<:" + emojiName + ":" + emojiId + ">";
 						}
 					}
-					
+
 					// Otherwise use name if available
 					if (name != null && !name.isEmpty()) {
 						return name;
@@ -623,7 +615,7 @@ public class stats extends ListenerAdapter {
 			// Database query failed, log and return raw value
 			System.err.println("Error querying datamappings for value '" + dataValue + "': " + e.getMessage());
 		}
-		
+
 		// Return raw data value if no mapping found
 		return dataValue;
 	}
@@ -631,21 +623,22 @@ public class stats extends ListenerAdapter {
 	/**
 	 * Create stat options for select menu
 	 */
-	private List<net.dv8tion.jda.api.interactions.components.selections.SelectOption> createStatOptions(String currentStat) {
+	private List<net.dv8tion.jda.api.interactions.components.selections.SelectOption> createStatOptions(
+			String currentStat) {
 		List<net.dv8tion.jda.api.interactions.components.selections.SelectOption> options = new ArrayList<>();
-		
+
 		for (String stat : STAT_TO_FIELD.keySet()) {
-			net.dv8tion.jda.api.interactions.components.selections.SelectOption option = 
-				net.dv8tion.jda.api.interactions.components.selections.SelectOption.of(stat, stat);
-			
+			net.dv8tion.jda.api.interactions.components.selections.SelectOption option = net.dv8tion.jda.api.interactions.components.selections.SelectOption
+					.of(stat, stat);
+
 			// Mark current stat as default
 			if (stat.equals(currentStat)) {
 				option = option.withDefault(true);
 			}
-			
+
 			options.add(option);
 		}
-		
+
 		return options;
 	}
 

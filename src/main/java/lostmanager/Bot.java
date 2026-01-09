@@ -61,8 +61,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.events.ReadyEvent;
-import net.dv8tion.jda.api.events.ShutdownEvent;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
+import net.dv8tion.jda.api.events.session.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -102,7 +102,7 @@ public class Bot extends ListenerAdapter {
 		verified_roleid = System.getenv("DISCORD_VERIFIED_ROLE_ID");
 		exmember_roleid = System.getenv("DISCORD_EX_MEMBER_ROLE_ID");
 		genaiClient = Client.builder().apiKey(System.getenv("GOOGLE_GENAI_API_KEY")).build();
-		
+
 		// Load webserver configuration
 		try {
 			webserver_port = Integer.parseInt(System.getenv().getOrDefault("WEBSERVER_PORT", "8080"));
@@ -137,7 +137,7 @@ public class Bot extends ListenerAdapter {
 
 		dbutil.Connection.tablesExists();
 		cleanupDuplicateWinsData();
-		
+
 		// Start JSON Upload Server
 		try {
 			uploadServer = new webserver.JsonUploadServer(webserver_port);
@@ -146,7 +146,7 @@ public class Bot extends ListenerAdapter {
 			System.err.println("Failed to start JSON Upload Server: " + e.getMessage());
 			e.printStackTrace();
 		}
-		
+
 		startNameUpdates();
 		restartAllEvents();
 
@@ -416,39 +416,31 @@ public class Bot extends ListenerAdapter {
 									.addOptions(new OptionData(OptionType.STRING, "player",
 											"Der Spieler, für den die Wins angezeigt werden sollen", false)
 											.setAutoComplete(true))
-									.addOptions(new OptionData(OptionType.STRING, "clan",
+									.addOptions(new OptionData(
+											OptionType.STRING, "clan",
 											"Der Clan, für den die Wins angezeigt werden sollen", false)
 											.setAutoComplete(true)),
 
 							Commands.slash("lmagent", "Dummy command mit einem Prompt-Parameter.")
 									.addOption(OptionType.STRING, "prompt", "Der Prompt als Text", true),
 
-							Commands.slash("jsonupload", "Generiere einen Link zum Hochladen von JSON-Daten aus dem Spiel"),
+							Commands.slash("jsonupload",
+									"Generiere einen Link zum Hochladen von JSON-Daten aus dem Spiel"),
 
 							Commands.slash("stats", "Zeige Spieler-Statistiken aus hochgeladenen JSON-Daten an")
 									.addOption(OptionType.STRING, "player", "Der Spieler (Tag)", true, true)
-									.addOptions(new OptionData(OptionType.STRING, "stat", "Die anzuzeigende Statistik", true)
-											.addChoice("Helpers", "Helpers")
-											.addChoice("Guardians", "Guardians")
+									.addOptions(new OptionData(OptionType.STRING, "stat", "Die anzuzeigende Statistik",
+											true).addChoice("Helpers", "Helpers").addChoice("Guardians", "Guardians")
 											.addChoice("Buildings", "Buildings")
-											.addChoice("Buildings (BB)", "Buildings (BB)")
-											.addChoice("Traps", "Traps")
-											.addChoice("Traps (BB)", "Traps (BB)")
-											.addChoice("Decos", "Decos")
-											.addChoice("Decos (BB)", "Decos (BB)")
-											.addChoice("Obstacles", "Obstacles")
-											.addChoice("Obstacles (BB)", "Obstacles (BB)")
-											.addChoice("Units", "Units")
-											.addChoice("Units (BB)", "Units (BB)")
-											.addChoice("Sieges", "Sieges")
-											.addChoice("Heroes", "Heroes")
-											.addChoice("Heroes (BB)", "Heroes (BB)")
-											.addChoice("Spells", "Spells")
-											.addChoice("Pets", "Pets")
-											.addChoice("Equips", "Equips")
-											.addChoice("House Parts", "House Parts")
-											.addChoice("Skins", "Skins")
-											.addChoice("Skins (BB)", "Skins (BB)")
+											.addChoice("Buildings (BB)", "Buildings (BB)").addChoice("Traps", "Traps")
+											.addChoice("Traps (BB)", "Traps (BB)").addChoice("Decos", "Decos")
+											.addChoice("Decos (BB)", "Decos (BB)").addChoice("Obstacles", "Obstacles")
+											.addChoice("Obstacles (BB)", "Obstacles (BB)").addChoice("Units", "Units")
+											.addChoice("Units (BB)", "Units (BB)").addChoice("Sieges", "Sieges")
+											.addChoice("Heroes", "Heroes").addChoice("Heroes (BB)", "Heroes (BB)")
+											.addChoice("Spells", "Spells").addChoice("Pets", "Pets")
+											.addChoice("Equips", "Equips").addChoice("House Parts", "House Parts")
+											.addChoice("Skins", "Skins").addChoice("Skins (BB)", "Skins (BB)")
 											.addChoice("Sceneries", "Sceneries")
 											.addChoice("Sceneries (BB)", "Sceneries (BB)"))
 
@@ -973,8 +965,8 @@ public class Bot extends ListenerAdapter {
 	}
 
 	/**
-	 * Clean up duplicate WINS data entries, keeping only the first (earliest) entry 
-	 * per player per month. This removes duplicates that may have accumulated from 
+	 * Clean up duplicate WINS data entries, keeping only the first (earliest) entry
+	 * per player per month. This removes duplicates that may have accumulated from
 	 * bot restarts before the deduplication check was implemented.
 	 * 
 	 * SAFETY: Only deletes duplicates within the same player-month combination.
@@ -983,47 +975,32 @@ public class Bot extends ListenerAdapter {
 	private static void cleanupDuplicateWinsData() {
 		try {
 			System.out.println("Checking for duplicate WINS data to clean up...");
-			
-			// SQL to delete duplicate WINS entries, keeping only the earliest timestamp per player per month
+
+			// SQL to delete duplicate WINS entries, keeping only the earliest timestamp per
+			// player per month
 			// This uses a CTE (Common Table Expression) to:
 			// 1. Rank all WINS records per player per month by timestamp (earliest = 1)
 			// 2. Delete all records where rank > 1 (i.e., not the earliest)
-			String cleanupSql = 
-				"WITH ranked_data AS (" +
-				"  SELECT id, " +
-				"         ROW_NUMBER() OVER (" +
-				"           PARTITION BY player_tag, DATE_TRUNC('month', time) " +
-				"           ORDER BY time ASC" +
-				"         ) as rn " +
-				"  FROM achievement_data " +
-				"  WHERE type = 'WINS'" +
-				") " +
-				"DELETE FROM achievement_data " +
-				"WHERE id IN (" +
-				"  SELECT id FROM ranked_data WHERE rn > 1" +
-				")";
-			
+			String cleanupSql = "WITH ranked_data AS (" + "  SELECT id, " + "         ROW_NUMBER() OVER ("
+					+ "           PARTITION BY player_tag, DATE_TRUNC('month', time) " + "           ORDER BY time ASC"
+					+ "         ) as rn " + "  FROM achievement_data " + "  WHERE type = 'WINS'" + ") "
+					+ "DELETE FROM achievement_data " + "WHERE id IN (" + "  SELECT id FROM ranked_data WHERE rn > 1"
+					+ ")";
+
 			// First, check how many duplicates exist
-			String countSql = 
-				"WITH ranked_data AS (" +
-				"  SELECT id, " +
-				"         ROW_NUMBER() OVER (" +
-				"           PARTITION BY player_tag, DATE_TRUNC('month', time) " +
-				"           ORDER BY time ASC" +
-				"         ) as rn " +
-				"  FROM achievement_data " +
-				"  WHERE type = 'WINS'" +
-				") " +
-				"SELECT COUNT(*) FROM ranked_data WHERE rn > 1";
-			
+			String countSql = "WITH ranked_data AS (" + "  SELECT id, " + "         ROW_NUMBER() OVER ("
+					+ "           PARTITION BY player_tag, DATE_TRUNC('month', time) " + "           ORDER BY time ASC"
+					+ "         ) as rn " + "  FROM achievement_data " + "  WHERE type = 'WINS'" + ") "
+					+ "SELECT COUNT(*) FROM ranked_data WHERE rn > 1";
+
 			Long duplicateCount = DBUtil.getValueFromSQL(countSql, Long.class);
-			
+
 			if (duplicateCount != null && duplicateCount > 0) {
 				System.out.println("Found " + duplicateCount + " duplicate WINS records to delete...");
-				
+
 				// Execute the cleanup
 				var result = DBUtil.executeUpdate(cleanupSql);
-				
+
 				if (result != null && result.getSecond() != null) {
 					System.out.println("Successfully deleted " + result.getSecond() + " duplicate WINS records");
 				} else {
@@ -1040,8 +1017,8 @@ public class Bot extends ListenerAdapter {
 	}
 
 	/**
-	 * Check if season start data already exists for the given timestamp
-	 * by querying any player's achievement data
+	 * Check if season start data already exists for the given timestamp by querying
+	 * any player's achievement data
 	 * 
 	 * @param seasonStartTime The timestamp to check
 	 * @return true if data exists for this timestamp, false otherwise
@@ -1049,10 +1026,11 @@ public class Bot extends ListenerAdapter {
 	private static boolean hasSeasonStartData(Timestamp seasonStartTime) {
 		try {
 			// Check if any player has WINS data recorded for this exact timestamp
-			// We only need to check one entry since season start saves are done for all players at once
+			// We only need to check one entry since season start saves are done for all
+			// players at once
 			String checkSql = "SELECT COUNT(*) FROM achievement_data WHERE type = 'WINS' AND time = ?";
 			Long count = DBUtil.getValueFromSQL(checkSql, Long.class, seasonStartTime);
-			
+
 			if (count != null && count > 0) {
 				System.out.println("Found " + count + " existing season start records for " + seasonStartTime);
 				return true;
@@ -1091,7 +1069,8 @@ public class Bot extends ListenerAdapter {
 				// Schedule check for next season start in 24 hours
 				long delayUntilNextCheck = 24 * 60 * 60 * 1000L;
 				System.out.println("Will check again in 24 hours for next season start");
-				schedulertasks.schedule(() -> scheduleSeasonStartWinsSaving(), delayUntilNextCheck, TimeUnit.MILLISECONDS);
+				schedulertasks.schedule(() -> scheduleSeasonStartWinsSaving(), delayUntilNextCheck,
+						TimeUnit.MILLISECONDS);
 				return;
 			}
 
