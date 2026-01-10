@@ -578,9 +578,8 @@ public class EmojiManager {
         continue;
       }
       
-      if (prefix.length() > 0) {
-        prefix.append("_");
-      }
+      // Build the initials for this folder part
+      StringBuilder folderInitials = new StringBuilder();
       
       // Take only the first character (initial) of the folder name
       // Handle multi-word folder names with hyphens by taking first char after each hyphen
@@ -588,9 +587,15 @@ public class EmojiManager {
       for (String word : words) {
         if (!word.isEmpty()) {
           // Take first character of each word, convert to lowercase
-          prefix.append(Character.toLowerCase(word.charAt(0)));
+          folderInitials.append(Character.toLowerCase(word.charAt(0)));
         }
       }
+      
+      // Add underscore separator between folders (but not before the first folder)
+      if (prefix.length() > 0) {
+        prefix.append("_");
+      }
+      prefix.append(folderInitials);
     }
     
     return prefix.toString();
