@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import util.MessageUtil;
 
@@ -489,7 +490,7 @@ public class stats extends ListenerAdapter {
 					} else {
 						// Simple values (e.g., house_parts, skins, sceneries)
 						String value = getMappedValue(item.toString());
-						sb.append("- ").append(value).append("\n");
+						sb.append("- ").append(value);
 					}
 
 					if (i < arr.length() - 1) {
@@ -573,10 +574,13 @@ public class stats extends ListenerAdapter {
 			for (ConfigGroup group : configGroups.values()) {
 				// Determine indentation based on whether we're showing counts
 				// Use 2 spaces per indent level and "· " for indented items
-				String countIndent = "  · "; // 1 indent level
-				String baseIndent = showCounts ? "    · " : "  · "; // 2 or 1 indent levels
+				String space = EmbedBuilder.ZERO_WIDTH_SPACE;
+				String countIndent = space.repeat(2) + "· "; // 1 indent level
+				String baseIndent = showCounts ? space.repeat(4) + "· " : space.repeat(2) + "· "; // 2 or 1 indent
+																									// levels
 				int objIndent = showCounts ? 3 : 2;
-				String arrItemIndent = showCounts ? "      · " : "    · "; // 3 or 2 indent levels
+				String arrItemIndent = showCounts ? space.repeat(6) + "· " : space.repeat(4) + "· "; // 3 or 2 indent
+																										// levels
 
 				// Only show count if there's actual grouping or multiple items
 				if (showCounts) {
