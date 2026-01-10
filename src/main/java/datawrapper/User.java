@@ -40,6 +40,9 @@ public class User {
 				isadmin = true;
 			}
 		}
+		if (isadmin == null) {
+			isadmin = false;
+		}
 		return isadmin;
 	}
 
