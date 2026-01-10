@@ -16,48 +16,48 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.genai.Client;
 
-import commands.coc.kickpoints.clanconfig;
-import commands.coc.kickpoints.kpadd;
-import commands.coc.kickpoints.kpaddreason;
-import commands.coc.kickpoints.kpclan;
-import commands.coc.kickpoints.kpedit;
-import commands.coc.kickpoints.kpeditreason;
-import commands.coc.kickpoints.kpinfo;
-import commands.coc.kickpoints.kpmember;
-import commands.coc.kickpoints.kpremove;
-import commands.coc.kickpoints.kpremovereason;
-import commands.coc.links.link;
-import commands.coc.links.playerinfo;
-import commands.coc.links.relink;
-import commands.coc.links.unlink;
-import commands.coc.links.verify;
-import commands.coc.memberlist.addmember;
-import commands.coc.memberlist.cwlmemberstatus;
-import commands.coc.memberlist.editmember;
-import commands.coc.memberlist.listmembers;
-import commands.coc.memberlist.memberstatus;
-import commands.coc.memberlist.removemember;
-import commands.coc.memberlist.transfermember;
-import commands.coc.util.checkroles;
-import commands.coc.util.cwdonator;
-import commands.coc.util.jsonupload;
-import commands.coc.util.listeningevent;
-import commands.coc.util.raidping;
-import commands.coc.util.reloadmappings;
-import commands.coc.util.setnick;
-import commands.coc.util.stats;
-import commands.coc.util.wins;
-import commands.discord.admin.deletemessages;
-import commands.discord.admin.reactionsrole;
-import commands.discord.admin.restart;
-import commands.discord.util.checkreacts;
-import commands.discord.util.lmagent;
-import commands.discord.util.teamcheck;
-import datawrapper.AchievementData.Type;
-import dbutil.DBUtil;
-import datawrapper.Clan;
-import datawrapper.ListeningEvent;
-import datawrapper.Player;
+import lostmanager.commands.coc.kickpoints.clanconfig;
+import lostmanager.commands.coc.kickpoints.kpadd;
+import lostmanager.commands.coc.kickpoints.kpaddreason;
+import lostmanager.commands.coc.kickpoints.kpclan;
+import lostmanager.commands.coc.kickpoints.kpedit;
+import lostmanager.commands.coc.kickpoints.kpeditreason;
+import lostmanager.commands.coc.kickpoints.kpinfo;
+import lostmanager.commands.coc.kickpoints.kpmember;
+import lostmanager.commands.coc.kickpoints.kpremove;
+import lostmanager.commands.coc.kickpoints.kpremovereason;
+import lostmanager.commands.coc.links.link;
+import lostmanager.commands.coc.links.playerinfo;
+import lostmanager.commands.coc.links.relink;
+import lostmanager.commands.coc.links.unlink;
+import lostmanager.commands.coc.links.verify;
+import lostmanager.commands.coc.memberlist.addmember;
+import lostmanager.commands.coc.memberlist.cwlmemberstatus;
+import lostmanager.commands.coc.memberlist.editmember;
+import lostmanager.commands.coc.memberlist.listmembers;
+import lostmanager.commands.coc.memberlist.memberstatus;
+import lostmanager.commands.coc.memberlist.removemember;
+import lostmanager.commands.coc.memberlist.transfermember;
+import lostmanager.commands.coc.util.checkroles;
+import lostmanager.commands.coc.util.cwdonator;
+import lostmanager.commands.coc.util.jsonupload;
+import lostmanager.commands.coc.util.listeningevent;
+import lostmanager.commands.coc.util.raidping;
+import lostmanager.commands.coc.util.reloadmappings;
+import lostmanager.commands.coc.util.setnick;
+import lostmanager.commands.coc.util.stats;
+import lostmanager.commands.coc.util.wins;
+import lostmanager.commands.discord.admin.deletemessages;
+import lostmanager.commands.discord.admin.reactionsrole;
+import lostmanager.commands.discord.admin.restart;
+import lostmanager.commands.discord.util.checkreacts;
+import lostmanager.commands.discord.util.lmagent;
+import lostmanager.commands.discord.util.teamcheck;
+import lostmanager.datawrapper.Clan;
+import lostmanager.datawrapper.ListeningEvent;
+import lostmanager.datawrapper.Player;
+import lostmanager.datawrapper.AchievementData.Type;
+import lostmanager.dbutil.DBUtil;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -91,7 +91,7 @@ public class Bot extends ListenerAdapter {
 	public static String systemInstructions;
 	public static int webserver_port;
 	public static String webserver_base_url;
-	private static webserver.JsonUploadServer uploadServer;
+	private static lostmanager.webserver.JsonUploadServer uploadServer;
 
 	public static void main(String[] args) throws Exception {
 		VERSION = "2.1.0";
@@ -130,18 +130,18 @@ public class Bot extends ListenerAdapter {
 
 		String token = System.getenv("LOST_MANAGER_TOKEN");
 
-		if (dbutil.Connection.checkDB()) {
+		if (lostmanager.dbutil.Connection.checkDB()) {
 			System.out.println("Verbindung zur Datenbank funktioniert.");
 		} else {
 			System.out.println("Verbindung zur Datenbank fehlgeschlagen.");
 		}
 
-		dbutil.Connection.tablesExists();
+		lostmanager.dbutil.Connection.tablesExists();
 		cleanupDuplicateWinsData();
 
 		// Start JSON Upload Server
 		try {
-			uploadServer = new webserver.JsonUploadServer(webserver_port);
+			uploadServer = new lostmanager.webserver.JsonUploadServer(webserver_port);
 			uploadServer.start();
 		} catch (Exception e) {
 			System.err.println("Failed to start JSON Upload Server: " + e.getMessage());
@@ -766,7 +766,7 @@ public class Bot extends ListenerAdapter {
 					java.util.List<Long> eventIds = entry.getValue();
 
 					try {
-						datawrapper.Clan clan = new datawrapper.Clan(clanTag);
+						lostmanager.datawrapper.Clan clan = new lostmanager.datawrapper.Clan(clanTag);
 
 						// Get last known state (only once per clan)
 						String lastState = getCWLastState(clanTag);
@@ -864,7 +864,7 @@ public class Bot extends ListenerAdapter {
 
 			for (String clanTag : clanTags) {
 				try {
-					datawrapper.Clan clan = new datawrapper.Clan(clanTag);
+					lostmanager.datawrapper.Clan clan = new lostmanager.datawrapper.Clan(clanTag);
 					String currentState = "notInWar"; // default
 
 					if (clan.isCWActive()) {
@@ -937,7 +937,7 @@ public class Bot extends ListenerAdapter {
 
 	public static void scheduleSeasonEndWinsSaving() {
 		// Fetch the actual season end time from the API
-		Timestamp seasonEndTime = util.SeasonUtil.fetchSeasonEndTime();
+		Timestamp seasonEndTime = lostmanager.util.SeasonUtil.fetchSeasonEndTime();
 
 		if (seasonEndTime == null) {
 			System.err.println("Failed to fetch season end time from API. Retrying in 1 hour...");
@@ -1050,7 +1050,7 @@ public class Bot extends ListenerAdapter {
 
 	public static void scheduleSeasonStartWinsSaving() {
 		// Fetch the actual season start time from the API
-		Timestamp seasonStartTime = util.SeasonUtil.fetchSeasonStartTime();
+		Timestamp seasonStartTime = lostmanager.util.SeasonUtil.fetchSeasonStartTime();
 
 		if (seasonStartTime == null) {
 			System.err.println("Failed to fetch season start time from API. Retrying in 1 hour...");
@@ -1136,7 +1136,7 @@ public class Bot extends ListenerAdapter {
 			
 			// Also reload image_map.json cache every 2 hours
 			try {
-				util.ImageMapCache.loadImageMap();
+				lostmanager.util.ImageMapCache.loadImageMap();
 			} catch (Exception e) {
 				System.err.println("Fehler beim Laden der image_map.json: " + e.getMessage());
 				e.printStackTrace();
