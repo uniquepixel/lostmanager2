@@ -29,6 +29,9 @@ public class Clan {
 	// Identifier
 	private String clan_tag;
 
+	//DB Index
+	private Long index;	
+	
 	// Names
 	private String namedb;
 	private String nameapi;
@@ -136,6 +139,23 @@ public class Clan {
 		return clan_tag;
 	}
 
+	public Long getIndex() {
+		if (index == null) {
+			String sql = "SELECT index FROM clans WHERE tag = ?";
+			try (PreparedStatement pstmt = Connection.getConnection().prepareStatement(sql)) {
+				pstmt.setString(1, clan_tag);
+				try (ResultSet rs = pstmt.executeQuery()) {
+					if (rs.next()) {
+						index = rs.getLong("index");
+					}
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return index;
+	}
+	
 	// Roles
 
 	public String getRoleID(Role role) {

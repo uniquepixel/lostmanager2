@@ -114,7 +114,7 @@ public class Bot extends ListenerAdapter {
 			webserver_port = 8080;
 		}
 		webserver_base_url = System.getenv().getOrDefault("WEBSERVER_BASE_URL", "http://localhost:8080");
-		
+
 		// Load REST API configuration
 		try {
 			rest_api_port = Integer.parseInt(System.getenv().getOrDefault("REST_API_PORT", "8070"));
@@ -157,7 +157,7 @@ public class Bot extends ListenerAdapter {
 			System.err.println("Failed to start JSON Upload Server: " + e.getMessage());
 			e.printStackTrace();
 		}
-		
+
 		// Start REST API Server
 		try {
 			restApiServer = new lostmanager.webserver.api.RestApiServer(rest_api_port);
@@ -1146,6 +1146,23 @@ public class Bot extends ListenerAdapter {
 	public static void startNameUpdates() {
 		System.out.println("Alle 2h werden nun die Namen aktualisiert. " + System.currentTimeMillis());
 		Runnable task = () -> {
+
+			// Update clan badges and descriptions
+			String clanSql = "SELECT tag FROM clans";
+			for (String clanTag : DBUtil.getArrayListFromSQL(clanSql, String.class)) {
+
+				try {
+					Clan clan = new Clan(clanTag);
+					String badgeUrl = clan.getIconAPI();
+					String description = clan.getDescriptionAPI();
+					DBUtil.executeUpdate("UPDATE clans SET badgeUrl = ?, description = ? WHERE tag = ?", badgeUrl,
+							description, clanTag);
+				} catch (Exception e) {
+					System.out.println(
+							"Fehler beim Badge/Description Update von Clan " + clanTag + ": " + e.getMessage());
+				}
+			}
+
 			// Update player names
 			String sql = "SELECT coc_tag FROM players";
 			for (String tag : DBUtil.getArrayListFromSQL(sql, String.class)) {
@@ -1156,21 +1173,7 @@ public class Bot extends ListenerAdapter {
 					System.out.println("Fehler beim Namenupdate von Tag " + tag);
 				}
 			}
-			
-			// Update clan badges and descriptions
-			String clanSql = "SELECT tag FROM clans";
-			for (String clanTag : DBUtil.getArrayListFromSQL(clanSql, String.class)) {
-				try {
-					Clan clan = new Clan(clanTag);
-					String badgeUrl = clan.getIconAPI();
-					String description = clan.getDescriptionAPI();
-					DBUtil.executeUpdate("UPDATE clans SET badgeUrl = ?, description = ? WHERE tag = ?", 
-							badgeUrl, description, clanTag);
-				} catch (Exception e) {
-					System.out.println("Fehler beim Badge/Description Update von Clan " + clanTag + ": " + e.getMessage());
-				}
-			}
-			
+
 			// Also reload image_map.json cache every 2 hours
 			try {
 				lostmanager.util.ImageMapCache.loadImageMap();

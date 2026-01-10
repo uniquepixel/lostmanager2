@@ -11,6 +11,9 @@ public class ClanDTO {
     @JsonProperty("tag")
     private String tag;
     
+    @JsonProperty("index")
+    private Long index;
+    
     @JsonProperty("nameDB")
     private String nameDB;
     
@@ -30,6 +33,12 @@ public class ClanDTO {
      */
     public ClanDTO(Clan clan) {
         this.tag = clan.getTag();
+        
+        try {
+            this.index = clan.getIndex();
+        } catch (Exception e) {
+            this.index = null;
+        }
         
         try {
             this.nameDB = clan.getNameDB();
@@ -57,6 +66,14 @@ public class ClanDTO {
     
     public void setTag(String tag) {
         this.tag = tag;
+    }
+    
+    public Long getIndex() {
+        return index;
+    }
+    
+    public void setIndex(Long index) {
+        this.index = index;
     }
     
     public String getNameDB() {
