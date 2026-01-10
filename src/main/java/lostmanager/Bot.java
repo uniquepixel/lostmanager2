@@ -91,7 +91,9 @@ public class Bot extends ListenerAdapter {
 	public static String systemInstructions;
 	public static int webserver_port;
 	public static String webserver_base_url;
+	public static int rest_api_port;
 	private static lostmanager.webserver.JsonUploadServer uploadServer;
+	private static lostmanager.webserver.api.RestApiServer restApiServer;
 
 	public static void main(String[] args) throws Exception {
 		VERSION = "2.1.0";
@@ -112,6 +114,14 @@ public class Bot extends ListenerAdapter {
 			webserver_port = 8080;
 		}
 		webserver_base_url = System.getenv().getOrDefault("WEBSERVER_BASE_URL", "http://localhost:8080");
+		
+		// Load REST API configuration
+		try {
+			rest_api_port = Integer.parseInt(System.getenv().getOrDefault("REST_API_PORT", "8070"));
+		} catch (NumberFormatException e) {
+			System.err.println("Invalid REST_API_PORT, using default 8070");
+			rest_api_port = 8070;
+		}
 
 		new Thread(new Runnable() {
 
@@ -145,6 +155,15 @@ public class Bot extends ListenerAdapter {
 			uploadServer.start();
 		} catch (Exception e) {
 			System.err.println("Failed to start JSON Upload Server: " + e.getMessage());
+			e.printStackTrace();
+		}
+		
+		// Start REST API Server
+		try {
+			restApiServer = new lostmanager.webserver.api.RestApiServer(rest_api_port);
+			restApiServer.start();
+		} catch (Exception e) {
+			System.err.println("Failed to start REST API Server: " + e.getMessage());
 			e.printStackTrace();
 		}
 
@@ -508,6 +527,9 @@ public class Bot extends ListenerAdapter {
 		stopScheduler();
 		if (uploadServer != null) {
 			uploadServer.stop();
+		}
+		if (restApiServer != null) {
+			restApiServer.stop();
 		}
 	}
 
