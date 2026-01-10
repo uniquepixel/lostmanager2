@@ -549,12 +549,12 @@ public class EmojiManager {
   
   /**
    * Extract folder structure from image path to create unique emoji names
-   * Takes the path between "assets" and the filename, excluding "assets" itself
-   * Example: "/home-base/buildings/wall/wall-1.png" -> "home_base_buildings"
-   * Example: "/builder-base/buildings/wall/wall-2.png" -> "builder_base_buildings"
+   * Uses only the first letter (initial) of each folder name to keep emoji names short
+   * Example: "/home-base/buildings/wall/wall-1.png" -> "hb_b_w"
+   * Example: "/builder-base/buildings/wall/wall-2.png" -> "bb_b_w"
    * 
    * @param imagePath The relative image path (e.g., "/home-base/buildings/wall/wall-1.png")
-   * @return The folder structure as underscore-separated string
+   * @return The folder structure as underscore-separated initials
    */
   private static String extractFolderPrefix(String imagePath) {
     if (imagePath == null || imagePath.isEmpty()) {
@@ -567,7 +567,7 @@ public class EmojiManager {
     // Split by slash to get path components
     String[] parts = path.split("/");
     
-    // Build folder prefix from all parts except the filename (last part)
+    // Build folder prefix from initials of all parts except the filename (last part)
     // Stop before the filename
     StringBuilder prefix = new StringBuilder();
     for (int i = 0; i < parts.length - 1; i++) {
@@ -578,12 +578,24 @@ public class EmojiManager {
         continue;
       }
       
+      // Build the initials for this folder part
+      StringBuilder folderInitials = new StringBuilder();
+      
+      // Take only the first character (initial) of the folder name
+      // Handle multi-word folder names with hyphens by taking first char after each hyphen
+      String[] words = part.split("-");
+      for (String word : words) {
+        if (!word.isEmpty()) {
+          // Take first character of each word, convert to lowercase
+          folderInitials.append(Character.toLowerCase(word.charAt(0)));
+        }
+      }
+      
+      // Add underscore separator between folders (but not before the first folder)
       if (prefix.length() > 0) {
         prefix.append("_");
       }
-      
-      // Replace hyphens with underscores for consistency
-      prefix.append(part.replace("-", "_"));
+      prefix.append(folderInitials);
     }
     
     return prefix.toString();
