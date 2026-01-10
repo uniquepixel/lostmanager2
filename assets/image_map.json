@@ -1976,6 +1976,14 @@
     "name": "Metal Pants",
     "icon": ""
   },
+  "90000045": {
+    "name": "Snow Flake",
+    "icon": ""
+  },
+  "90000046": {
+    "name": "Stick Horse",
+    "icon": ""
+  },
   "90000047": {
     "name": "Noble Iron",
     "icon": ""
@@ -1985,83 +1993,27 @@
     "icon": ""
   },
   "18000000": {
-    "icon": "/home-base/decorations/mighty-statue.png",
-    "name": "Mighty Statue"
-  },
-  "18000001": {
-    "name": "Torch",
-    "icon": "/home-base/decorations/torch.webp"
-  },
-  "18000003": {
-    "icon": "/home-base/decorations/white-flag.png",
-    "name": "White Flag"
+    "name": "Mighty Statue",
+    "icon": "/home-base/decorations/mighty-statue.png"
   },
   "18000004": {
-    "icon": "/home-base/decorations/pirate-flag.png",
-    "name": "Pirate Flag"
-  },
-  "18000005": {
-    "name": "Cornflower Bed",
-    "icon": ""
-  },
-  "18000006": {
-    "name": "Sunflower Bed",
-    "icon": ""
-  },
-  "18000007": {
-    "name": "Weather Vane",
-    "icon": ""
-  },
-  "18000008": {
-    "name": "Rally Flag",
-    "icon": ""
-  },
-  "18000009": {
-    "name": "Point Flag",
-    "icon": ""
-  },
-  "18000010": {
-    "name": "Ancient Skull",
-    "icon": ""
+    "name": "Pirate Flag",
+    "icon": "/home-base/decorations/pirate-flag.png"
   },
   "18000033": {
     "name": "Statue of P.E.K.K.A",
     "icon": ""
   },
   "18000037": {
-    "name": "Mighty Hero Statue",
-    "icon": ""
-  },
-  "18000038": {
-    "name": "Torch",
-    "icon": ""
-  },
-  "18000039": {
-    "name": "Small Spruce Tree",
-    "icon": ""
-  },
-  "18000040": {
-    "name": "Spruce Tree",
+    "name": "Barbarian King Statue",
     "icon": ""
   },
   "18000041": {
     "name": "Ancient Barbarian Statue",
     "icon": ""
   },
-  "18000042": {
-    "name": "Stone Path",
-    "icon": ""
-  },
   "18000043": {
     "name": "Archer Queen Statue",
-    "icon": ""
-  },
-  "18000044": {
-    "name": "Target",
-    "icon": ""
-  },
-  "18000045": {
-    "name": "Bonfire",
     "icon": ""
   },
   "18000046": {
@@ -2091,13 +2043,9 @@
   "18000052": {
     "name": "Golden Hog",
     "icon": ""
-  },
+  },  
   "18000053": {
     "name": "Festive Firecrackers",
-    "icon": ""
-  },
-  "18000054": {
-    "name": "Snowman",
     "icon": ""
   },
   "18000055": {
@@ -2145,8 +2093,8 @@
     "icon": ""
   },
   "18000066": {
-    "icon": "/home-base/decorations/firework-fanboy.png",
-    "name": "Firework Fanboy"
+    "name": "Firework Fanboy",
+    "icon": "/home-base/decorations/firework-fanboy.png"
   },
   "18000067": {
     "name": "Flowing Fountain",
@@ -2184,18 +2132,6 @@
     "name": "Dragon Trophy",
     "icon": ""
   },
-  "18000076": {
-    "name": "Bonfire",
-    "icon": ""
-  },
-  "18000077": {
-    "name": "Torch",
-    "icon": ""
-  },
-  "18000078": {
-    "name": "Target",
-    "icon": ""
-  },
   "18000079": {
     "name": "Books of Clash",
     "icon": ""
@@ -2204,64 +2140,12 @@
     "name": "Master Builder's Return",
     "icon": ""
   },
-  "18000081": {
-    "name": "Goblin Chest",
-    "icon": ""
-  },
-  "18000082": {
-    "name": "Goblin Cart",
-    "icon": ""
-  },
-  "18000083": {
-    "name": "Torch",
-    "icon": ""
-  },
-  "18000084": {
-    "name": "Torch",
-    "icon": ""
-  },
-  "18000085": {
-    "name": "Torch",
-    "icon": ""
-  },
-  "18000086": {
-    "name": "Torch",
-    "icon": ""
-  },
-  "18000087": {
-    "name": "Torch",
-    "icon": ""
-  },
-  "18000088": {
-    "name": "Torch",
-    "icon": ""
-  },
   "18000089": {
-    "name": "Goblin Cellar",
+    "name": "Goblin Pit",
     "icon": ""
   },
   "18000090": {
     "name": "Goblin Dragon Statue",
-    "icon": ""
-  },
-  "18000091": {
-    "name": "Goblin Barrel",
-    "icon": ""
-  },
-  "18000092": {
-    "name": "League Hammer",
-    "icon": ""
-  },
-  "18000093": {
-    "name": "League Shield",
-    "icon": ""
-  },
-  "18000094": {
-    "name": "Razer Deco",
-    "icon": ""
-  },
-  "18000095": {
-    "name": "Flexing Barbarian",
     "icon": ""
   },
   "18000096": {
@@ -2373,8 +2257,8 @@
     "icon": ""
   },
   "18000133": {
-    "icon": "/home-base/decorations/haaland-statue.png",
-    "name": "Haaland Statue"
+    "name": "Haaland Statue",
+    "icon": "/home-base/decorations/haaland-statue.png"
   },
   "18000134": {
     "name": "Triumphant Trophy",
@@ -2408,10 +2292,6 @@
     "name": "Wizard Vendor",
     "icon": ""
   },
-  "18000142": {
-    "name": "Torch",
-    "icon": ""
-  },
   "18000143": {
     "name": "Cherry Bonsai",
     "icon": ""
@@ -2436,10 +2316,6 @@
     "name": "Gargantuan Gauntlet",
     "icon": ""
   },
-  "18000149": {
-    "name": "Heroic Chicken",
-    "icon": ""
-  },
   "18000150": {
     "name": "Sleepy King",
     "icon": ""
@@ -2453,8 +2329,8 @@
     "icon": ""
   },
   "18000153": {
-    "icon": "/home-base/decorations/foot-tribute.png",
-    "name": "Foot Tribute"
+    "name": "Foot Tribute",
+    "icon": "153.png"
   },
   "18000154": {
     "name": "Pretty Portal",
@@ -2509,8 +2385,8 @@
     "icon": ""
   },
   "18000167": {
-    "icon": "/home-base/decorations/monk-statue.png",
-    "name": "Monk Statue"
+    "name": "Monk Statue",
+    "icon": "167.png"    
   },
   "18000168": {
     "name": "Cozy Sauna",
@@ -2584,532 +2460,192 @@
     "name": "Justice Crown",
     "icon": ""
   },
-  "8000000": {
-    "name": "Tree",
-    "icon": ""
-  },
-  "8000001": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000002": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000003": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000004": {
-    "name": "Bush",
-    "icon": ""
-  },
-  "8000005": {
-    "name": "Tree",
-    "icon": ""
-  },
-  "8000006": {
-    "name": "Trunk",
-    "icon": ""
-  },
-  "8000007": {
-    "name": "Trunk",
-    "icon": ""
-  },
-  "8000008": {
-    "name": "Mushroom",
-    "icon": ""
-  },
-  "8000009": {
-    "name": "Tombstone",
-    "icon": ""
-  },
-  "8000010": {
-    "name": "Trunk",
-    "icon": ""
-  },
-  "8000011": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000012": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000013": {
-    "name": "Tree",
-    "icon": ""
-  },
-  "8000014": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000015": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000016": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000017": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000018": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000019": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000020": {
-    "name": "Stone",
-    "icon": ""
-  },
   "8000021": {
-    "name": "Clashmas Tree",
-    "icon": ""
-  },
-  "8000022": {
-    "name": "Tombstone",
-    "icon": ""
-  },
-  "8000023": {
-    "name": "Tombstone",
-    "icon": ""
-  },
-  "8000024": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000025": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000026": {
-    "name": "Goblin Camp Fire",
-    "icon": ""
-  },
-  "8000027": {
-    "name": "Goblin Camp Fire",
+    "name": "2012 Clashmas Tree",
     "icon": ""
   },
   "8000028": {
-    "name": "Clashmas Tree",
-    "icon": ""
-  },
-  "8000029": {
-    "name": "Present",
-    "icon": ""
-  },
-  "8000030": {
-    "name": "Gem Box",
+    "name": "2013 Clashmas Tree",
     "icon": ""
   },
   "8000031": {
-    "name": "Halloween Headstone",
+    "name": "2014 Halloween Headstone",
     "icon": ""
   },
   "8000032": {
-    "name": "Clashmas Tree",
-    "icon": ""
-  },
-  "8000033": {
-    "name": "Present",
-    "icon": ""
-  },
-  "8000034": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000035": {
-    "name": "Stone",
+    "name": "2014 Clashmas Tree",
     "icon": ""
   },
   "8000036": {
-    "name": "Halloween Cauldron",
+    "name": "2015 Halloween Cauldron",
     "icon": ""
   },
   "8000037": {
-    "name": "Clashmas Tree",
-    "icon": ""
-  },
-  "8000038": {
-    "name": "Loot Cart",
+    "name": "2015 Clashmas Tree",
     "icon": ""
   },
   "8000039": {
-    "name": "Scary Pumpkin",
+    "name": "2016 Scary Pumpkin",
     "icon": ""
   },
   "8000040": {
-    "name": "Clashmas Tree",
-    "icon": ""
-  },
-  "8000041": {
-    "name": "Tree",
-    "icon": ""
-  },
-  "8000042": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000043": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000044": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000045": {
-    "name": "Bush",
-    "icon": ""
-  },
-  "8000046": {
-    "name": "Tree",
-    "icon": ""
-  },
-  "8000047": {
-    "name": "Mushroom",
-    "icon": ""
-  },
-  "8000048": {
-    "name": "Tombstone",
-    "icon": ""
-  },
-  "8000049": {
-    "name": "Trunk",
-    "icon": ""
-  },
-  "8000050": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000051": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000052": {
-    "name": "Tree",
-    "icon": ""
-  },
-  "8000053": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000054": {
-    "name": "Stone",
+    "name": "2016 Clashmas Tree",
     "icon": ""
   },
   "8000055": {
     "name": "Old Barbarian Statue",
     "icon": ""
   },
-  "8000056": {
-    "name": "Tree Stump",
-    "icon": ""
-  },
-  "8000057": {
-    "name": "Grove",
-    "icon": ""
-  },
-  "8000058": {
-    "name": "Small Tree",
-    "icon": ""
-  },
-  "8000059": {
-    "name": "Big Tree",
-    "icon": ""
-  },
-  "8000060": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000061": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000062": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000063": {
-    "name": "Tall Grass",
-    "icon": ""
-  },
-  "8000064": {
-    "name": "Tall Grass",
-    "icon": ""
-  },
   "8000065": {
-    "name": "5th Anniversary Cake",
-    "icon": ""
-  },
-  "8000066": {
-    "name": "Present",
+    "name": "2017 Anniversary Cake",
     "icon": ""
   },
   "8000067": {
-    "name": "Halloween Obstacle",
+    "name": "2017 Halloween Obstacle",
     "icon": ""
   },
   "8000068": {
-    "name": "Fireworks Stash",
+    "name": "2018 Fireworks Stash",
     "icon": ""
   },
   "8000069": {
-    "name": "Clashmas Tree",
+    "name": "2017 Clashmas Tree",
     "icon": ""
   },
   "8000070": {
-    "name": "Fortune Tree",
+    "name": "2018 Fortune Tree",
     "icon": ""
   },
   "8000071": {
-    "name": "6th Anniversary Cake",
+    "name": "2018 Anniversary Cake",
     "icon": ""
   },
   "8000072": {
-    "name": "Clashmas Tree",
+    "name": "2018 Clashmas Tree",
     "icon": ""
   },
   "8000073": {
-    "name": "Witch's Hat",
+    "name": "2018 Witch's Hat",
     "icon": ""
   },
   "8000074": {
-    "name": "Spike-y Cactus",
+    "name": "2018 Spike-y Cactus",
     "icon": ""
   },
   "8000075": {
-    "name": "Glowy Lantern",
+    "name": "2020 Glowy Lantern (BB)",
     "icon": ""
   },
   "8000076": {
-    "name": "7th Birthday Surprise",
+    "name": "2019 Birthday Surprise",
     "icon": ""
   },
   "8000077": {
-    "name": "Spooky Tree",
+    "name": "2019 Spooky Tree",
     "icon": ""
   },
   "8000078": {
-    "name": "Clashmas Tree",
+    "name": "2019 Clashmas Tree",
     "icon": ""
   },
   "8000079": {
-    "name": "Glowy Lantern",
+    "name": "2020 Glowy Lantern",
     "icon": ""
   },
   "8000080": {
-    "name": "8th Anniversary Cake",
+    "name": "2020 Anniversary Cake",
     "icon": ""
   },
   "8000081": {
-    "name": "Vacant Tomb",
+    "name": "2020 Vacant Tomb",
     "icon": ""
   },
   "8000082": {
-    "name": "Clashmas Tree",
+    "name": "2020 Clashmas Tree",
     "icon": ""
   },
   "8000083": {
-    "name": "Lucky Shrub",
+    "name": "2021 Lucky Shrub",
     "icon": ""
   },
   "8000084": {
-    "name": "9th Anniversary Cake",
+    "name": "2021 Anniversary Cake",
     "icon": ""
   },
   "8000085": {
-    "name": "\\qFriendly\\q Flower",
+    "name": "2021 Friendly Flower",
     "icon": ""
   },
   "8000086": {
-    "name": "Clashmas Tree",
+    "name": "2021 Clashmas Tree",
     "icon": ""
   },
   "8000087": {
-    "name": "10th Anniversary Cake",
+    "name": "2022 Anniversary Cake",
     "icon": ""
   },
   "8000088": {
-    "name": "Trick or Treat?",
+    "name": "2022 Trick or Treat?",
     "icon": ""
   },
   "8000089": {
-    "name": "Clashmas Tree",
+    "name": "2022 Clashmas Tree",
     "icon": ""
   },
   "8000090": {
-    "name": "Rabbit Lantern",
-    "icon": ""
-  },
-  "8000091": {
-    "name": "Root",
-    "icon": ""
-  },
-  "8000092": {
-    "name": "Large Root",
-    "icon": ""
-  },
-  "8000093": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000094": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000095": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000096": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000097": {
-    "name": "Small Root",
-    "icon": ""
-  },
-  "8000098": {
-    "name": "Small Root",
-    "icon": ""
-  },
-  "8000099": {
-    "name": "Small Root",
-    "icon": ""
-  },
-  "8000100": {
-    "name": "Root",
-    "icon": ""
-  },
-  "8000101": {
-    "name": "Small Root",
-    "icon": ""
-  },
-  "8000102": {
-    "name": "Stone",
-    "icon": ""
-  },
-  "8000103": {
-    "name": "Pond",
-    "icon": ""
-  },
-  "8000104": {
-    "name": "Pond",
-    "icon": ""
-  },
-  "8000105": {
-    "name": "Overgrown Pond",
-    "icon": ""
-  },
-  "8000106": {
-    "name": "Large Pond",
-    "icon": ""
-  },
-  "8000107": {
-    "name": "Large Pond",
+    "name": "2023 Rabbit Lantern",
     "icon": ""
   },
   "8000108": {
-    "name": "11th Anniversary Cake",
-    "icon": ""
-  },
-  "8000109": {
-    "name": "Tombstone",
+    "name": "2023 Anniversary Cake",
     "icon": ""
   },
   "8000110": {
-    "name": "Sinister Sapling",
+    "name": "2023 Sinister Sapling",
     "icon": ""
   },
   "8000111": {
-    "name": "Clashmas Tree",
-    "icon": ""
-  },
-  "8000112": {
-    "name": "Tombstone",
+    "name": "2023 Clashmas Tree",
     "icon": ""
   },
   "8000113": {
-    "name": "Lucky Letterbox",
-    "icon": ""
-  },
-  "8000114": {
-    "name": "Tombstone",
+    "name": "2024 Lucky Letterbox",
     "icon": ""
   },
   "8000115": {
-    "name": "Mysterious Object",
+    "name": "2024 Mysterious Object",
     "icon": ""
   },
   "8000116": {
-    "name": "12th Anniversary Cake",
+    "name": "2024 Anniversary Cake",
     "icon": ""
   },
   "8000117": {
-    "name": "Ghost Post",
-    "icon": ""
-  },
-  "8000118": {
-    "name": "Deployable area marker",
-    "icon": ""
-  },
-  "8000119": {
-    "name": "Foothill",
-    "icon": ""
-  },
-  "8000120": {
-    "name": "Foothill",
-    "icon": ""
-  },
-  "8000121": {
-    "name": "Foothill",
-    "icon": ""
-  },
-  "8000122": {
-    "name": "Foothill",
-    "icon": ""
-  },
-  "8000123": {
-    "name": "Foothill",
-    "icon": ""
-  },
-  "8000124": {
-    "name": "Foothill",
-    "icon": ""
-  },
-  "8000125": {
-    "name": "Water",
-    "icon": ""
-  },
-  "8000126": {
-    "name": "Foothill",
+    "name": "2024 Ghost Post",
     "icon": ""
   },
   "8000127": {
-    "name": "Clashmas Tree",
+    "name": "2024 Clashmas Tree",
     "icon": ""
   },
   "8000128": {
-    "name": "Snake Sculpture",
+    "name": "2025 Snake Sculpture",
     "icon": ""
   },
   "8000129": {
-    "name": "Money in the Bank",
-    "icon": ""
-  },
-  "8000130": {
-    "name": "Tombstone",
+    "name": "2025 Money in the Bank",
     "icon": ""
   },
   "8000131": {
-    "name": "13th Anniversary Cake",
+    "name": "2025 Anniversary Cake",
+    "icon": ""
+  },
+  "8000135": {
+    "name": "2025 Cursed Seedling",
+    "icon": ""
+  },
+  "8000137": {
+    "name": "2025 Clashmas Tree",
     "icon": ""
   },
   "60000000": {
