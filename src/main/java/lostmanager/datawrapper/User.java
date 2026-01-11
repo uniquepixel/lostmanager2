@@ -2,6 +2,7 @@ package lostmanager.datawrapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
 import lostmanager.Bot;
 import lostmanager.dbutil.DBManager;
@@ -34,7 +35,14 @@ public class User {
 		if (isadmin == null) {
 			if (DBUtil.getValueFromSQL("SELECT is_admin FROM users WHERE discord_id = ?", Boolean.class,
 					userid) == null) {
-				DBUtil.executeUpdate("INSERT INTO users (discord_id, is_admin) VALUES (?, ?)", userid, false);
+				try {
+					DBUtil.executeUpdate("INSERT INTO users (discord_id, name, is_admin) VALUES (?, ?, ?)", userid,
+							Bot.getJda().getGuildById(Bot.guild_id).retrieveMemberById(userid).submit().get()
+									.getEffectiveName(),
+							false);
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+				}
 			}
 			if (DBUtil.getValueFromSQL("SELECT is_admin FROM users WHERE discord_id = ?", Boolean.class, userid)) {
 				isadmin = true;
