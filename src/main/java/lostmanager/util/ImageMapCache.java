@@ -5,32 +5,24 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.json.JSONObject;
 
 /**
- * Utility class to cache and manage the image_map.json from GitHub
- * Provides fast lookups using a HashMap
+ * Utility class to fetch and manage the image_map.json from GitHub
+ * Fetches data fresh from GitHub on every access
  */
 public class ImageMapCache {
   
   private static final String IMAGE_MAP_URL = "https://raw.githubusercontent.com/uniquepixel/lostmanager2/main/assets/image_map.json";
   private static final String GITHUB_ASSETS_BASE_URL = "https://raw.githubusercontent.com/uniquepixel/lostmanager2/main/assets";
   
-  // Cache storage
-  private static volatile Map<String, JSONObject> imageMapCache = new ConcurrentHashMap<>();
-  private static volatile boolean isInitialized = false;
-  
   /**
-   * Load the image_map.json from GitHub and cache it
+   * Fetch the image_map.json from GitHub
+   * @return JSONObject containing the full image map or null if fetch fails
    */
-  public static synchronized void loadImageMap() {
+  private static JSONObject fetchFullMap() {
     try {
-      System.out.println("Loading image_map.json from GitHub...");
-      
       URL url = URI.create(IMAGE_MAP_URL).toURL();
       HttpURLConnection conn = (HttpURLConnection) url.openConnection();
       conn.setRequestMethod("GET");
@@ -40,7 +32,7 @@ public class ImageMapCache {
       int responseCode = conn.getResponseCode();
       if (responseCode != 200) {
         System.err.println("Failed to fetch image_map.json: HTTP " + responseCode);
-        return;
+        return null;
       }
       
       StringBuilder jsonContent = new StringBuilder();
@@ -51,37 +43,26 @@ public class ImageMapCache {
         }
       }
       
-      // Parse JSON and populate cache
-      JSONObject fullMap = new JSONObject(jsonContent.toString());
-      Map<String, JSONObject> newCache = new HashMap<>();
-      
-      for (String dataId : fullMap.keySet()) {
-        JSONObject itemData = fullMap.getJSONObject(dataId);
-        newCache.put(dataId, itemData);
-      }
-      
-      // Atomically replace the cache
-      imageMapCache = newCache;
-      isInitialized = true;
-      
-      System.out.println("Successfully loaded " + newCache.size() + " entries from image_map.json");
+      return new JSONObject(jsonContent.toString());
       
     } catch (Exception e) {
-      System.err.println("Error loading image_map.json: " + e.getMessage());
+      System.err.println("Error fetching image_map.json: " + e.getMessage());
       e.printStackTrace();
+      return null;
     }
   }
   
   /**
-   * Get item data from cache by data ID
+   * Get item data by data ID
    * @param dataId The data ID to lookup
    * @return JSONObject with item data or null if not found
    */
   public static JSONObject getItemData(String dataId) {
-    if (!isInitialized) {
-      loadImageMap();
+    JSONObject fullMap = fetchFullMap();
+    if (fullMap == null || !fullMap.has(dataId)) {
+      return null;
     }
-    return imageMapCache.get(dataId);
+    return fullMap.getJSONObject(dataId);
   }
   
   /**
@@ -156,11 +137,4 @@ public class ImageMapCache {
     return GITHUB_ASSETS_BASE_URL + relativePath;
   }
   
-  /**
-   * Check if cache is initialized
-   * @return true if cache has been loaded
-   */
-  public static boolean isInitialized() {
-    return isInitialized;
-  }
 }
