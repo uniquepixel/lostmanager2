@@ -43,7 +43,7 @@ import lostmanager.commands.coc.util.cwdonator;
 import lostmanager.commands.coc.util.jsonupload;
 import lostmanager.commands.coc.util.listeningevent;
 import lostmanager.commands.coc.util.raidping;
-import lostmanager.commands.coc.util.reloadmappings;
+
 import lostmanager.commands.coc.util.setnick;
 import lostmanager.commands.coc.util.stats;
 import lostmanager.commands.coc.util.wins;
@@ -462,10 +462,7 @@ public class Bot extends ListenerAdapter {
 											.addChoice("Equips", "Equips").addChoice("House Parts", "House Parts")
 											.addChoice("Skins", "Skins").addChoice("Skins (BB)", "Skins (BB)")
 											.addChoice("Sceneries", "Sceneries")
-											.addChoice("Sceneries (BB)", "Sceneries (BB)")),
-
-							Commands.slash("reloadmappings",
-									"Lade die Mappings (image_map.json) manuell neu. Wird automatisch alle 2h durchgeführt.")
+											.addChoice("Sceneries (BB)", "Sceneries (BB)"))
 
 					).queue();
 		}
@@ -511,7 +508,6 @@ public class Bot extends ListenerAdapter {
 		classes.add(new wins());
 		classes.add(new jsonupload());
 		classes.add(new stats());
-		classes.add(new reloadmappings());
 
 		return classes.toArray();
 	}
@@ -1172,14 +1168,6 @@ public class Bot extends ListenerAdapter {
 				} catch (Exception e) {
 					System.out.println("Fehler beim Namenupdate von Tag " + tag);
 				}
-			}
-
-			// Also reload image_map.json cache every 2 hours
-			try {
-				lostmanager.util.ImageMapCache.loadImageMap();
-			} catch (Exception e) {
-				System.err.println("Fehler beim Laden der image_map.json: " + e.getMessage());
-				e.printStackTrace();
 			}
 		};
 		schedulernames.scheduleAtFixedRate(task, 0, 2, TimeUnit.HOURS);
