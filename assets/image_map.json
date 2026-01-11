@@ -3875,6 +3875,11 @@
     "icon": "/home-base/decorations/157.png",
     "full": ""
   },
+  "52000162": {
+    "name": "Yeti Champion",
+    "icon": "/home-base/decorations/162.png",
+    "full": ""
+  },
   "52000163": {
     "name": "Battle Copter",
     "icon": "/builder-base/heroes/battle-copter-icon.png",
@@ -3883,6 +3888,11 @@
   "52000164": {
     "name": "SteamPunk Copter",
     "icon": "/builder-base/skins/164.png",
+    "full": ""
+  },
+  "52000165": {
+    "name": "Explorer Champion",
+    "icon": "/home-base/decorations/165.png",
     "full": ""
   },
   "52000166": {
@@ -3928,6 +3938,21 @@
   "52000181": {
     "name": "Showtime Champion",
     "icon": "/home-base/skins/181.png",
+    "full": ""
+  },
+  "52000182": {
+    "name": "Royal Officer",
+    "icon": "/home-base/skins/182.png",
+    "full": ""
+  },
+  "52000183": {
+    "name": "Clash-A-Rama Champion",
+    "icon": "/home-base/skins/183.png",
+    "full": ""
+  },
+  "52000184": {
+    "name": "Mirage Champion",
+    "icon": "/home-base/skins/184.png",
     "full": ""
   },
   "52000191": {
@@ -3985,6 +4010,11 @@
     "icon": "/home-base/skins/201.png",
     "full": ""
   },
+  "52000202": {
+    "name": "Renegade King",
+    "icon": "/home-base/skins/202.png",
+    "full": ""
+  },
   "52000210": {
     "name": "Puppet Queen",
     "icon": "/home-base/skins/210.png",
@@ -4017,7 +4047,42 @@
   },
   "52000216": {
     "name": "Queen Fatale",
-    "icon": "/home-base/skins/215.png",
+    "icon": "/home-base/skins/216.png",
+    "full": ""
+  },
+  "52000217": {
+    "name": "Renegade Queen",
+    "icon": "/home-base/skins/217.png",
+    "full": ""
+  },
+  "52000218": {
+    "name": "Clash-A-Rama Queen",
+    "icon": "/home-base/skins/218.png",
+    "full": ""
+  },
+  "52000219": {
+    "name": "P.E.Q.Q.A Queen",
+    "icon": "/home-base/skins/219.png",
+    "full": ""
+  },
+  "52000220": {
+    "name": "Archer Hunter",
+    "icon": "/home-base/skins/220.png",
+    "full": ""
+  },
+  "52000221": {
+    "name": "Fury Queen",
+    "icon": "/home-base/skins/221.png",
+    "full": ""
+  },
+  "52000222": {
+    "name": "Blizzard Queen",
+    "icon": "/home-base/skins/222.png",
+    "full": ""
+  },
+  "52000223": {
+    "name": "Queen of the Dunes",
+    "icon": "/home-base/skins/223.png",
     "full": ""
   },
   "52000230": {
@@ -4060,6 +4125,41 @@
     "icon": "/home-base/skins/237.png",
     "full": ""
   },
+  "52000238": {
+    "name": "Grand Doctor",
+    "icon": "/home-base/skins/238.png",
+    "full": ""
+  },
+  "52000239": {
+    "name": "Clash-A-Rama Warden",
+    "icon": "/home-base/skins/239.png",
+    "full": ""
+  },
+  "52000240": {
+    "name": "Ivan Warden",
+    "icon": "/home-base/skins/240.png",
+    "full": ""
+  },
+  "52000241": {
+    "name": "Eternal Warden",
+    "icon": "/home-base/skins/241.png",
+    "full": ""
+  },
+  "52000242": {
+    "name": "Shaman Warden",
+    "icon": "/home-base/skins/242.png",
+    "full": ""
+  },
+  "52000243": {
+    "name": "Grand Warlock",
+    "icon": "/home-base/skins/243.png",
+    "full": ""
+  },
+  "52000244": {
+    "name": "Grand Sorcerer",
+    "icon": "/home-base/skins/244.png",
+    "full": ""
+  },
   "52000250": {
     "name": "Minion Prince",
     "icon": "/home-base/heroes/minion-prince-icon.png",
@@ -4073,6 +4173,26 @@
   "52000252": {
     "name": "Minion General",
     "icon": "/home-base/skins/252.png",
+    "full": ""
+  },
+  "52000253": {
+    "name": "Prince Mysterio",
+    "icon": "/home-base/skins/253.png",
+    "full": ""
+  },
+  "52000254": {
+    "name": "Cyclone Prince",
+    "icon": "/home-base/skins/254.png",
+    "full": ""
+  },
+  "52000255": {
+    "name": "Minion Cop",
+    "icon": "/home-base/skins/255.png",
+    "full": ""
+  },
+  "52000256": {
+    "name": "Minion Inventor",
+    "icon": "/home-base/skins/256.png",
     "full": ""
   },
   "82000000": {
