@@ -1851,6 +1851,11 @@
     "icon": "/home-base/troops/the-disarmer/the-disarmer-icon.png",
     "character": "/home-base/troops/the-disarmer/the-disarmer-character.png"
   },
+  "4000177": {
+    "name": "Meteorite Golem",
+    "icon": "/home-base/troops/meteorite-golem/meteorite-golem-icon.png",
+    "character": "/home-base/troops/meteorite-golem/meteorite-golem-character.png"
+  },
   "28000000": {
     "name": "Barbarian King",
     "icon": "/home-base/heroes/barbarian-king-icon.png",
