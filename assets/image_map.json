@@ -1081,6 +1081,13 @@
       "4": "/home-base/buildings/ricochet-cannon/ricochet-cannon-4.png"
     }
   },
+  "1000086": {
+    "name": "Revenge Tower",
+    "levels": {
+      "1": "/home-base/buildings/revenge-tower/revenge-tower-1.png",
+      "2": "/home-base/buildings/revenge-tower/revenge-tower-2.png"
+    }
+  },
   "1000089": {
     "name": "Firespitter",
     "levels": {
