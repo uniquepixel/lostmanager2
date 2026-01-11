@@ -420,7 +420,7 @@ public class RestApiServer {
                 
                 // Check if user has any linked accounts
                 ArrayList<Player> linkedPlayers = user.getAllLinkedAccounts();
-                if (linkedPlayers == null || linkedPlayers.isEmpty()) {
+                if ((linkedPlayers == null || linkedPlayers.isEmpty()) && !user.isAdmin()) {
                     sendResponse(exchange, 404, "{\"error\":\"User not found or has no linked accounts\"}");
                     return;
                 }
