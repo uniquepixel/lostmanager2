@@ -136,9 +136,6 @@ public class stats extends ListenerAdapter {
 				return;
 			}
 
-			// Create button ID with encoded data
-			String buttonId = encodeButtonId(playerTag, statType, 0);
-
 			performStatsDisplay(event.getHook(), title, playerTag, statType, 0);
 
 		}, "StatsCommand-" + event.getUser().getId()).start();
@@ -159,7 +156,7 @@ public class stats extends ListenerAdapter {
 				// Get available players based on permissions
 				List<Command.Choice> choices = getAvailablePlayers(userExecuted, input);
 
-				event.replyChoices(choices).queue(success -> {
+				event.replyChoices(choices).queue(_ -> {
 				}, error -> System.err.println("Error replying to autocomplete: " + error.getMessage()));
 			}
 		}, "StatsAutocomplete-" + event.getUser().getId()).start();
@@ -269,9 +266,6 @@ public class stats extends ListenerAdapter {
 							.queue();
 					return;
 				}
-
-				// Create new button ID
-				String buttonId = encodeButtonId(playerTag, newStatType, 0);
 
 				performStatsDisplay(event.getHook(), title, playerTag, newStatType, 0);
 
@@ -575,7 +569,7 @@ public class stats extends ListenerAdapter {
 				JSONObject obj = (JSONObject) item;
 				if (obj.has("data")) {
 					String dataId = obj.get("data").toString();
-					groupedByData.computeIfAbsent(dataId, k -> new ArrayList<>()).add(obj);
+					groupedByData.computeIfAbsent(dataId, _ -> new ArrayList<>()).add(obj);
 				}
 			}
 		}
@@ -606,7 +600,7 @@ public class stats extends ListenerAdapter {
 				// and "helper_cooldown"
 				String configKey = createConfigKey(obj);
 
-				ConfigGroup group = configGroups.computeIfAbsent(configKey, k -> new ConfigGroup(obj));
+				ConfigGroup group = configGroups.computeIfAbsent(configKey, _ -> new ConfigGroup(obj));
 
 				// Add count
 				int cnt = obj.has("cnt") ? obj.optInt("cnt", 1) : 1;
@@ -1070,13 +1064,6 @@ public class stats extends ListenerAdapter {
 		}
 
 		return options;
-	}
-
-	/**
-	 * Encode parameters into a Base64 string for button ID
-	 */
-	private String encodeButtonId(String playerTag, String statType) {
-		return encodeButtonId(playerTag, statType, 0);
 	}
 
 	/**
