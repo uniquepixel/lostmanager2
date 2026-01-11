@@ -1108,7 +1108,14 @@
       "1": "/home-base/buildings/crafting-station/crafting-station-1.png"
     }
   },
-  "855814416": {
+  "1000102": {
+    "name": "Super Wizard Tower",
+    "levels": {
+      "1": "/home-base/buildings/super-wizard-tower/swt-1.png",
+      "2": "/home-base/buildings/super-wizard-tower/swt-2.png"
+    }
+  },
+  "103000007": {
     "name": "Hero Bell",
     "icon": "/home-base/seasonal-defenses/hero-bell/hero-bell-icon.png",
     "tier_1": "/home-base/seasonal-defenses/hero-bell/hero-bell-1.png",
@@ -1116,7 +1123,7 @@
     "tier_3": "/home-base/seasonal-defenses/hero-bell/hero-bell-3.png",
     "tier_4": "/home-base/seasonal-defenses/hero-bell/hero-bell-4.png"
   },
-  "3616099271": {
+  "103000002": {
     "name": "Bomb Hive",
     "icon": "/home-base/seasonal-defenses/bomb-hive/bomb-hive-icon.png",
     "tier_1": "/home-base/seasonal-defenses/bomb-hive/bomb-hive-1.png",
@@ -1124,7 +1131,7 @@
     "tier_3": "/home-base/seasonal-defenses/bomb-hive/bomb-hive-3.png",
     "tier_4": "/home-base/seasonal-defenses/bomb-hive/bomb-hive-4.png"
   },
-  "3765015657": {
+  "103000001": {
     "name": "Light Beam",
     "icon": "/home-base/seasonal-defenses/light-beam/light-beam-icon.png",
     "tier_1": "/home-base/seasonal-defenses/light-beam/light-beam-1.png",
