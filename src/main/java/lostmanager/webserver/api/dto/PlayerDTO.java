@@ -37,6 +37,12 @@ public class PlayerDTO {
 	@JsonProperty("activeKickpoints")
 	private List<KickpointDTO> activeKickpoints;
 
+	@JsonProperty("monthlyWins")
+	private Integer monthlyWins;
+
+	@JsonProperty("monthlyWinsHasWarning")
+	private Boolean monthlyWinsHasWarning;
+
 	public PlayerDTO() {
 		// Default constructor for Jackson
 	}
@@ -91,6 +97,20 @@ public class PlayerDTO {
 			}
 		} catch (Exception e) {
 			this.activeKickpoints = null;
+		}
+
+		try {
+			Player.WinsData wd = player.getCurrentMonthWins();
+			this.monthlyWins = wd != null ? wd.wins : null;
+		} catch (Exception e) {
+			this.monthlyWins = null;
+		}
+
+		try {
+			Player.WinsData wd2 = player.getCurrentMonthWins();
+			this.monthlyWinsHasWarning = wd2 != null ? wd2.hasWarning : null;
+		} catch (Exception e) {
+			this.monthlyWinsHasWarning = null;
 		}
 	}
 
@@ -157,6 +177,22 @@ public class PlayerDTO {
 
 	public void setActiveKickpoints(List<KickpointDTO> activeKickpoints) {
 		this.activeKickpoints = activeKickpoints;
+	}
+
+	public Integer getMonthlyWins() {
+		return monthlyWins;
+	}
+
+	public void setMonthlyWins(Integer monthlyWins) {
+		this.monthlyWins = monthlyWins;
+	}
+
+	public Boolean getMonthlyWinsHasWarning() {
+		return monthlyWinsHasWarning;
+	}
+
+	public void setMonthlyWinsHasWarning(Boolean monthlyWinsHasWarning) {
+		this.monthlyWinsHasWarning = monthlyWinsHasWarning;
 	}
 
 }

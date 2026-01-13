@@ -732,6 +732,18 @@ public class Player {
 		}
 	}
 
+	/**
+	 * Compatibility wrapper: returns WinsData for the current month using system zone.
+	 */
+	public WinsData getCurrentMonthWins() {
+		java.time.ZoneId zone = java.time.ZoneId.systemDefault();
+		java.time.ZonedDateTime nowZ = java.time.ZonedDateTime.now(zone);
+		java.time.YearMonth ym = java.time.YearMonth.from(nowZ);
+		java.time.ZonedDateTime startOfMonth = ym.atDay(1).atStartOfDay(zone);
+		java.time.ZonedDateTime startOfNextMonth = startOfMonth.plusMonths(1);
+		return getMonthlyWins(ym.getYear(), ym.getMonthValue(), true, startOfMonth, startOfNextMonth, zone);
+	}
+
 	public WinsData getMonthlyWins(int year, int month, boolean isCurrentMonth,
 			java.time.ZonedDateTime startOfMonth, java.time.ZonedDateTime startOfNextMonth,
 			java.time.ZoneId zone) {
