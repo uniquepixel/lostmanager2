@@ -986,16 +986,30 @@ public class stats extends ListenerAdapter {
 				// For items with levels, don't show emoji here (will be shown on Level line)
 				return name;
 			} else {
-				// For items without levels, try to get and create emoji from icon
+				// For items without levels, always prefer showing price if available, and append emoji if present
+				String price = lostmanager.util.ImageMapCache.getPrice(dataValue);
+				String priceLine = price != null ? " · Preis: " + price : "";
+
+				// Try to get emoji/icon
 				String iconPath = lostmanager.util.ImageMapCache.getIconPath(dataValue);
+				String emoji = null;
 				if (iconPath != null && !iconPath.isEmpty()) {
-					String emoji = getOrCreateEmojiForPath(iconPath, name);
-					if (emoji != null) {
-						return name + " " + emoji;
-					}
+					emoji = getOrCreateEmojiForPath(iconPath, name);
 				}
-				// No icon available, just return name
-				return name;
+
+				// Build base line with name and optional emoji
+				String base = name;
+				if (emoji != null) {
+					base += " " + emoji;
+				}
+
+				// Append price on a new line if available
+				if (!priceLine.isEmpty()) {
+					return base + "\n" + priceLine;
+				}
+
+				// No price
+				return base;
 			}
 
 		} catch (Exception e) {
