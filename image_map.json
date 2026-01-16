@@ -2092,749 +2092,930 @@
   },
   "18000000": {
     "name": "Mighty Statue (Aug. 2012",
-    "icon": "/home-base/decorations/0.png"
+    "icon": "/home-base/decorations/0.png",
+    "index": "0"
   },
   "18000004": {
     "name": "Pirate Flag (Aug. 2012)",
-    "icon": "/home-base/decorations/4.png"
+    "icon": "/home-base/decorations/4.png",
+    "index": "1"
   },
   "18000010": {
     "name": "Ancient Skull (Aug. 2012)",
-    "icon": "/home-base/decorations/10.png"
+    "icon": "/home-base/decorations/10.png",
+    "index": "2"
   },
   "18000033": {
     "name": "Statue of P.E.K.K.A (Aug. 2012)",
-    "icon": "/home-base/decorations/33.png"
+    "icon": "/home-base/decorations/33.png",
+    "index": "3"
   },
   "18000037": {
     "name": "Barbarian King Statue (Aug. 2012)",
-    "icon": "/home-base/decorations/37.png"
+    "icon": "/home-base/decorations/37.png",
+    "index": "4"
   },
   "18000041": {
     "name": "Ancient Barbarian Statue (BB) (May 2017)",
-    "icon": "/home-base/decorations/41.png"
+    "icon": "/home-base/decorations/41.png",
+    "index": "5"
   },
   "18000043": {
     "name": "Archer Queen Statue (BB) (May 2017)",
-    "icon": "/home-base/decorations/43.png"
+    "icon": "/home-base/decorations/43.png",
+    "index": "6"
   },
   "18000046": {
     "name": "Builder Statue (May 2017)",
     "icon": "/home-base/decorations/46.png",
-    "price": "5€"
+    "price": "5€",
+    "index": "7"
   },
   "18000047": {
     "name": "CWL The Champion Statue (Oct. 2018)",
-    "icon": "/home-base/decorations/47.png"
+    "icon": "/home-base/decorations/47.png",
+    "index": "8"
   },
   "18000048": {
     "name": "CWL The Master Statue (Oct. 2018)",
-    "icon": "/home-base/decorations/48.png"
+    "icon": "/home-base/decorations/48.png",
+    "index": "9"
   },
   "18000049": {
     "name": "CWL The Contender Statue (Oct. 2018)",
-    "icon": "/home-base/decorations/49.png"
+    "icon": "/home-base/decorations/49.png",
+    "index": "10"
   },
   "18000050": {
     "name": "CWL The Challenger Statue (Oct. 2018)",
-    "icon": "/home-base/decorations/50.png"
+    "icon": "/home-base/decorations/50.png",
+    "index": "11"
   },
   "18000051": {
     "name": "CWL The Warrior Statue (Oct. 2018)",
-    "icon": "/home-base/decorations/51.png"
+    "icon": "/home-base/decorations/51.png",
+    "index": "12"
   },
   "18000052": {
     "name": "Golden Hog (Feb. 2019)",
     "icon": "/home-base/decorations/52.png",
-    "price": "1€"
+    "price": "1€",
+    "index": "14"
   },
   "18000053": {
     "name": "Festive Firecrackers (BB) (Feb. 2019)",
     "icon": "/home-base/decorations/53.png",
-    "price": "5€"
+    "price": "5€",
+    "index": "15"
   },
   "18000055": {
     "name": "Snowman (Dec. 2018)",
     "icon": "/home-base/decorations/55.png",
-    "price": "5€"
+    "price": "5€",
+    "index": "13"
   },
   "18000056": {
     "name": "Battle Machine Statue (Jun. 2019)",
     "icon": "/home-base/decorations/56.png",
-    "price": "5€"
+    "price": "5€",
+    "index": "16"
   },
   "18000057": {
     "name": "Dragon Statue (Oct. 2019)",
     "icon": "/home-base/decorations/57.png",
-    "price": "10€"
+    "price": "10€",
+    "index": "17"
   },
   "18000058": {
     "name": "Golden Poet (Jan. 2020)",
     "icon": "/home-base/decorations/58.png",
-    "price": "10€"
+    "price": "10€",
+    "index": "18"
   },
   "18000059": {
     "name": "Super Statue (May 2020)",
     "icon": "/home-base/decorations/59.png",
-    "price": "10€"
+    "price": "10€",
+    "index": "19"
   },
   "18000060": {
     "name": "Storied Statue (Aug. 2020)",
-    "icon": "/home-base/decorations/60.png"
+    "icon": "/home-base/decorations/60.png",
+    "index": "21"
   },
   "18000061": {
     "name": "Anniversary Fountain (Aug. 2020)",
-    "icon": "/home-base/decorations/61.png"
+    "icon": "/home-base/decorations/61.png",
+    "index": "22"
   },
   "18000062": {
     "name": "Clockwork Statue (May 2020)",
     "icon": "/home-base/decorations/62.png",
-    "price": "10€"
+    "price": "10€",
+    "index": "20"
   },
   "18000063": {
     "name": "A Piece of Birthday Cake (Aug. 2020)",
-    "icon": "/home-base/decorations/63.png"
+    "icon": "/home-base/decorations/63.png",
+    "index": "23"
   },
   "18000064": {
     "name": "Retired Anchor (Nov. 2020)",
     "icon": "/home-base/decorations/64.png",
-    "price": "4€"
+    "price": "4€",
+    "index": "24"
   },
   "18000065": {
     "name": "Logmas Tree (Dec. 2020)",
-    "icon": "/home-base/decorations/65.png"
+    "icon": "/home-base/decorations/65.png",
+    "index": "25"
   },
   "18000066": {
     "name": "Firework Fanboy (Feb. 2021)",
     "icon": "/home-base/decorations/66.png",
-    "price": "5€"
+    "price": "5€",
+    "index": "26"
   },
   "18000067": {
     "name": "Flowing Fountain (Apr. 2021)",
-    "icon": "/home-base/decorations/67.png"
+    "icon": "/home-base/decorations/67.png",
+    "index": "27"
   },
   "18000068": {
     "name": "Fiery Figure (Aug. 2021)",
-    "icon": "/home-base/decorations/68.png"
+    "icon": "/home-base/decorations/68.png",
+    "index": "28"
   },
   "18000069": {
     "name": "Wizard Statue (May 2022)",
-    "icon": "/home-base/decorations/69.png"
+    "icon": "/home-base/decorations/69.png",
+    "index": "29"
   },
   "18000070": {
     "name": "Goblin King Tribute (Aug. 2022)",
-    "icon": "/home-base/decorations/70.png"
+    "icon": "/home-base/decorations/70.png",
+    "index": "30"
   },
   "18000071": {
     "name": "Eternal Flame (Sep. 2022)",
-    "icon": "/home-base/decorations/71.png"
+    "icon": "/home-base/decorations/71.png",
+    "index": "31"
   },
   "18000072": {
     "name": "Clashmas Sleigh (Dec. 2022)",
-    "icon": "/home-base/decorations/72.png"
+    "icon": "/home-base/decorations/72.png",
+    "index": "32"
   },
   "18000073": {
     "name": "Magic Show Statue (Feb. 2023)",
     "icon": "/home-base/decorations/73.png",
-    "price": "1€"
+    "price": "1€",
+    "index": "33"
   },
   "18000074": {
     "name": "Decorated Dragon Statue (Mar. 2023)",
-    "icon": "/home-base/decorations/74.png"
+    "icon": "/home-base/decorations/74.png",
+    "index": "34"
   },
   "18000075": {
     "name": "Dragon Trophy (Apr. 2024)",
     "icon": "/home-base/decorations/75.png",
-    "price": "3€"
+    "price": "3€",
+    "index": "59"
   },
   "18000079": {
     "name": "Books of Clash (Jun. 2023)",
-    "icon": "/home-base/decorations/79.png"
+    "icon": "/home-base/decorations/79.png",
+    "index": "36"
   },
   "18000080": {
     "name": "Master Builder's Return (BB) (May 2023)",
     "icon": "/home-base/decorations/80.png",
-    "price": "3€"
+    "price": "3€",
+    "index": "35"
   },
   "18000089": {
     "name": "Goblin Pit (Jul. 2023)",
-    "icon": "/home-base/decorations/89.png"
+    "icon": "/home-base/decorations/89.png",
+    "index": "37"
   },
   "18000090": {
     "name": "Goblin Dragon Statue (Jul. 2023) (GP)",
-    "icon": "/home-base/decorations/90.png"
+    "icon": "/home-base/decorations/90.png",
+    "index": "38"
   },
   "18000096": {
     "name": "Cosy Coffin (Oct. 2023)",
-    "icon": "/home-base/decorations/96.png"
+    "icon": "/home-base/decorations/96.png",
+    "index": "39"
   },
   "18000097": {
     "name": "Friendly Clown (Oct. 2023)",
-    "icon": "/home-base/decorations/97.png"
+    "icon": "/home-base/decorations/97.png",
+    "index": "40"
   },
   "18000098": {
     "name": "Spooky Spa (Oct. 2023)",
-    "icon": "/home-base/decorations/98.png"
+    "icon": "/home-base/decorations/98.png",
+    "index": "41"
   },
   "18000099": {
     "name": "Pumpkin Scarecrow (Oct. 2023)",
-    "icon": "/home-base/decorations/99.png"
+    "icon": "/home-base/decorations/99.png",
+    "index": "42"
   },
   "18000100": {
     "name": "Sour Elixir Cauldron (Oct. 2023)",
-    "icon": "/home-base/decorations/100.png"
+    "icon": "/home-base/decorations/100.png",
+    "index": "43"
   },
   "18000101": {
     "name": "World Finals 23 Statue (Nov. 2023)",
-    "icon": "/home-base/decorations/101.png"
+    "icon": "/home-base/decorations/101.png",
+    "index": "44"
   },
   "18000103": {
     "name": "Duck Bath (Nov. 2023)",
-    "icon": "/home-base/decorations/103.png"
+    "icon": "/home-base/decorations/103.png",
+    "index": "45"
   },
   "18000109": {
     "name": "Hog Pen (Nov. 2023)",
-    "icon": "/home-base/decorations/109.png"
+    "icon": "/home-base/decorations/109.png",
+    "index": "46"
   },
   "18000114": {
     "name": "Cozy Clam (Nov. 2023)",
-    "icon": "/home-base/decorations/114.png"
+    "icon": "/home-base/decorations/114.png",
+    "index": "47"
   },
   "18000115": {
     "name": "Gingerbread Bakery (Dec. 2023)",
-    "icon": "/home-base/decorations/115.png"
+    "icon": "/home-base/decorations/115.png",
+    "index": "48"
   },
   "18000116": {
     "name": "Jingle Bell (Dec. 2023)",
-    "icon": "/home-base/decorations/116.png"
+    "icon": "/home-base/decorations/116.png",
+    "index": "49"
   },
   "18000117": {
     "name": "Barbarian Santa (Dec. 2023)",
-    "icon": "/home-base/decorations/117.png"
+    "icon": "/home-base/decorations/117.png",
+    "index": "50"
   },
   "18000118": {
     "name": "Skeleton Sock (Dec. 2023)",
-    "icon": "/home-base/decorations/118.png"
+    "icon": "/home-base/decorations/118.png",
+    "index": "51"
   },
   "18000119": {
     "name": "Lucky Anchor (Feb. 2024)",
-    "icon": "/home-base/decorations/119.png"
+    "icon": "/home-base/decorations/119.png",
+    "index": "52"
   },
   "18000120": {
     "name": "Crab at home (Feb. 2024)",
-    "icon": "/home-base/decorations/120.png"
+    "icon": "/home-base/decorations/120.png",
+    "index": "53"
   },
   "18000121": {
     "name": "Baby Dragon Statue (Feb. 2024) (EP)",
-    "icon": "/home-base/decorations/121.png"
+    "icon": "/home-base/decorations/121.png",
+    "index": "54"
   },
   "18000122": {
     "name": "Dragon Pinata (Feb. 2024)",
-    "icon": "/home-base/decorations/122.png"
+    "icon": "/home-base/decorations/122.png",
+    "index": "55"
   },
   "18000123": {
     "name": "Clashy Crater (Mar. 2024)",
-    "icon": "/home-base/decorations/123.png"
+    "icon": "/home-base/decorations/123.png",
+    "index": "56"
   },
   "18000124": {
     "name": "Stone Globe (Mar. 2024) (EP)",
-    "icon": "/home-base/decorations/124.png"
+    "icon": "/home-base/decorations/124.png",
+    "index": "57"
   },
   "18000125": {
     "name": "Goblin Explorer (Mar. 2024)",
-    "icon": "/home-base/decorations/125.png"
+    "icon": "/home-base/decorations/125.png",
+    "index": "58"
   },
   "18000126": {
     "name": "Baby Ptah (Apr. 2024)",
-    "icon": "/home-base/decorations/126.png"
+    "icon": "/home-base/decorations/126.png",
+    "index": "60"
   },
   "18000127": {
     "name": "Goblin Pharaoh (Apr. 2024) (EP)",
-    "icon": "/home-base/decorations/127.png"
+    "icon": "/home-base/decorations/127.png",
+    "index": "61"
   },
   "18000128": {
     "name": "Hog Sphinx (Apr. 2024)",
-    "icon": "/home-base/decorations/128.png"
+    "icon": "/home-base/decorations/128.png",
+    "index": "62"
   },
   "18000129": {
     "name": "Crown Sword (Apr. 2024)",
-    "icon": "/home-base/decorations/129.png"
+    "icon": "/home-base/decorations/129.png",
+    "index": "63"
   },
   "18000130": {
     "name": "Surprising Squad (May 2024)",
-    "icon": "/home-base/decorations/130.png"
+    "icon": "/home-base/decorations/130.png",
+    "index": "64"
   },
   "18000131": {
     "name": "Golden Boot (Jun. 2024)",
-    "icon": "/home-base/decorations/131.png"
+    "icon": "/home-base/decorations/131.png",
+    "index": "65"
   },
   "18000132": {
     "name": "Bestest Ball (Jun. 2024)",
-    "icon": "/home-base/decorations/132.png"
+    "icon": "/home-base/decorations/132.png",
+    "index": "66"
   },
   "18000133": {
     "name": "Haaland Statue (Jun. 2024)",
-    "icon": "/home-base/decorations/133.png"
+    "icon": "/home-base/decorations/133.png",
+    "index": "67"
   },
   "18000134": {
     "name": "Triumphant Trophy (Jun. 2024)",
-    "icon": "/home-base/decorations/134.png"
+    "icon": "/home-base/decorations/134.png",
+    "index": "68"
   },
   "18000135": {
     "name": "Celebration Cup (Jun. 2024)",
-    "icon": "/home-base/decorations/135.png"
+    "icon": "/home-base/decorations/135.png",
+    "index": "69"
   },
   "18000136": {
     "name": "Victory Milk (Jun. 2024) (EP)",
-    "icon": "/home-base/decorations/136.png"
+    "icon": "/home-base/decorations/136.png",
+    "index": "70"
   },
   "18000137": {
     "name": "Cactus Guy (Jun. 2024) (EP)",
-    "icon": "/home-base/decorations/137.png"
+    "icon": "/home-base/decorations/137.png",
+    "index": "71"
   },
   "18000138": {
     "name": "Cowboy Skeleton (Jun. 2024)",
-    "icon": "/home-base/decorations/138.png"
+    "icon": "/home-base/decorations/138.png",
+    "index": "72"
   },
   "18000139": {
     "name": "Dragon Totem (Jun. 2024)",
-    "icon": "/home-base/decorations/139.png"
+    "icon": "/home-base/decorations/139.png",
+    "index": "73"
   },
   "18000140": {
     "name": "Football Camp (Jun. 2024)",
-    "icon": "/home-base/decorations/140.png"
+    "icon": "/home-base/decorations/140.png",
+    "index": "74"
   },
   "18000141": {
     "name": "Wizard Vendor (Aug. 2024)",
-    "icon": "/home-base/decorations/141.png"
+    "icon": "/home-base/decorations/141.png",
+    "index": "79"
   },
   "18000143": {
     "name": "Cherry Bonsai (Aug. 2024)",
-    "icon": "/home-base/decorations/143.png"
+    "icon": "/home-base/decorations/143.png",
+    "index": "80"
   },
   "18000144": {
     "name": "Chibi Archer (Aug. 2024)",
-    "icon": "/home-base/decorations/144.png"
+    "icon": "/home-base/decorations/144.png",
+    "index": "81"
   },
   "18000145": {
     "name": "Kawaii Giant (Aug. 2024)",
-    "icon": "/home-base/decorations/145.png"
+    "icon": "/home-base/decorations/145.png",
+    "index": "82"
   },
   "18000147": {
     "name": "Brawl's Star (SC-ID) (Feb. 2025)",
-    "icon": "/home-base/decorations/147.png"
+    "icon": "/home-base/decorations/147.png",
+    "index": "96"
   },
   "18000148": {
     "name": "Gargantuan Gauntlet (SC-ID) (Dec. 2024)",
-    "icon": "/home-base/decorations/148.png"
+    "icon": "/home-base/decorations/148.png",
+    "index": "90"
   },
   "18000150": {
     "name": "Sleepy King (SC-ID) (Feb. 2025)",
-    "icon": "/home-base/decorations/150.png"
+    "icon": "/home-base/decorations/150.png",
+    "index": "97"
   },
   "18000151": {
     "name": "Champion's Flame (Jul. 2024)",
-    "icon": "/home-base/decorations/151.png"
+    "icon": "/home-base/decorations/151.png",
+    "index": "75"
   },
   "18000152": {
     "name": "Goblin High Dive (Jul 2024)",
     "icon": "/home-base/decorations/152.png",
-    "price": "6€"
+    "price": "6€",
+    "index": "76"
   },
   "18000153": {
     "name": "Foot Tribute (Jul. 2024)",
-    "icon": "/home-base/decorations/153.png"
+    "icon": "/home-base/decorations/153.png",
+    "index": "77"
   },
   "18000154": {
     "name": "Pretty Portal (Sep. 2024) (EP)",
-    "icon": "/home-base/decorations/154.png"
+    "icon": "/home-base/decorations/154.png",
+    "index": "83"
   },
   "18000155": {
     "name": "Decision Dice (Sep. 2024) (GP)",
-    "icon": "/home-base/decorations/155.png"
+    "icon": "/home-base/decorations/155.png",
+    "index": "84"
   },
   "18000156": {
     "name": "Cuddly Chest (Sep. 2024) (EP)",
-    "icon": "/home-base/decorations/156.png"
+    "icon": "/home-base/decorations/156.png",
+    "index": "85"
   },
   "18000157": {
     "name": "Hydra Headstone (Oct. 2024)",
-    "icon": "/home-base/decorations/157.png"
+    "icon": "/home-base/decorations/157.png",
+    "index": "86"
   },
   "18000158": {
     "name": "Jailbroken Box (Oct. 2024)",
-    "icon": "/home-base/decorations/158.png"
+    "icon": "/home-base/decorations/158.png",
+    "index": "87"
   },
   "18000159": {
     "name": "Bubble Boil Cauldron (Oct. 2024)",
-    "icon": "/home-base/decorations/159.png"
+    "icon": "/home-base/decorations/159.png",
+    "index": "88"
   },
   "18000160": {
     "name": "Abra-Cada-Brewer (Nov. 2024)",
     "icon": "/home-base/decorations/160.png",
-    "price": "6€"
+    "price": "6€",
+    "index": "89"
   },
   "18000161": {
     "name": "Festival Lantern (Oct. 2025)",
     "icon": "/home-base/decorations/161.png",
-    "price": "6€"
+    "price": "6€",
+    "index": "115"
   },
   "18000162": {
     "name": "Rocking Reindeer (Dec. 2024)",
-    "icon": "/home-base/decorations/162.png"
+    "icon": "/home-base/decorations/162.png",
+    "index": "91"
   },
   "18000163": {
     "name": "Clockwork Choir (Dec. 2024)",
-    "icon": "/home-base/decorations/163.png"
+    "icon": "/home-base/decorations/163.png",
+    "index": "92"
   },
   "18000164": {
     "name": "Snow Globe (Dec. 2024)",
-    "icon": "/home-base/decorations/164.png"
+    "icon": "/home-base/decorations/164.png",
+    "index": "93"
   },
   "18000165": {
     "name": "Gift Bag (Dec. 2024)",
-    "icon": "/home-base/decorations/165.png"
+    "icon": "/home-base/decorations/165.png",
+    "index": "94"
   },
   "18000166": {
     "name": "Snake Shrine (Feb. 2025)",
-    "icon": "/home-base/decorations/166.png"
+    "icon": "/home-base/decorations/166.png",
+    "index": "98"
   },
   "18000167": {
     "name": "Monk Statue (Feb. 2025)",
-    "icon": "/home-base/decorations/167.png"
+    "icon": "/home-base/decorations/167.png",
+    "index": "99"
   },
   "18000168": {
     "name": "Cozy Sauna (Jan. 2025)",
     "icon": "/home-base/decorations/168.png",
-    "price": "6€"
+    "price": "6€",
+    "index": "95"
   },
   "18000169": {
     "name": "Lucky Cookies (Feb. 2025)",
-    "icon": "/home-base/decorations/169.png"
+    "icon": "/home-base/decorations/169.png",
+    "index": "100"
   },
   "18000170": {
     "name": "Shooting Range (Mar. 2025)",
     "icon": "/home-base/decorations/170.png",
-    "price": "6€"
+    "price": "6€",
+    "index": "101"
   },
   "18000171": {
     "name": "WWE Title (Apr. 2025)",
-    "icon": "/home-base/decorations/171.png"
+    "icon": "/home-base/decorations/171.png",
+    "index": "102"
   },
   "18000172": {
     "name": "Rumbling Goblins (Apr. 2025)",
-    "icon": "/home-base/decorations/172.png"
+    "icon": "/home-base/decorations/172.png",
+    "index": "103"
   },
   "18000173": {
     "name": "Golden Giant (Apr. 2025)",
-    "icon": "/home-base/decorations/173.png"
+    "icon": "/home-base/decorations/173.png",
+    "index": "104"
   },
   "18000174": {
     "name": "Creator Fountain (May 2025) (Super Creator)",
-    "icon": "/home-base/decorations/174.png"
+    "icon": "/home-base/decorations/174.png",
+    "index": "106"
   },
   "18000175": {
     "name": "Surprise Wheel (Apr. 2025)",
-    "icon": "/home-base/decorations/175.png"
+    "icon": "/home-base/decorations/175.png",
+    "index": "105"
   },
   "18000176": {
     "name": "Sacred Gate (May 2025) (EP)",
-    "icon": "/home-base/decorations/176.png"
+    "icon": "/home-base/decorations/176.png",
+    "index": "107"
   },
   "18000177": {
     "name": "Jingle Maker (Jun. 2025)",
     "icon": "/home-base/decorations/177.png",
-    "price": "6€"
+    "price": "6€",
+    "index": "108"
   },
   "18000178": {
     "name": "Looter Wagon (Jun. 2026)",
-    "icon": "/home-base/decorations/178.png"
+    "icon": "/home-base/decorations/178.png",
+    "index": "128"
   },
   "18000179": {
     "name": "Frozen Wizard (Aug. 2025)",
-    "icon": "/home-base/decorations/179.png"
+    "icon": "/home-base/decorations/179.png",
+    "index": "110"
   },
   "18000180": {
     "name": "Clashy Carving (Aug. 2025)",
-    "icon": "/home-base/decorations/180.png"
+    "icon": "/home-base/decorations/180.png",
+    "index": "111"
   },
   "18000181": {
     "name": "Sketch Summoner (Sep. 2025) (EP)",
-    "icon": "/home-base/decorations/181.png"
+    "icon": "/home-base/decorations/181.png",
+    "index": "114"
   },
   "18000182": {
     "name": "Cyber Hologram (Jul. 2024)",
     "icon": "/home-base/decorations/182.png",
-    "price": "6€"
+    "price": "6€",
+    "index": "78"
   },
   "18000183": {
     "name": "Soda Stand (Aug. 2025)",
-    "icon": "/home-base/decorations/183.png"
+    "icon": "/home-base/decorations/183.png",
+    "index": "112"
   },
   "18000184": {
     "name": "Party Bench (Aug. 2025)",
-    "icon": "/home-base/decorations/184.png"
+    "icon": "/home-base/decorations/184.png",
+    "index": "113"
   },
   "18000185": {
     "name": "Justice Crown (Jun. 2025)",
-    "icon": "/home-base/decorations/185.png"
+    "icon": "/home-base/decorations/185.png",
+    "index": "109"
   },
   "18000186": {
     "name": "Cosmic Lantern (Oct. 2025)",
-    "icon": "/home-base/decorations/186.png"
+    "icon": "/home-base/decorations/186.png",
+    "index": "116"
   },
   "18000187": {
     "name": "Electro Skull (Nov. 2025)",
-    "icon": "/home-base/decorations/187.png"
+    "icon": "/home-base/decorations/187.png",
+    "index": "119"
   },
   "18000189": {
     "name": "Fortune Printer (Nov. 2025)",
     "icon": "/home-base/decorations/189.png",
-    "price": "6€"
+    "price": "6€",
+    "index": "120"
   },
   "18000190": {
     "name": "Boom Box (Oct. 2025)",
-    "icon": "/home-base/decorations/190.png"
+    "icon": "/home-base/decorations/190.png",
+    "index": "117"
   },
   "18000191": {
     "name": "Cursed Tome (Oct. 2025)",
-    "icon": "/home-base/decorations/191.png"
+    "icon": "/home-base/decorations/191.png",
+    "index": "118"
   },
   "18000192": {
     "name": "Eagle Monument (Nov. 2025)",
-    "icon": "/home-base/decorations/192.png"
+    "icon": "/home-base/decorations/192.png",
+    "index": "121"
   },
   "18000196": {
     "name": "Smokey Stove (Dec. 2025)",
-    "icon": "/home-base/decorations/196.png"
+    "icon": "/home-base/decorations/196.png",
+    "index": "123"
   },
   "18000197": {
     "name": "Wish Lamp (Jan. 2026)",
-    "icon": "/home-base/decorations/197.png"
+    "icon": "/home-base/decorations/197.png",
+    "index": "127"
   },
   "18000199": {
     "name": "Brawny Battleaxe (Dec. 2025)",
-    "icon": "/home-base/decorations/199.png"
+    "icon": "/home-base/decorations/199.png",
+    "index": "124"
   },
   "18000200": {
     "name": "Crafted Statue (Nov. 2025)",
-    "icon": "/home-base/decorations/200.png"
+    "icon": "/home-base/decorations/200.png",
+    "index": "122"
   },
   "18000203": {
     "name": "Hungry Hound (Dec. 2025)",
-    "icon": "/home-base/decorations/203.png"
+    "icon": "/home-base/decorations/203.png",
+    "index": "125"
   },
   "18000204": {
     "name": "Frozen Stone (Dec. 2025)",
-    "icon": "/home-base/decorations/204.png"
+    "icon": "/home-base/decorations/204.png",
+    "index": "126"
   },
   "8000015": {
     "name": "2012 Stone",
-    "icon": "/home-base/obstacles/15.png"
+    "icon": "/home-base/obstacles/15.png",
+    "index": "2"
   },
   "8000021": {
     "name": "2012 Clashmas Tree",
-    "icon": "/home-base/obstacles/21.png"
+    "icon": "/home-base/obstacles/21.png",
+    "index": "3"
   },
   "8000028": {
     "name": "2013 Clashmas Tree",
-    "icon": "/home-base/obstacles/28.png"
+    "icon": "/home-base/obstacles/28.png",
+    "index": "4"
   },
   "8000030": {
     "name": "Gem Box",
-    "icon": "/home-base/obstacles/30.png"
+    "icon": "/home-base/obstacles/30.png",
+    "index": "0"
   },
   "8000031": {
     "name": "2014 Halloween Headstone",
-    "icon": "/home-base/obstacles/31.png"
+    "icon": "/home-base/obstacles/31.png",
+    "index": "5"
   },
   "8000032": {
     "name": "2014 Clashmas Tree",
-    "icon": "/home-base/obstacles/32.png"
+    "icon": "/home-base/obstacles/32.png",
+    "index": "6"
   },
   "8000036": {
     "name": "2015 Halloween Cauldron",
-    "icon": "/home-base/obstacles/36.png"
+    "icon": "/home-base/obstacles/36.png",
+    "index": "7"
   },
   "8000037": {
     "name": "2015 Clashmas Tree",
-    "icon": "/home-base/obstacles/37.png"
+    "icon": "/home-base/obstacles/37.png",
+    "index": "8"
   },
   "8000039": {
     "name": "2016 Scary Pumpkin",
-    "icon": "/home-base/obstacles/39.png"
+    "icon": "/home-base/obstacles/39.png",
+    "index": "9"
   },
   "8000040": {
     "name": "2016 Clashmas Tree",
-    "icon": "/home-base/obstacles/40.png"
+    "icon": "/home-base/obstacles/40.png",
+    "index": "10"
   },
   "8000055": {
     "name": "Old Barbarian Statue",
-    "icon": "/home-base/obstacles/55.png"
+    "icon": "/home-base/obstacles/55.png",
+    "index": "1"
   },
   "8000065": {
     "name": "2017 Anniversary Cake",
-    "icon": "/home-base/obstacles/65.png"
+    "icon": "/home-base/obstacles/65.png",
+    "index": "11"
   },
   "8000067": {
     "name": "2017 Halloween Obstacle",
-    "icon": "/home-base/obstacles/67.png"
+    "icon": "/home-base/obstacles/67.png",
+    "index": "12"
   },
   "8000068": {
     "name": "2018 Fireworks Stash",
-    "icon": "/home-base/obstacles/68.png"
+    "icon": "/home-base/obstacles/68.png",
+    "index": "14"
   },
   "8000069": {
     "name": "2017 Clashmas Tree",
-    "icon": "/home-base/obstacles/69.png"
+    "icon": "/home-base/obstacles/69.png",
+    "index": "13"
   },
   "8000070": {
     "name": "2018 Fortune Tree",
-    "icon": "/home-base/obstacles/70.png"
+    "icon": "/home-base/obstacles/70.png",
+    "index": "15"
   },
   "8000071": {
     "name": "2018 Anniversary Cake",
-    "icon": "/home-base/obstacles/71.png"
+    "icon": "/home-base/obstacles/71.png",
+    "index": "17"
   },
   "8000072": {
     "name": "2018 Clashmas Tree",
-    "icon": "/home-base/obstacles/72.png"
+    "icon": "/home-base/obstacles/72.png",
+    "index": "19"
   },
   "8000073": {
     "name": "2018 Witch's Hat",
-    "icon": "/home-base/obstacles/73.png"
+    "icon": "/home-base/obstacles/73.png",
+    "index": "18"
   },
   "8000074": {
     "name": "2018 Spike-y Cactus",
-    "icon": "/home-base/obstacles/74.png"
+    "icon": "/home-base/obstacles/74.png",
+    "index": "16"
   },
   "8000075": {
     "name": "2020 Glowy Lantern (BB)",
-    "icon": "/home-base/obstacles/75.png"
+    "icon": "/home-base/obstacles/75.png",
+    "index": "23"
   },
   "8000076": {
     "name": "2019 Birthday Surprise",
-    "icon": "/home-base/obstacles/76.png"
+    "icon": "/home-base/obstacles/76.png",
+    "index": "20"
   },
   "8000077": {
     "name": "2019 Spooky Tree",
-    "icon": "/home-base/obstacles/77.png"
+    "icon": "/home-base/obstacles/77.png",
+    "index": "21"
   },
   "8000078": {
     "name": "2019 Clashmas Tree",
-    "icon": "/home-base/obstacles/78.png"
+    "icon": "/home-base/obstacles/78.png",
+    "index": "22"
   },
   "8000079": {
     "name": "2020 Glowy Lantern",
-    "icon": "/home-base/obstacles/79.png"
+    "icon": "/home-base/obstacles/79.png",
+    "index": "24"
   },
   "8000080": {
     "name": "2020 Anniversary Cake",
-    "icon": "/home-base/obstacles/80.png"
+    "icon": "/home-base/obstacles/80.png",
+    "index": "25"
   },
   "8000081": {
     "name": "2020 Vacant Tomb",
-    "icon": "/home-base/obstacles/81.png"
+    "icon": "/home-base/obstacles/81.png",
+    "index": "26"
   },
   "8000082": {
     "name": "2020 Clashmas Tree",
-    "icon": "/home-base/obstacles/82.png"
+    "icon": "/home-base/obstacles/82.png",
+    "index": "27"
   },
   "8000083": {
     "name": "2021 Lucky Shrub",
-    "icon": "/home-base/obstacles/83.png"
+    "icon": "/home-base/obstacles/83.png",
+    "index": "28"
   },
   "8000084": {
     "name": "2021 Anniversary Cake",
-    "icon": "/home-base/obstacles/84.png"
+    "icon": "/home-base/obstacles/84.png",
+    "index": "29"
   },
   "8000085": {
     "name": "2021 Friendly Flower",
-    "icon": "/home-base/obstacles/85.png"
+    "icon": "/home-base/obstacles/85.png",
+    "index": "30"
   },
   "8000086": {
     "name": "2021 Clashmas Tree",
-    "icon": "/home-base/obstacles/86.png"
+    "icon": "/home-base/obstacles/86.png",
+    "index": "31"
   },
   "8000087": {
     "name": "2022 Anniversary Cake",
-    "icon": "/home-base/obstacles/87.png"
+    "icon": "/home-base/obstacles/87.png",
+    "index": "32"
   },
   "8000088": {
     "name": "2022 Trick or Treat?",
-    "icon": "/home-base/obstacles/88.png"
+    "icon": "/home-base/obstacles/88.png",
+    "index": "33"
   },
   "8000089": {
     "name": "2022 Clashmas Tree",
-    "icon": "/home-base/obstacles/89.png"
+    "icon": "/home-base/obstacles/89.png",
+    "index": "34"
   },
   "8000090": {
     "name": "2023 Rabbit Lantern",
-    "icon": "/home-base/obstacles/90.png"
+    "icon": "/home-base/obstacles/90.png",
+    "index": "35"
   },
   "8000108": {
     "name": "2023 Anniversary Cake",
-    "icon": "/home-base/obstacles/108.png"
+    "icon": "/home-base/obstacles/108.png",
+    "index": "36"
   },
   "8000110": {
     "name": "2023 Sinister Sapling",
-    "icon": "/home-base/obstacles/110.png"
+    "icon": "/home-base/obstacles/110.png",
+    "index": "37"
   },
   "8000111": {
     "name": "2023 Clashmas Tree",
-    "icon": "/home-base/obstacles/111.png"
+    "icon": "/home-base/obstacles/111.png",
+    "index": "38"
   },
   "8000113": {
     "name": "2024 Lucky Letterbox",
-    "icon": "/home-base/obstacles/113.png"
+    "icon": "/home-base/obstacles/113.png",
+    "index": "39"
   },
   "8000115": {
     "name": "2024 Mysterious Object",
-    "icon": "/home-base/obstacles/115.png"
+    "icon": "/home-base/obstacles/115.png",
+    "index": "40"
   },
   "8000116": {
     "name": "2024 Anniversary Cake",
-    "icon": "/home-base/obstacles/116.png"
+    "icon": "/home-base/obstacles/116.png",
+    "index": "41"
   },
   "8000117": {
     "name": "2024 Ghost Post",
-    "icon": "/home-base/obstacles/117.png"
+    "icon": "/home-base/obstacles/117.png",
+    "index": "42"
   },
   "8000127": {
     "name": "2024 Clashmas Tree",
-    "icon": "/home-base/obstacles/127.png"
+    "icon": "/home-base/obstacles/127.png",
+    "index": "43"
   },
   "8000128": {
     "name": "2025 Snake Sculpture",
-    "icon": "/home-base/obstacles/128.png"
+    "icon": "/home-base/obstacles/128.png",
+    "index": "44"
   },
   "8000129": {
     "name": "2025 Money in the Bank",
-    "icon": "/home-base/obstacles/129.png"
+    "icon": "/home-base/obstacles/129.png",
+    "index": "45"
   },
   "8000131": {
     "name": "2025 Anniversary Cake",
-    "icon": "/home-base/obstacles/131.png"
+    "icon": "/home-base/obstacles/131.png",
+    "index": "46"
   },
   "8000132": {
-    "name": "Shiny Ore Meteorite",
-    "icon": "/home-base/obstacles/132.png"
+    "name": "2025 Shiny Ore Meteorite",
+    "icon": "/home-base/obstacles/132.png",
+    "index": "48"
   },
   "8000133": {
-    "name": "Glowy Ore Meteorite",
-    "icon": "/home-base/obstacles/133.png"
+    "name": "2025 Glowy Ore Meteorite",
+    "icon": "/home-base/obstacles/133.png",
+    "index": "49"
   },
   "8000134": {
-    "name": "Starry Ore Meteorite",
-    "icon": "/home-base/obstacles/134.png"
+    "name": "2025 Starry Ore Meteorite",
+    "icon": "/home-base/obstacles/134.png",
+    "index": "50"
   },
   "8000135": {
     "name": "2025 Cursed Seedling",
-    "icon": "/home-base/obstacles/135.png"
+    "icon": "/home-base/obstacles/135.png",
+    "index": "47"
   },
   "8000137": {
     "name": "2025 Clashmas Tree",
-    "icon": "/home-base/obstacles/137.png"
+    "icon": "/home-base/obstacles/137.png",
+    "index": "51"
   },
   "60000000": {
     "name": "Classic Scenery",
