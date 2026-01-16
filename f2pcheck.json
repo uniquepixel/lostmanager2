@@ -1,41 +1,99 @@
 {
     "Conditions": [{
         "Cases": [{
-                "Allowed": [{
-                    "type": "element",
-                    "id": 124636
-                }]
+                "IfMoreThan": {
+                    "type": "quantity",
+                    "allowed": 0,
+                    "subtract": 0,
+                    "elements": [{
+                        "type": "element",
+                        "id": "52000101",
+                        "name": "Ghost Queen"
+                    }]
+                }
             },
             {
-                "Allowed": [{
-                        "type": "element",
-                        "id": 124637
-                    },
-                    {
-                        "type": "element",
-                        "id": 124638
-                    },
-                    {
-                        "type": "element",
-                        "id": 124639
-                    },
-                    {
-                        "type": "count",
-                        "allowed": 3,
-                        "subtract": 1,
-                        "elements": [{
-                                "type": "element",
-                                "id": 124640
+                "IfMoreThan": [{
+                    "type": "count",
+                    "allowed": 3,
+                    "subtract": 0,
+                    "elements": [{
+                            "type": "element",
+                            "id": "18000099",
+                            "name": "Pumpkin Scarecrow"
+                        },
+                        {
+                            "type": "element",
+                            "id": "18000098",
+                            "name": "Spooky Spa"
+                        },
+                        {
+                            "type": "element",
+                            "id": "18000096",
+                            "name": "Cozy Coffin"
+                        }
+                    ]
+                }],
+                "ThenForbidden": {}
+            },
+            {
+                "IfMoreThan": {
+                    "type": "count",
+                    "allowed": 4,
+                    "elements": [{
+                            "type": "element",
+                            "id": "18000099",
+                            "name": "Pumpkin Scarecrow"
+                        },
+                        {
+                            "type": "element",
+                            "id": "18000098",
+                            "name": "Spooky Spa"
+                        },
+                        {
+                            "type": "element",
+                            "id": "18000096",
+                            "name": "Cozy Coffin"
+                        }
+                    ]
+                },
+                "ThenForbidden": {
+                    "CasesStrict": [{
+                            "IfMoreThan": {
+                                "type": "quantity",
+                                "allowed": 0,
+                                "elements": [{
+                                    "type": "element",
+                                    "name": "Friendly Clown",
+                                    "id":   "18000097"
+                                }]
                             },
-                            {
-                                "type": "element",
-                                "id": 124641
+                            "ThenForbidden": {
+                                "CasesStrict": [{
+                                    "IfMoreThan": {
+                                        "type": "quantity",
+                                        "allowed": 0,
+                                        "elements": [{
+                                            "type": "element",
+                                            "name": "Dinosaur",
+                                            "id":   "82000109"
+                                        }, {
+                                            "type": "element",
+                                            "name": "Halloween Roof",
+                                            "id":   "82000108"
+                                        }]
+                                    }
+                                }]
                             }
-                        ]
-                    }
-                ]
+                        },
+                        {
+
+                        }
+                    ]
+
+                }
             }
         ]
     }],
-    "Unallowed": [1234566,124623]
+    "StrictForbidden": [1234566, 124623]
 }
