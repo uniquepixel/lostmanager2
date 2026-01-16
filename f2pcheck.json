@@ -7,7 +7,7 @@
                     "subtract": 0,
                     "elements": [{
                         "type": "element",
-                        "id": "52000101",
+                        "id": 52000101,
                         "name": "Ghost Queen"
                     }]
                 }
@@ -18,17 +18,17 @@
                     "allowed": 3,
                     "elements": [{
                             "type": "element",
-                            "id": "18000099",
+                            "id": 18000099,
                             "name": "Pumpkin Scarecrow"
                         },
                         {
                             "type": "element",
-                            "id": "18000098",
+                            "id": 18000098,
                             "name": "Spooky Spa"
                         },
                         {
                             "type": "element",
-                            "id": "18000096",
+                            "id": 18000096,
                             "name": "Cozy Coffin"
                         }
                     ]
@@ -41,7 +41,7 @@
                                 "elements": [{
                                     "type": "element",
                                     "name": "Friendly Clown",
-                                    "id":   "18000097"
+                                    "id":   18000097
                                 }]
                             },
                             "ThenForbidden": {
@@ -52,11 +52,11 @@
                                         "elements": [{
                                             "type": "element",
                                             "name": "Dinosaur",
-                                            "id":   "82000109"
+                                            "id":   82000109
                                         }, {
                                             "type": "element",
                                             "name": "Halloween Roof",
-                                            "id":   "82000108"
+                                            "id":   82000108
                                         }]
                                     }
                                 }]
@@ -75,17 +75,17 @@
                     "allowed": 4,
                     "elements": [{
                             "type": "element",
-                            "id": "18000099",
+                            "id": 18000099,
                             "name": "Pumpkin Scarecrow"
                         },
                         {
                             "type": "element",
-                            "id": "18000098",
+                            "id": 18000098,
                             "name": "Spooky Spa"
                         },
                         {
                             "type": "element",
-                            "id": "18000096",
+                            "id": 18000096,
                             "name": "Cozy Coffin"
                         }
                     ]
@@ -98,17 +98,17 @@
                                 "elements": [{
                                     "type": "element",
                                     "name": "Friendly Clown",
-                                    "id":   "18000097"
+                                    "id":   18000097
                                 },
                                 {
                                     "type": "element",
                                     "name": "Dinosaur",
-                                    "id":   "82000109"
+                                    "id":   82000109
                                 }, 
                                 {
                                     "type": "element",
                                     "name": "Halloween Roof",
-                                    "id":   "82000108"
+                                    "id":   82000108
                                 }]
                             }
                         }
