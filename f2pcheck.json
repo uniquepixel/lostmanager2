@@ -284,45 +284,37 @@
                         "name": "Dragon Warden"
                     }]
                 }
-            },
-            {
-                "CasesStrict": [{
-                    "name":"Hat 'Crab at Home', 'Lucky Anchor' oder >= 1 LNY 2024 Clan House",
-                    "IfMoreThan": {
-                        "type": "quantity",
-                        "allowed": 0,
-                        "elements": [{
-                            "type": "element",
-                            "name": "Crab at Home",
-                            "id": "18000120"
-                        },
-                        {
-                            "type": "element",
-                            "name": "Skeleton Sock",
-                            "id": "18000118"
-                        },
-                        {
-                            "type": "element",
-                            "name": "Gingerbread Roof",
-                            "id": "82000046"
-                        },
-                        {
-                            "type": "element",
-                            "name": "Gingerbread Walls",
-                            "id": "82000055"
-                        },
-                        {
-                            "type": "element",
-                            "name": "Gingerbread Floor",
-                            "id": "82000006"
-                        },
-                        {
-                            "type": "element",
-                            "name": "Gingerbread Archer",
-                            "id": "82000067"
-                        }]
-                        }
-                }]
+            },{
+                "name":"Hat 'Crab at Home', 'Lucky Anchor' oder >= 1 LNY 2024 Clan House",
+                "IfMoreThan": {
+                    "type": "quantity",
+                    "allowed": 0,
+                    "elements": [{
+                        "type": "element",
+                        "name": "LNY 2024 Roof",
+                        "id": "82000114"
+                    },{
+                        "type": "element",
+                        "name": "LNY 2024 Sign",
+                        "id": "82000115"
+                    },{
+                        "type": "element",
+                        "name": "LNY 2024 Walls",
+                        "id": "82000116"
+                    },{
+                        "type": "element",
+                        "name": "LNY 2024 Ground",
+                        "id": "82000117"
+                    },{
+                        "type": "element",
+                        "name": "Lucky Anchor",
+                        "id": "18000119"
+                    },{
+                        "type": "element",
+                        "name": "Crab at Home",
+                        "id": "18000120"
+                    }]
+                }
             }
             ]
         }
