@@ -336,40 +336,34 @@
             },
             {
                 "IfMoreThan":{
-                    "name": "Hat 'Golden Boot', 'Bestest Ball' oder 'Triumphant Trophy'",
+                    "name": "",
                     "type": "count",
                     "allowed": 0,
                     "elements": [{
                             "type": "element",
                             "name": "Golden Boot",
                             "id": "18000131"
-                        },
-                        {
+                        },{
                             "type": "element",
                             "name": "Bestest Ball",
                             "id": "18000132"
-                        },
-                        {
+                        },{
                             "type": "element",
                             "name": "Triumphant Trophy",
                             "id": "18000134"
-                        },
-                        {
+                        },{
                             "type": "element",
                             "name": "Football Roof",
                             "id": "82000120"
-                        },
-                        {
+                        },{
                             "type": "element",
                             "name": "Football Decoration",
                             "id": "82000121"
-                        },
-                        {
+                        },{
                             "type": "element",
                             "name": "Football Walls",
                             "id": "82000122"
-                        },
-                        {
+                        },{
                             "type": "element",
                             "name": "Football Ground",
                             "id": "82000123"
@@ -378,7 +372,7 @@
                 },
                 "ThenForbidden":{
                     "CasesStrict": [{
-                        "name":"Hat mindestens eins davon: 'Golden Boot', 'Bestest Ball' oder 'Triumphant Trophy' oder mindestens ein Football Clan House'",
+                        "name":"Hat 'Football Queen' sowie mindestens eins davon: 'Golden Boot', 'Bestest Ball' oder 'Triumphant Trophy' oder mindestens ein 'Football Clan House'",
                         "IfMoreThan": {
                         "type": "quantity",
                         "allowed": 0,
@@ -389,6 +383,100 @@
                         }]
                         }
                     }] 
+                }
+            },
+            {
+               "IfMoreThan":{
+                    "name": "",
+                    "type": "count",
+                    "allowed": 2,
+                    "elements": [{
+                            "type": "element",
+                            "name": "Golden Boot",
+                            "id": "18000131"
+                        },{
+                             "type": "element",
+                            "name": "Bestest Ball",
+                            "id": "18000132"
+                        },{
+                            "type": "element",
+                            "name": "Triumphant Trophy",
+                            "id": "18000134"
+                        }
+                    ]
+                },
+                "ThenForbidden":{
+                    "CasesStrict": [{
+                        "name": "",
+                        "IfMoreThan": {
+                            "type": "count",
+                            "allowed": 3,
+                            "elements": [{
+                                "type": "element",
+                                "name": "Football Roof",
+                                "id": "82000120"
+                            },{
+                                "type": "element",
+                                "name": "Football Decoration",
+                                "id": "82000121"
+                            },{
+                                "type": "element",
+                                "name": "Football Walls",
+                                "id": "82000122"
+                            },{
+                                "type": "element",
+                                "name": "Football Ground",
+                                "id": "82000123"
+                            }]
+                        }
+                    }]
+                }
+            },
+            {
+               "IfMoreThan":{
+                    "name": "",
+                    "type": "count",
+                    "allowed": 2,
+                    "elements": [{
+                            "type": "element",
+                            "name": "Golden Boot",
+                            "id": "18000131"
+                        },{
+                             "type": "element",
+                            "name": "Bestest Ball",
+                            "id": "18000132"
+                        },{
+                            "type": "element",
+                            "name": "Triumphant Trophy",
+                            "id": "18000134"
+                        }
+                    ]
+                },
+                "ThenForbidden":{
+                    "CasesStrict": [{
+                        "name": "Hat 'Golden Boot', 'Bestest Ball', 'Triumphant Trophy' sowie 4 'Football Clan Houses'",
+                        "IfMoreThan": {
+                            "type": "count",
+                            "allowed": 3,
+                            "elements": [{
+                                "type": "element",
+                                "name": "Football Roof",
+                                "id": "82000120"
+                            },{
+                                "type": "element",
+                                "name": "Football Decoration",
+                                "id": "82000121"
+                            },{
+                                "type": "element",
+                                "name": "Football Walls",
+                                "id": "82000122"
+                            },{
+                                "type": "element",
+                                "name": "Football Ground",
+                                "id": "82000123"
+                            }]
+                        }
+                    }]
                 }
             }]
         }
