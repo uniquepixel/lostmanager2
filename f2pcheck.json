@@ -799,6 +799,107 @@
                 }
             }]
         }
+    },
+    {
+        "Cases":{
+            "name": "February 2025 Event",
+            "cases": [{
+                "name": "",
+                "IfMoreThan": {
+                    "type": "quantity",
+                    "allowed": 0,
+                    "elements": [{
+                        "type": "element",
+                        "name": "Lucky Cookies Deco",
+                        "id": "18000169"
+                    }]
+                },
+                "ThenForbidden": {
+                    "CasesStrict":[{
+                        "name": "",
+                        "IfMoreThan": {
+                            "type": "quantity",
+                            "allowed": 1,
+                            "elements": [{
+                                "type": "element",
+                                "name": "Lunar New Year 2025 Roof",
+                                "id": "82000136"                            
+                            },{
+                                "type": "element",
+                                "name": "Snake",
+                                "id": "82000137"                            
+                            }]
+                        }
+                    }]
+                }
+            },{
+                "name": "",
+                "IfMoreThan": {
+                    "type": "quantity",
+                    "allowed": 0,
+                    "elements": [{
+                        "type": "element",
+                        "name": "Lucky Cookies Deco",
+                        "id": "18000169"
+                    }]
+                },
+                "ThenForbidden": {
+                    "CasesStrict":[{
+                        "name": "Hat 'Lucky Cookies Deco' und mehr als ein Clan House",
+                        "IfMoreThan": {
+                            "type": "quantity",
+                            "allowed": 1,
+                            "elements": [{
+                                "type": "element",
+                                "name": "Lunar New Year 2025 Roof",
+                                "id": "82000136"                            
+                            },{
+                                "type": "element",
+                                "name": "Snake",
+                                "id": "82000137"                            
+                            }]
+                        }
+                    },{
+                        "name": "",
+                        "IfMoreThan": {
+                            "type": "quantity",
+                            "allowed": 0,
+                            "elements": [{
+                                "type": "element",
+                                "name": "Monk Statue",
+                                "id": "18000167"                            
+                            }]
+                        }
+                    }]                    
+                }
+            },
+            {
+                "name": "",
+                "IfMoreThan": {
+                    "type": "quantity",
+                    "allowed": 0,
+                    "elements": [{
+                        "type": "element",
+                        "name": "Lucky Cookies Deco",
+                        "id": "18000169"
+                    }]
+                },
+                "ThenForbidden": {
+                    "CasesStrict":[{
+                        "name": "Hat 'Lucky Cookies Deco' und 'Monk Statue'",
+                        "IfMoreThan": {
+                            "type": "quantity",
+                            "allowed": 0,
+                            "elements": [{
+                                "type": "element",
+                                "name": "Monk Statue",
+                                "id": "18000167"                            
+                            }]
+                        }
+                    }]                    
+                }
+            }]
+        }
     }
     ],
     "StrictForbidden": [1234566, 124623]
