@@ -18,7 +18,7 @@
                     "name": "Hat 'Ghost Queen' + mindestens eins davon: 'Pumpkin Scarecrow Deco', 'Spooky Spa Deco', 'Cozy Coffin Deco','Halloween Roof' oder 'Dinosaur Clan House' ",
                     "IfMoreThan": {
                         "type": "count",
-                        "allowed": 1,
+                        "allowed": 0,
                         "elements": [{
                                 "type": "element",
                                 "name": "Pumpkin Scarecrow",
