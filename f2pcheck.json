@@ -1,7 +1,8 @@
 {
     "Conditions": [{
-        "name": "October 2023 Event",
-        "CasesStrict": [{
+        "Cases":[{
+           "name": "October 2023 Event",
+            "CasesStrict": [{
             "name": "",
             "IfMoreThan": {
                 "type": "count",
@@ -87,8 +88,8 @@
                     }
                 }]
             }
-        }],
-        "Cases": [{
+        }] 
+        },{
             "name": "",
             "IfMoreThan": [{
                 "type": "count",
@@ -463,7 +464,7 @@
     {
         "Cases":{
             "name": "December 2024 Event",
-            "cases": [{
+            "CasesStrict": [{
                 "name": "",
                 "IfMoreThan": {
                     "type": "quantity",
@@ -475,36 +476,7 @@
                     }]
                 },
                 "ThenForbidden": {
-                    "CasesStrict":[{
-                        "name": "",
-                        "IfMoreThan": {
-                            "type": "quantity",
-                            "allowed": 1,
-                            "elements": [{
-                                "type": "element",
-                                "name": "Toyshop Roof",
-                                "id": "82000134"                            
-                            },{
-                                "type": "element",
-                                "name": "Nutcracker",
-                                "id": "82000135"                            
-                            }]
-                        }
-                    }]
-                }
-            },{
-                "name": "",
-                "IfMoreThan": {
-                    "type": "quantity",
-                    "allowed": 0,
-                    "elements": [{
-                        "type": "element",
-                        "name": "Snow Globe Deco",
-                        "id": "18000164"
-                    }]
-                },
-                "ThenForbidden": {
-                    "CasesStrict":[{
+                    "CasesStrict":[{    
                         "name": "Hat 'Snow Globe Deco' und mehr als ein Clan House",
                         "IfMoreThan": {
                             "type": "quantity",
@@ -520,32 +492,6 @@
                             }]
                         }
                     },{
-                        "name": "",
-                        "IfMoreThan": {
-                            "type": "quantity",
-                            "allowed": 0,
-                            "elements": [{
-                                "type": "element",
-                                "name": "Clockwork Choir",
-                                "id": "18000163"                            
-                            }]
-                        }
-                    }]                    
-                }
-            },
-            {
-                "name": "",
-                "IfMoreThan": {
-                    "type": "quantity",
-                    "allowed": 0,
-                    "elements": [{
-                        "type": "element",
-                        "name": "Snow Globe Deco",
-                        "id": "18000164"
-                    }]
-                },
-                "ThenForbidden": {
-                    "CasesStrict":[{
                         "name": "Hat 'Snow Globe Deco' und 'Clockwork Choir'",
                         "IfMoreThan": {
                             "type": "quantity",
@@ -556,7 +502,7 @@
                                 "id": "18000163"                            
                             }]
                         }
-                    }]                    
+                    }]
                 }
             }]
         }
