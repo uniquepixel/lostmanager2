@@ -491,7 +491,7 @@
                     "allowed": 0,
                     "elements": [{
                         "type": "element",
-                        "name": "Hat 'Kawaii Giant Deco'",
+                        "name": "",
                         "id": "18000145"
                     }]
                 },
@@ -556,9 +556,8 @@
                                 "id": "82000129"                            
                             }]
                         }
-                    },
-                    {
-                        "name": "Hat 'Kawaii Giant Deco' und 'Chibi Archer Deco'",
+                    },{
+                        "name": "",
                         "IfMoreThan": {
                             "type": "quantity",
                             "allowed": 0,
@@ -568,8 +567,22 @@
                                 "id": "18000144"                            
                             }]
                         }
-                    },
-                    {
+                    }]                    
+                }
+            },
+            {
+                "name": "",
+                "IfMoreThan": {
+                    "type": "quantity",
+                    "allowed": 0,
+                    "elements": [{
+                        "type": "element",
+                        "name": "",
+                        "id": "18000145"
+                    }]
+                },
+                "ThenForbidden": {
+                    "CasesStrict":[{
                         "name": "Hat 'Kawaii Giant Deco' und 'Chibi Archer Deco'",
                         "IfMoreThan": {
                             "type": "quantity",
