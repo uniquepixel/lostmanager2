@@ -21,37 +21,34 @@
                         "allowed": 0,
                         "elements": [{
                                 "type": "element",
-                                "name": "Pumpkin Scarecrow",
-                                "id": "18000099"
-                            },
-                            {
-                                "type": "element",
-                                "name": "Spooky Spa",
-                                "id": "18000098"
-                            },
-                            {
-                                "type": "element",
                                 "name": "Cozy Coffin",
                                 "id": "18000096"
-                            },
-                            {
+                            },{
                                 "type": "element",
                                 "name": "Friendly Clown",
                                 "id": "18000097"
-                            },
-                            {   "type": "element",
-                                "name": "Dinosaur",
-                                "id": "82000109"
-                            }, 
-                            {
+                            },{
+                                "type": "element",
+                                "name": "Spooky Spa",
+                                "id": "18000098"
+                            },{   
+                                "type": "element",
+                                "name": "Pumpkin Scarecrow",
+                                "id": "18000099"
+                            },{
                                 "type": "element",
                                 "name": "Halloween Roof",
                                 "id": "82000108"
-                            }    
+                            },{   
+                                "type": "element",
+                                "name": "Dinosaur",
+                                "id": "82000109"
+                            }                               
                         ]
                     },
                     "ThenForbidden":{
-                        "IfMoreThan": {
+                        "CasesStrict": [{
+                            "IfMoreThan": {
                             "type": "quantity",
                             "allowed": 0,
                             "elements": [{
@@ -59,7 +56,8 @@
                                 "name": "Ghost Queen",
                                 "id": "52000101"
                             }]
-                        }
+                            }
+                        }]
                     }
                 },
                 {
