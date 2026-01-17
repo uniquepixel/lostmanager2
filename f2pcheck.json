@@ -497,7 +497,7 @@
                 },
                 "ThenForbidden": {
                     "CasesStrict":[{
-                        "name": "Hat 'Kawaii Giant Deco' und mindestens ein Clan House",
+                        "name": "",
                         "IfMoreThan": {
                             "type": "quantity",
                             "allowed": 1,
@@ -534,7 +534,7 @@
                 },
                 "ThenForbidden": {
                     "CasesStrict":[{
-                        "name": "Hat 'Kawaii Giant Deco' und mindestens ein Clan House",
+                        "name": "Hat 'Kawaii Giant Deco' und mehr als ein Clan House",
                         "IfMoreThan": {
                             "type": "quantity",
                             "allowed": 1,
