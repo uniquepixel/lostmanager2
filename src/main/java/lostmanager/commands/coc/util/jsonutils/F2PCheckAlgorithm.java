@@ -92,13 +92,15 @@ public class F2PCheckAlgorithm {
         }
 
         Object val = group.get(key);
-        JSONArray cases;
         String groupName = null;
+        if (group.has("name")) {
+            groupName = group.getString("name");
+        }
+        JSONArray cases = null;
 
         if (val instanceof JSONObject) {
             JSONObject valObj = (JSONObject) val;
-            cases = valObj.getJSONArray("cases");
-            groupName = valObj.optString("name", null);
+            return evaluateGroup(valObj, playerData);
         } else if (val instanceof JSONArray) {
             cases = (JSONArray) val;
         } else {
