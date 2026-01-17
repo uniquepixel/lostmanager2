@@ -1,45 +1,92 @@
 {
     "Conditions": [{
         "Cases": {
-            "name": "Halloween 2023 Special Rules",
+            "name": "October Event 2023",
             "cases": [{
-                    "name": "Hat Ghost Queen",
+                    "name": "Hat 'Ghost Queen'",
                     "IfMoreThan": {
                         "type": "quantity",
                         "allowed": 0,
-                        "subtract": 0,
                         "elements": [{
                             "type": "element",
-                            "id": "52000101",
-                            "name": "Ghost Queen"
+                            "name": "Ghost Queen",
+                            "id": "52000101"
                         }]
                     }
                 },
                 {
-                    "name": "Hat >2 Pumpkin Scarecrow, Spooky Spa oder Cozy Coffin",
+                    "name": "Hat 'Ghost Queen' + mindestens eins davon: 'Pumpkin Scarecrow Deco', 'Spooky Spa Deco', 'Cozy Coffin Deco','Halloween Roof' oder 'Dinosaur Clan House' ",
+                    "IfMoreThan": {
+                        "type": "count",
+                        "allowed": 1,
+                        "elements": [{
+                                "type": "element",
+                                "name": "Pumpkin Scarecrow",
+                                "id": "18000099"
+                            },
+                            {
+                                "type": "element",
+                                "name": "Spooky Spa",
+                                "id": "18000098"
+                            },
+                            {
+                                "type": "element",
+                                "name": "Cozy Coffin",
+                                "id": "18000096"
+                            },
+                            {
+                                "type": "element",
+                                "name": "Friendly Clown",
+                                "id": "18000097"
+                            },
+                            {   "type": "element",
+                                "name": "Dinosaur",
+                                "id": "82000109"
+                            }, 
+                            {
+                                "type": "element",
+                                "name": "Halloween Roof",
+                                "id": "82000108"
+                            }    
+                        ]
+                    },
+                    "ThenForbidden":{
+                        "IfMoreThan": {
+                        "type": "count",
+                        "allowed": 0,
+                        "elements": [{
+                            "type": "element",
+                            "name": "Ghost Queen",
+                            "id": "52000101"
+                        }]
+                        }
+                    }
+                },
+                {
+                    "name": "Hat >2 'Pumpkin Scarecrow Deco', 'Spooky Spa Deco' oder 'Cozy Coffin Deco'",
                     "IfMoreThan": [{
                         "type": "count",
                         "allowed": 2,
                         "elements": [{
                                 "type": "element",
-                                "id": "18000099",
-                                "name": "Pumpkin Scarecrow"
+                                "name": "Pumpkin Scarecrow",
+                                "id": "18000099"
                             },
                             {
                                 "type": "element",
-                                "id": "18000098",
-                                "name": "Spooky Spa"
+                                "name": "Spooky Spa",
+                                "id": "18000098"
                             },
                             {
                                 "type": "element",
-                                "id": "18000096",
-                                "name": "Cozy Coffin"
+                                "name": "Cozy Coffin",
+                                "id": "18000096"
                             }
                         ]
                     }],
                     "ThenForbidden": {
                         "CasesStrict": [{
-                                "name": "Hat Friendly Clown",
+                                "name": "Hat 'Friendly Clown Deco'",
                                 "IfMoreThan": {
                                     "type": "quantity",
                                     "allowed": 0,
@@ -51,7 +98,7 @@
                                 },
                                 "ThenForbidden": {
                                     "CasesStrict": [{
-                                        "name": "Hat Clan Stadt Dinosaur oder Halloween Roof",
+                                        "name": "Hat 'Halloween Roof' oder 'Dinosaur Clan House'",
                                         "IfMoreThan": {
                                             "type": "quantity",
                                             "allowed": 0,
@@ -59,7 +106,8 @@
                                                 "type": "element",
                                                 "name": "Dinosaur",
                                                 "id": "82000109"
-                                            }, {
+                                            }, 
+                                            {
                                                 "type": "element",
                                                 "name": "Halloween Roof",
                                                 "id": "82000108"
@@ -75,7 +123,8 @@
 
                     }
                 },
-                {
+                {   
+                    "name": "Hat gesamt 5 'Pumpkin Scarecrow Decos', 'Spooky Spa Deco' und 'Cozy Coffin Deco'",
                     "IfMoreThan": {
                         "type": "count",
                         "allowed": 4,
@@ -98,6 +147,7 @@
                     },
                     "ThenForbidden": {
                         "CasesStrict": [{
+                            "name": "Hat 'Friendly Clown Deco', 'Halloween Roof' oder 'Dinosaur Clan House'",
                             "IfMoreThan": {
                                 "type": "quantity",
                                 "allowed": 0,
@@ -124,6 +174,7 @@
                 },
                 {
                     "IfMoreThan": {
+                        "name":"Hat jeweils 2 'Pumpkin Scarecrow Decos', 'Spooky Spa Deco' und 'Cozy Coffin Deco'",
                         "type": "count",
                         "allowed": 5,
                         "elements": [{
@@ -146,6 +197,188 @@
                 }
             ]
         }
-    }],
+    },
+    {
+        "Cases":{
+            "name": "December Event 2023",
+            "cases": [{
+                "name": "Hat 'Gingerbread King'",
+                "IfMoreThan": {
+                    "type": "quantity",
+                    "allowed": 0,
+                    "subtract": 0,
+                    "elements": [{
+                        "type": "element",
+                        "id": "52000094",
+                        "name": "Gingerbread King"
+                    }]
+                }
+            },
+            {
+                "CasesStrict": [{
+                    "name":"Hat 'Barbarian Santa Deco', 'Skeleton Sock Deco' oder >= 1 Gingerbread Clan House",
+                    "IfMoreThan": {
+                        "type": "quantity",
+                        "allowed": 0,
+                        "elements": [{
+                            "type": "element",
+                            "name": "Barbarian Santa",
+                            "id": "18000117"
+                        },
+                        {
+                            "type": "element",
+                            "name": "Skeleton Sock",
+                            "id": "18000118"
+                        },
+                        {
+                            "type": "element",
+                            "name": "Gingerbread Roof",
+                            "id": "82000046"
+                        },
+                        {
+                            "type": "element",
+                            "name": "Gingerbread Walls",
+                            "id": "82000055"
+                        },
+                        {
+                            "type": "element",
+                            "name": "Gingerbread Floor",
+                            "id": "82000006"
+                        },
+                        {
+                            "type": "element",
+                            "name": "Gingerbread Archer",
+                            "id": "82000067"
+                        }]
+                        }
+                }]
+            }
+            ]
+        }
+    },
+    {
+        "Cases":{
+            "name": "February Event 2024",
+            "cases": [{
+                "name": "Hat 'Dragon Warden'",
+                "IfMoreThan": {
+                    "type": "quantity",
+                    "allowed": 0,
+                    "subtract": 0,
+                    "elements": [{
+                        "type": "element",
+                        "id": "52000124",
+                        "name": "Dragon Warden"
+                    }]
+                }
+            },
+            {
+                "CasesStrict": [{
+                    "name":"Hat 'Crab at Home', 'Lucky Anchor' oder >= 1 LNY 2024 Clan House",
+                    "IfMoreThan": {
+                        "type": "quantity",
+                        "allowed": 0,
+                        "elements": [{
+                            "type": "element",
+                            "name": "Crab at Home",
+                            "id": "18000120"
+                        },
+                        {
+                            "type": "element",
+                            "name": "Skeleton Sock",
+                            "id": "18000118"
+                        },
+                        {
+                            "type": "element",
+                            "name": "Gingerbread Roof",
+                            "id": "82000046"
+                        },
+                        {
+                            "type": "element",
+                            "name": "Gingerbread Walls",
+                            "id": "82000055"
+                        },
+                        {
+                            "type": "element",
+                            "name": "Gingerbread Floor",
+                            "id": "82000006"
+                        },
+                        {
+                            "type": "element",
+                            "name": "Gingerbread Archer",
+                            "id": "82000067"
+                        }]
+                        }
+                }]
+            }
+            ]
+        }
+    },
+    {
+        "Cases":{
+            "name": "May 2024 Event",
+            "cases":[{
+                "name": "Hat 'Football Queen'",
+                "IfMoreThan": {
+                    "type": "quantity",
+                    "allowed": 0,
+                    "elements": [{
+                        "type": "element",
+                        "id": "52000101",
+                        "name": "Football Queen"
+                    }]
+                }
+            },
+            {
+                "IfMoreThan":{
+                    "name": "Hat 'Golden Boot', 'Bestest Ball' oder 'Triumphant Trophy'",
+                    "type": "count",
+                    "allowed": 1,
+                    "elements": [{
+                            "type": "element",
+                            "id": "18000131",
+                            "name": "Golden Boot"
+                        },
+                        {
+                            "type": "element",
+                            "id": "18000132",
+                            "name": "Bestest Ball"
+                        },
+                        {
+                            "type": "element",
+                            "id": "18000134",
+                            "name": "Triumphant Trophy"
+                        }
+                    ]
+                },
+                "ThenForbidden": {
+                        "CasesStrict": [{
+                            "name": "Hat 'Friendly Clown Deco', 'Halloween Roof' oder 'Dinosaur Clan House'",
+                            "IfMoreThan": {
+                                "type": "quantity",
+                                "allowed": 0,
+                                "elements": [{
+                                    "type": "element",
+                                    "name": "Friendly Clown",
+                                    "id": "18000097"
+                                },
+                                {
+                                    "type": "element",
+                                    "name": "Dinosaur",
+                                    "id": "82000109"
+                                },
+                                {
+                                    "type": "element",
+                                    "name": "Halloween Roof",
+                                    "id": "82000108"
+                                }
+                            ]
+                        }
+                    }]
+                }
+            }]
+        }
+    }
+    ],
     "StrictForbidden": [1234566, 124623]
 }
