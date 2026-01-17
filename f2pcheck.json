@@ -160,7 +160,7 @@
                     },
                     "ThenForbidden": {
                         "CasesStrict": [{
-                            "name": "Hat gesamt 5-6 'Pumpkin Scarecrow Decos', 'Spooky Spa Deco' und 'Cozy Coffin Deco' sowie mindestens eins davon: 'Friendly Clown Deco', 'Halloween Roof' oder 'Dinosaur Clan House'",
+                            "name": "Hat gesamt 5-6 'Pumpkin Scarecrow Decos', 'Spooky Spa Deco' und 'Cozy Coffin Deco' sowie 'Friendly Clown Deco'",
                             "IfMoreThan": {
                                 "type": "quantity",
                                 "allowed": 0,
@@ -168,14 +168,6 @@
                                         "type": "element",
                                         "name": "Friendly Clown",
                                         "id": "18000097"
-                                    },{
-                                        "type": "element",
-                                        "name": "Halloween Roof",
-                                        "id": "82000108"
-                                    },{
-                                        "type": "element",
-                                        "name": "Dinosaur",
-                                        "id": "82000109"
                                     }
                                 ]
                             }
@@ -183,9 +175,9 @@
 
                     }
                 },
-                {
+                {   
+                    "name": "",
                     "IfMoreThan": {
-                        "name":"Hat gesamt 5-6 'Pumpkin Scarecrow Decos', 'Spooky Spa Deco' und 'Cozy Coffin Deco'",
                         "type": "count",
                         "allowed": 4,
                         "elements": [{
@@ -202,6 +194,26 @@
                                 "id": "18000099"
                             }
                         ]
+                    },
+                    "ThenForbidden": {
+                        "CasesStrict": [{
+                            "name": "Hat gesamt 5-6 'Pumpkin Scarecrow Decos', 'Spooky Spa Deco' und 'Cozy Coffin Deco' sowie 'Halloween Roof' oder 'Dinosaur Clan House'",
+                            "IfMoreThan": {
+                                "type": "quantity",
+                                "allowed": 0,
+                                "elements": [{
+                                        "type": "element",
+                                        "name": "Halloween Roof",
+                                        "id": "82000108"
+                                    },{
+                                        "type": "element",
+                                        "name": "Dinosaur",
+                                        "id": "82000109"
+                                    }
+                                ]
+                            }
+                        }]
+
                     }
                 }
             ]
