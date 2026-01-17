@@ -1108,6 +1108,113 @@
                         }
                     }]
                 }
+            },
+            {    
+                "name": "",
+                "IfMoreThan": {
+                    "type": "quantity",
+                    "allowed": 0,
+                    "elements": [{
+                        "type": "element",
+                        "name": "Clashy Carving Deco",
+                        "id": "18000180"
+                    }]
+                },
+                "ThenForbidden": {
+                    "CasesStrict":[{
+                        "name": "",
+                        "IfMoreThan": {
+                            "type": "quantity",
+                            "allowed": 0,
+                            "elements": [{
+                                "type": "element",
+                                "name": "Frozen Wizard Deco",
+                                "id": "18000179"                            
+                            },{
+                                "type": "element",
+                                "name": "Soda Stand Deco",
+                                "id": "18000183"                            
+                            }]
+                        },
+                        "ThenForbidden":{
+                            "name": "",
+                            "IfMoreThan": {
+                                "type": "quantity",
+                                "allowed": 0,
+                                "elements": [{
+                                    "type": "element",
+                                    "name": "Clash-A-Rama Roof",
+                                    "id": "82000142"                            
+                                },{
+                                    "type": "element",
+                                    "name": "Cartoon Barrel",
+                                    "id": "82000143"                            
+                                },{
+                                    "type": "element",
+                                    "name": "Clash-A-Rama Walls",
+                                    "id": "82000144"                            
+                                },{
+                                    "type": "element",
+                                    "name": "Clash-A-Rama Ground",
+                                    "id": "82000145"                            
+                                }]
+                            }  
+                        }
+                    }]
+                }
+            },{
+                "name": "",
+                "IfMoreThan": {
+                    "type": "quantity",
+                    "allowed": 0,
+                    "elements": [{
+                        "type": "element",
+                        "name": "Clashy Carving Deco",
+                        "id": "18000180"
+                    }]
+                },
+                "ThenForbidden": {
+                    "CasesStrict":[{
+                        "name": "Hat 'Clash Carving Deco' und mindestens eins davon: 'Frozen Wizard Deco' und 'Soda Stand Deco' sowie mindestens ein 'Clash-A-Rama Clan House'",
+                        "IfMoreThan": {
+                            "type": "quantity",
+                            "allowed": 0,
+                            "elements": [{
+                                "type": "element",
+                                "name": "Frozen Wizard Deco",
+                                "id": "18000179"                            
+                            },{
+                                "type": "element",
+                                "name": "Soda Stand Deco",
+                                "id": "18000183"                            
+                            }]
+                        },
+                        "ThenForbidden":{
+                            "name": "",
+                            "IfMoreThan": {
+                                "type": "quantity",
+                                "allowed": 0,
+                                "elements": [{
+                                    "type": "element",
+                                    "name": "Clash-A-Rama Roof",
+                                    "id": "82000142"                            
+                                },{
+                                    "type": "element",
+                                    "name": "Cartoon Barrel",
+                                    "id": "82000143"                            
+                                },{
+                                    "type": "element",
+                                    "name": "Clash-A-Rama Walls",
+                                    "id": "82000144"                            
+                                },{
+                                    "type": "element",
+                                    "name": "Clash-A-Rama Ground",
+                                    "id": "82000145"                            
+                                }]
+                            }  
+                        }
+                    }]
+                }
             }]
         }
     }
