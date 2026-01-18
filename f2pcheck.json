@@ -763,6 +763,22 @@
                     },
                     "ThenForbidden": {
                         "CasesStrict": [{
+                            "name": "Hat 'Frost Flake Equipment' und 'Hungry Hound Deco'",
+                            "IfMoreThan": {
+                                "type": "quantity",
+                                "allowed": 1,
+                                "elements": [{
+                                    "type": "element",
+                                    "name": "Frost Flake Equipment",
+                                    "id": "90000050"
+                                },
+                                {   
+                                    "type": "element",
+                                    "name": "Hungry Hound Deco",
+                                    "id": "18000203"
+                                }]
+                            }
+                        },{
                             "name": "",
                             "IfMoreThan": {
                                 "type": "quantity",
@@ -775,7 +791,7 @@
                             },
                             "ThenForbidden": {
                                 "CasesStrict": [{
-                                    "name": "Hat 'Frost Flake Equipment', 'Frozen Stone' und mindestens ein 'Meltdown Clan House'",
+                                    "name": "Hat 'Frost Flake Equipment' oder 'Hungry Hound Deco' sowie 'Frozen Stone Deco' und mindestens ein 'Meltdown Clan House'",
                                     "IfMoreThan": {
                                         "type": "quantity",
                                         "allowed": 0,
