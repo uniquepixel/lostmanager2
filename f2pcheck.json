@@ -89,7 +89,7 @@
                         }]
                     }
                 }]
-            }, {
+            },{
                 "name": "",
                 "IfMoreThan": [{
                     "type": "count",
@@ -122,7 +122,7 @@
                         }
                     }]
                 }
-            }, {
+            },{
                 "name": "",
                 "IfMoreThan": [{
                     "type": "count",
@@ -143,7 +143,7 @@
                 }],
                 "ThenForbidden": {
                     "CasesStrict": [{
-                        "name": "Hat >3 'Pumpkin Scarecrow Deco', 'Spooky Spa Deco' oder 'Cozy Coffin Deco' sowie 'Friendly Clown Deco' und 'Halloween Roof' oder 'Dinosaur Clan House'",
+                        "name": "Hat >3 'Pumpkin Scarecrow Deco', 'Spooky Spa Deco' oder 'Cozy Coffin Deco' sowie 'Friendly Clown Deco' und mindestens 1 'Halloween 2023 Clan House'",
                         "IfMoreThan": {
                             "type": "count",
                             "allowed": 0,
@@ -178,7 +178,7 @@
                     },
                     "ThenForbidden": {
                         "CasesStrict": [{
-                            "name": "Hat 'Gingerbread King' und mindestens eins davon: 'Barbarian Santa Deco', 'Skeleton Sock Deco' oder mindestens 1 Gingerbread Clan House",
+                            "name": "Hat 'Gingerbread King' und mindestens eins davon: 'Barbarian Santa Deco', 'Skeleton Sock Deco' oder mindestens 1 'Gingerbread Clan House'",
                             "IfMoreThan": {
                                 "type": "quantity",
                                 "allowed": 0,
@@ -230,7 +230,7 @@
                     },
                     "ThenForbidden": {
                         "CasesStrict": [{
-                            "name": "Hat 'Dragon Warden' und mindestens eins davon: 'Crab at Home', 'Lucky Anchor' oder mindestens 1 LNY 2024 Clan House",
+                            "name": "Hat 'Dragon Warden' und mindestens eins davon: 'Crab at Home', 'Lucky Anchor' oder mindestens 1 'LNY 2024 Clan House'",
                             "IfMoreThan": {
                                 "type": "quantity",
                                 "allowed": 0,
@@ -269,7 +269,7 @@
             "Cases": {
                 "name": "May 2024 Event",
                 "CasesStrict": [{
-                    "name": "Hat 'Football Queen'",
+                    "name": "",
                     "IfMoreThan": {
                         "type": "quantity",
                         "allowed": 0,
@@ -281,7 +281,7 @@
                     },
                     "ThenForbidden": {
                         "CasesStrict": [{
-                            "name": "",
+                            "name": "Hat 'Football Queen' sowie mindestens eins davon: 'Golden Boot', 'Bestest Ball', 'Triumphant Trophy' oder mindestens ein 'Football Clan House'",
                             "IfMoreThan": {
                                 "name": "",
                                 "type": "count",
@@ -382,7 +382,7 @@
                     },
                     "ThenForbidden": {
                         "CasesStrict": [{
-                            "name": "",
+                            "name": "Hat 'Kawaii Giant Deco' und mehr als ein 'Anime Clan House'",
                             "IfMoreThan": {
                                 "type": "quantity",
                                 "allowed": 1,
@@ -405,7 +405,7 @@
                                 }]
                             }
                         }, {
-                            "name": "",
+                            "name": "Hat 'Kawaii Giant Deco' und 'Chibi Archer Deco'",
                             "IfMoreThan": {
                                 "type": "quantity",
                                 "allowed": 0,
@@ -430,13 +430,13 @@
                         "allowed": 0,
                         "elements": [{
                             "type": "element",
-                            "name": "Bubble Boil Cauldron Deco",
+                            "name": "Bubble Boil Cauldron",
                             "id": "18000159"
                         }]
                     },
                     "ThenForbidden": {
                         "CasesStrict": [{
-                            "name": "",
+                            "name": "Hat 'Bubble Boil Cauldron Deco' und mehr als ein 'Halloween 2024 Clan House'",
                             "IfMoreThan": {
                                 "type": "quantity",
                                 "allowed": 1,
@@ -450,8 +450,8 @@
                                     "id": "82000133"
                                 }]
                             }
-                        }, {
-                            "name": "",
+                        },{
+                            "name": "Hat 'Bubble Boil Cauldron Deco' und 'Jailbroken Box Deco'",
                             "IfMoreThan": {
                                 "type": "quantity",
                                 "allowed": 0,
@@ -496,7 +496,7 @@
                                     "id": "82000135"
                                 }]
                             }
-                        }, {
+                        },{
                             "name": "Hat 'Snow Globe Deco' und 'Clockwork Choir'",
                             "IfMoreThan": {
                                 "type": "quantity",
