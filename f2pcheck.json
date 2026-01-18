@@ -3,7 +3,7 @@
             "Cases": [{
                 "name": "October 2023 Event",
                 "CasesStrict": [{
-                    "name": "",
+                    "name": "October 2023 Event V2",
                     "IfMoreThan": {
                         "type": "count",
                         "allowed": 0,
