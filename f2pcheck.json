@@ -746,93 +746,53 @@
             "Cases": {
                 "name": "Dec. 2025 Event",
                 "CasesStrict": [{
-                        "name": "",
-                        "IfMoreThan": {
-                            "type": "quantity",
-                            "allowed": 0,
-                            "elements": [{
-                                "type": "element",
-                                "name": "Frost Flake Equipment",
-                                "id": "90000050"
-                            }]
+                    "name": "",
+                    "IfMoreThan": {
+                        "type": "quantity",
+                        "allowed": 0,
+                        "elements": [{
+                            "type": "element",
+                            "name": "Frost Flake Equipment",
+                            "id": "90000050"
                         },
-                        "ThenForbidden": {
-                            "CasesStrict": [{
-                                "name": "",
-                                "IfMoreThan": {
-                                    "type": "quantity",
-                                    "allowed": 0,
-                                    "elements": [{
-                                        "type": "element",
-                                        "name": "Frozen Stone",
-                                        "id": "18000204"
-                                    }]
-                                },
-                                "ThenForbidden": {
-                                    "CasesStrict": [{
-                                        "name": "Hat 'Frost Flake Equipment', 'Frozen Stone' und beide 'Meltdown Clan Houses'",
-                                        "IfMoreThan": {
-                                            "type": "quantity",
-                                            "allowed": 0,
-                                            "elements": [{
-                                                "type": "element",
-                                                "name": "Meltdown Barrel",
-                                                "id": "82000148"
-                                            }, {
-                                                "type": "element",
-                                                "name": "Meltdown Roof",
-                                                "id": "82000149"
-                                            }]
-                                        }
-                                    }]
-                                }
-                            }]
-                        }
-                }, {
-                    "CasesStrict": [{
-                        "name": "",
-                        "IfMoreThan": {
-                            "type": "quantity",
-                            "allowed": 0,
-                            "elements": [{
-                                "type": "element",
-                                "name": "Hungry Hound Deco",
-                                "id": "18000203"
-                            }]
-                        },
-                        "ThenForbidden": {
-                            "CasesStrict": [{
-                                "name": "",
-                                "IfMoreThan": {
-                                    "type": "quantity",
-                                    "allowed": 0,
-                                    "elements": [{
-                                        "type": "element",
-                                        "name": "Frozen Stone",
-                                        "id": "18000204"
-                                    }]
-                                },
-                                "ThenForbidden": {
-                                    "CasesStrict": [{
-                                        "name": "Hat 'Hungry Hound Deco', 'Frozen Stone Deco' und beide 'Meltdown Clan Houses'",
-                                        "IfMoreThan": {
-                                            "type": "quantity",
-                                            "allowed": 0,
-                                            "elements": [{
-                                                "type": "element",
-                                                "name": "Meltdown Barrel",
-                                                "id": "82000148"
-                                            }, {
-                                                "type": "element",
-                                                "name": "Meltdown Roof",
-                                                "id": "82000149"
-                                            }]
-                                        }
-                                    }]
-                                }
-                            }]
-                        }
-                    }]
+                        {   
+                            "type": "element",
+                            "name": "Hungry Hound Deco",
+                            "id": "18000203"
+                        }]
+                    },
+                    "ThenForbidden": {
+                        "CasesStrict": [{
+                            "name": "",
+                            "IfMoreThan": {
+                                "type": "quantity",
+                                "allowed": 0,
+                                "elements": [{
+                                    "type": "element",
+                                    "name": "Frozen Stone",
+                                    "id": "18000204"
+                                }]
+                            },
+                            "ThenForbidden": {
+                                "CasesStrict": [{
+                                    "name": "Hat 'Frost Flake Equipment', 'Frozen Stone' und mindestens ein 'Meltdown Clan House'",
+                                    "IfMoreThan": {
+                                        "type": "quantity",
+                                        "allowed": 0,
+                                        "elements": [{
+                                            "type": "element",
+                                            "name": "Meltdown Barrel",
+                                            "id": "82000148"
+                                        }, {
+                                            "type": "element",
+                                            "name": "Meltdown Roof",
+                                            "id": "82000149"
+                                        }]
+                                    }
+                                }]
+                            }
+                        }]
+                    }
                 }]
             }
         },
