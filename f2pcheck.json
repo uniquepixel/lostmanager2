@@ -528,7 +528,7 @@
                     },
                     "ThenForbidden": {
                         "CasesStrict": [{
-                            "name": "",
+                            "name": "Hat 'Lucky Cookies Deco' und mindestens ein 'LNY 2025 Clan House'",
                             "IfMoreThan": {
                                 "type": "quantity",
                                 "allowed": 1,
@@ -542,8 +542,8 @@
                                     "id": "82000137"
                                 }]
                             }
-                        }, {
-                            "name": "",
+                        },{
+                            "name": "Hat 'Lucky Cookies Deco' und 'Monk Statue Deco'",
                             "IfMoreThan": {
                                 "type": "quantity",
                                 "allowed": 0,
@@ -578,7 +578,7 @@
                     },
                     "ThenForbidden": {
                         "CasesStrict": [{
-                            "name": "",
+                            "name": "Hat 'Golden Giant Deco' und 'Surprise Wheel Deco' sowie beide 'WWE Clan Houses'",
                             "IfMoreThan": {
                                 "type": "quantity",
                                 "allowed": 1,
