@@ -3411,16 +3411,16 @@
     "index": "59"
   },
   "60000082": {
-    "name": "Desert Nights Scenery",
+    "name": "Classic Meteor Scenery",
     "icon": "/home-base/sceneries/82.png",
     "full": "",
-    "index": "60"
+    "index": "61"
   },
   "60000083": {
-    "name": "Classic Meteor Scenery",
+    "name": "Desert Nights Scenery",
     "icon": "/home-base/sceneries/83.png",
     "full": "",
-    "index": "61"
+    "index": "60"
   },
   "52000000": {
     "name": "Barbarian King",
