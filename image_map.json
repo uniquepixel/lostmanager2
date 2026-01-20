@@ -2088,7 +2088,7 @@
   },
   "90000051": {
     "name": "Stick Horse",
-    "icon": ""
+    "icon": "/home-base/equipments/51.png"
   },
   "18000000": {
     "name": "Mighty Statue (Aug. 2012",
@@ -2571,7 +2571,7 @@
     "name": "Festival Lantern (Oct. 2025)",
     "icon": "/home-base/decorations/161.png",
     "price": "6€",
-    "index": "115"
+    "index": "116"
   },
   "18000162": {
     "name": "Rocking Reindeer (Dec. 2024)",
@@ -2657,24 +2657,24 @@
     "index": "108"
   },
   "18000178": {
-    "name": "Looter Wagon (Jun. 2026)",
+    "name": "Looter Wagon (Jun. 2025)",
     "icon": "/home-base/decorations/178.png",
-    "index": "128"
+    "index": "109"
   },
   "18000179": {
     "name": "Frozen Wizard (Aug. 2025)",
     "icon": "/home-base/decorations/179.png",
-    "index": "110"
+    "index": "111"
   },
   "18000180": {
     "name": "Clashy Carving (Aug. 2025)",
     "icon": "/home-base/decorations/180.png",
-    "index": "111"
+    "index": "112"
   },
   "18000181": {
     "name": "Sketch Summoner (Sep. 2025) (EP)",
     "icon": "/home-base/decorations/181.png",
-    "index": "114"
+    "index": "115"
   },
   "18000182": {
     "name": "Cyber Hologram (Jul. 2024)",
@@ -2685,78 +2685,83 @@
   "18000183": {
     "name": "Soda Stand (Aug. 2025)",
     "icon": "/home-base/decorations/183.png",
-    "index": "112"
+    "index": "113"
   },
   "18000184": {
     "name": "Party Bench (Aug. 2025)",
     "icon": "/home-base/decorations/184.png",
-    "index": "113"
+    "index": "114"
   },
   "18000185": {
     "name": "Justice Crown (Jun. 2025)",
     "icon": "/home-base/decorations/185.png",
-    "index": "109"
+    "index": "110"
   },
   "18000186": {
     "name": "Cosmic Lantern (Oct. 2025)",
     "icon": "/home-base/decorations/186.png",
-    "index": "116"
+    "index": "117"
   },
   "18000187": {
     "name": "Electro Skull (Nov. 2025)",
     "icon": "/home-base/decorations/187.png",
-    "index": "119"
+    "index": "120"
+  },
+  "18000188": {
+    "name": "Meteor Observer (Jan. 2026)",
+    "icon": "/home-base/decorations/188.png",
+    "index": "129"
   },
   "18000189": {
     "name": "Fortune Printer (Nov. 2025)",
     "icon": "/home-base/decorations/189.png",
     "price": "6€",
-    "index": "120"
+    "index": "121"
   },
   "18000190": {
     "name": "Boom Box (Oct. 2025)",
     "icon": "/home-base/decorations/190.png",
-    "index": "117"
+    "index": "118"
   },
   "18000191": {
     "name": "Cursed Tome (Oct. 2025)",
     "icon": "/home-base/decorations/191.png",
-    "index": "118"
+    "index": "119"
   },
   "18000192": {
     "name": "Eagle Monument (Nov. 2025)",
     "icon": "/home-base/decorations/192.png",
-    "index": "121"
+    "index": "122"
   },
   "18000196": {
     "name": "Smokey Stove (Dec. 2025)",
     "icon": "/home-base/decorations/196.png",
-    "index": "123"
+    "index": "124"
   },
   "18000197": {
     "name": "Wish Lamp (Jan. 2026)",
     "icon": "/home-base/decorations/197.png",
-    "index": "127"
+    "index": "128"
   },
   "18000199": {
     "name": "Brawny Battleaxe (Dec. 2025)",
     "icon": "/home-base/decorations/199.png",
-    "index": "124"
+    "index": "125"
   },
   "18000200": {
     "name": "Crafted Statue (Nov. 2025)",
     "icon": "/home-base/decorations/200.png",
-    "index": "122"
+    "index": "123"
   },
   "18000203": {
     "name": "Hungry Hound (Dec. 2025)",
     "icon": "/home-base/decorations/203.png",
-    "index": "125"
+    "index": "126"
   },
   "18000204": {
     "name": "Frozen Stone (Dec. 2025)",
     "icon": "/home-base/decorations/204.png",
-    "index": "126"
+    "index": "127"
   },
   "8000015": {
     "name": "2012 Stone",
@@ -3017,6 +3022,11 @@
     "name": "2025 Clashmas Tree",
     "icon": "/home-base/obstacles/137.png",
     "index": "51"
+  },
+  "8000138": {
+    "name": "2026 LNY Kumquat Tree",
+    "icon": "/home-base/obstacles/138.png",
+    "index": "52"
   },
   "60000000": {
     "name": "Classic Scenery",
@@ -3411,16 +3421,16 @@
     "index": "59"
   },
   "60000082": {
-    "name": "Desert Nights Scenery",
+    "name": "Classic Meteor Scenery",
     "icon": "/home-base/sceneries/82.png",
     "full": "",
-    "index": "60"
+    "index": "61"
   },
   "60000083": {
-    "name": "Classic Meteor Scenery",
+    "name": "Desert Nights Scenery",
     "icon": "/home-base/sceneries/83.png",
     "full": "",
-    "index": "61"
+    "index": "60"
   },
   "52000000": {
     "name": "Barbarian King",
