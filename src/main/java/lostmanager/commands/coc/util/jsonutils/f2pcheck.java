@@ -85,11 +85,8 @@ public class f2pcheck extends ListenerAdapter {
                                 MessageUtil.EmbedType.SUCCESS))
                                 .queue();
                     } else {
-                        event.getHook().editOriginalEmbeds(MessageUtil.buildEmbed(title,
-                                "Dieser Spieler " + player.getInfoStringAPI() + " ist **NICHT F2P**.\nGrund: "
-                                        + result.getReason(),
-                                MessageUtil.EmbedType.ERROR))
-                                .queue();
+                        List<String> reasons = result.getReasons();
+                        sendFailureMessages(event, title, player, reasons);
                     }
                 }
             } catch (Exception e) {
@@ -246,5 +243,49 @@ public class f2pcheck extends ListenerAdapter {
         }
 
         return choices;
+    }
+
+    @SuppressWarnings("null")
+    private void sendFailureMessages(SlashCommandInteractionEvent event, String title, Player player,
+            List<String> reasons) {
+        String baseMessage = "Dieser Spieler " + player.getInfoStringAPI() + " ist **NICHT F2P**.\n";
+
+        List<String> chunks = new ArrayList<>();
+        StringBuilder currentChunk = new StringBuilder();
+        currentChunk.append(baseMessage);
+
+        if (reasons == null || reasons.isEmpty()) {
+            currentChunk.append("Grund: Unbekannt");
+            chunks.add(currentChunk.toString());
+        } else if (reasons.size() == 1) {
+            currentChunk.append("Grund: ").append(reasons.get(0));
+            chunks.add(currentChunk.toString());
+        } else {
+            currentChunk.append("Gründe:\n");
+            for (String reason : reasons) {
+                String line = "- " + reason + "\n";
+                // Check if adding this line exceeds limit (using 4000 to be safe)
+                if (currentChunk.length() + line.length() > 4000) {
+                    chunks.add(currentChunk.toString());
+                    currentChunk = new StringBuilder();
+                }
+                currentChunk.append(line);
+            }
+            if (currentChunk.length() > 0) {
+                chunks.add(currentChunk.toString());
+            }
+        }
+
+        for (int i = 0; i < chunks.size(); i++) {
+            if (i == 0) {
+                event.getHook()
+                        .editOriginalEmbeds(MessageUtil.buildEmbed(title, chunks.get(i), MessageUtil.EmbedType.ERROR))
+                        .complete();
+            } else {
+                event.getChannel()
+                        .sendMessageEmbeds(MessageUtil.buildEmbed(title, chunks.get(i), MessageUtil.EmbedType.ERROR))
+                        .complete();
+            }
+        }
     }
 }
