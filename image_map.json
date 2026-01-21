@@ -5446,11 +5446,11 @@
     "icon": "/home-base/spells/120.png"
   },
   "93000000": {
-    "name": "Kinderarbeit",
+    "name": "Builder Apprentice (inoffiziell Kinderarbeit)",
     "icon": "/home-base/apprentice/apprentice-builder.png"
   },
   "93000001": {
-    "name": "Schwarzarbeiter",
+    "name": "Lab Apprentice (inoffiziell Schwarzarbeiter)",
     "icon": "/home-base/apprentice/apprentice-laboratory.png"
   },
   "93000002": {
