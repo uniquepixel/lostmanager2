@@ -45,6 +45,7 @@ import lostmanager.commands.coc.util.jsonutils.f2pcheck;
 import lostmanager.commands.coc.util.jsonutils.stats;
 import lostmanager.commands.coc.util.playerutils.setnick;
 import lostmanager.commands.coc.util.playerutils.wins;
+import lostmanager.commands.coc.util.playerutils.missinghits;
 import lostmanager.commands.coc.util.automation.listeningevent;
 import lostmanager.commands.coc.util.clanutils.cwdonator;
 import lostmanager.commands.coc.util.clanutils.raidping;
@@ -205,6 +206,8 @@ public class Bot extends ListenerAdapter {
 											.setAutoComplete(true)),
 
 							Commands.slash("restart", "Startet den Bot neu."),
+
+							Commands.slash("missinghits", "Zeigt fehlende Angriffe für alle verlinkten Accounts an."),
 
 							Commands.slash("addmember", "Füge einen Spieler zu einem Clan hinzu.")
 									.addOptions(new OptionData(OptionType.STRING, "clan",
@@ -517,6 +520,7 @@ public class Bot extends ListenerAdapter {
 		classes.add(new teamcheck());
 		classes.add(new checkroles());
 		classes.add(new wins());
+		classes.add(new missinghits());
 		classes.add(new jsonupload());
 		classes.add(new stats());
 		classes.add(new f2pcheck());
