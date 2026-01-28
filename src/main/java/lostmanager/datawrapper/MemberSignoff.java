@@ -68,7 +68,7 @@ public class MemberSignoff {
     public static boolean isSignedOff(String playerTag) {
         // Query database directly without loading full object
         String sql = "SELECT COUNT(*) FROM member_signoffs WHERE player_tag = ? AND (end_date IS NULL OR end_date > NOW())";
-        Integer count = DBUtil.getValueFromSQL(sql, Integer.class, playerTag);
+        Long count = DBUtil.getValueFromSQL(sql, Long.class, playerTag);
         return count != null && count > 0;
     }
 

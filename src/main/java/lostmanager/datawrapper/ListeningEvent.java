@@ -441,6 +441,8 @@ public class ListeningEvent {
 			return; // Can't execute if no war members
 		}
 
+		int cwsize = warMemberList.size();
+
 		// Filter hidden co-leaders
 		warMemberList.removeIf(p -> p.isHiddenColeader());
 
@@ -470,8 +472,6 @@ public class ListeningEvent {
 				}
 			}
 		}
-
-		int cwsize = warMemberList.size();
 
 		// Use the same mapping logic as cwdonator command
 		HashMap<Integer, ArrayList<lostmanager.util.Tuple<Integer, Integer>>> mappings = getCWDonatorMappings();
